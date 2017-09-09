@@ -19,8 +19,8 @@
 #' @export
 #'
 #' @examples
-#'\dontrun{
-#'testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
+#' \dontrun{
+#' testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
 #'
 #'}
 fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = accelerate, GenRandomPars = GenRandomPars, 

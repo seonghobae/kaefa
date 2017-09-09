@@ -1,7 +1,7 @@
 Package: kaefa
 Type: Package
 Title: kwangwoon automated exploratory factor analysis
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: c(person("Seongho", family="Bae", role = c("aut", "cre"),
                      email = c("seongho@kw.ac.kr", "seonghobae@me.com")),
               person("Tae-Yong", family="Yoo", role = "ctb",

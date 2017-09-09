@@ -1,5 +1,24 @@
 # tools.R
 
+#' fitMLIRT: fit multilevel item response model
+#'
+#' @param data insert data.frame object.
+#' @param model specify the mirt model if want to calibrate. accepting mirt::mirt.model() object.
+#' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
+#' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
+#' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
+#' @param SEMCYCLES N Cycles of Metro-hastings burnin stage (stage 2). Default is 1000.
+#' @param covdata insert covariate data frame where use to fixed and random effect term. if not inserted, ignoring fixed and random effect estimation.
+#' @param fixed a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.
+#' @param random a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.
+#' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
+#' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
+#' @param itemtype set the calibration item type
+#'
+#' @return
+#' @export
+#'
+#' @examples
 fitMLIRT <-
   function(data = data,
            model = model,
@@ -95,62 +114,30 @@ fitMLIRT <-
   }
 
 
+#' evaluateItemFit
+#'
+#' @param mirtModel insert estimated mirt::mirt or mirt::mixedmirt model.
+#' @param GCEvms insert google computing engine virtual machine information.
+#' @param rotate set the rotate critera if mirt model is exploratory model. default is bifactorQ
+#'
+#' @return
+#' @export
+#'
+#' @examples
 evaluateItemFit <-
   function(mirtModel,
            GCEvms = NULL,
            rotate = 'bifactorQ') {
+    a <- NULL ## To please R CMD check
+    b <- 3.14
+    a %<-% {
+      b + 1
+    }
+    a
+
     if (attr(class(mirtModel), 'package') == 'mirt') {
-      # check mirtModel is mirt object
-      if (!require('future')) {
-        install.packages('future', repos = 'http://cloud.r-project.org')
-      }
-      require('future') # GET RID OFF WHEN PRODUCTION
-
-      if (!require('mirt')) {
-        install.packages('mirt', repos = 'http://cloud.r-project.org')
-      }
-      require('mirt') # GET RID OFF WHEN PRODUCTION
-
-      if (!require('progress')) {
-        install.packages('progress', repos = 'http://cloud.r-project.org')
-      }
-      require('progress') # GET RID OFF WHEN PRODUCTION
-
-      if (!require('plyr')) {
-        install.packages('plyr', repos = 'http://cloud.r-project.org')
-      }
-      require('plyr') # GET RID OFF WHEN PRODUCTION
-
-      if (!require('psych')) {
-        install.packages('psych', repos = 'http://cloud.r-project.org')
-      }
-      require('psych') # GET RID OFF WHEN PRODUCTION
-
-      # load cluster
-      if (!is.null(GCEvms)) {
-        parallel::mclapply(1:length(GCEvms),
-                           future::plan(list(
-                             future::tweak(future::cluster, workers = future::as.cluster(GCEvms)),
-                             future::multiprocess
-                           )),
-                           mc.cores = length(GCEvms))
-      } else {
-        if (length(grep('openblas', extSoftVersion()["BLAS"])) > 0) {
-          future::plan(future::multiprocess)
-        } else if (length(future::availableWorkers()) == 1) {
-          future::plan(future::sequential)
-        } else {
-          suppressMessages(try(future::plan(strategy = list(
-            future::tweak(future::cluster),
-            future::multiprocess
-          )), silent = T))
-          # mirt::mirtCluster()
-
-        }
-
-      }
-
       # item fit evaluation
+      modFit_Zh <- listenv()
       modFit_Zh %<-% try(mirt::itemfit(
         mirtModel,
         rotate = rotate,
@@ -164,6 +151,7 @@ evaluateItemFit <-
       ),
       silent = T)
 
+      modFit_SX2 <- listenv()
       modFit_SX2 %<-% try(mirt::itemfit(
         mirtModel,
         rotate = rotate,
@@ -178,6 +166,7 @@ evaluateItemFit <-
       silent = T)
 
       if (mirtModel@Model$nfact == 1) {
+        modFit_PVQ1 <- listenv()
         modFit_PVQ1 %<-% try(mirt::itemfit(
           mirtModel,
           rotate = rotate,
@@ -191,6 +180,7 @@ evaluateItemFit <-
 
       if (sum(mirtModel@Model$itemtype %in% 'Rasch') > 0 &&
           mirtModel@Model$nfact == 1) {
+        modFit_infit <- listenv()
         modFit_infit %<-% try(mirt::itemfit(
           mirtModel,
           rotate = rotate,
@@ -206,6 +196,31 @@ evaluateItemFit <-
       }
 
       # check item fit indices are exists
+
+      if (exists('modFit_Zh')) {
+        if (!class(modFit_Zh)[1] == 'mirt_df') {
+          rm(modFit_Zh)
+        }
+      }
+
+      if (exists('modFit_SX2')) {
+        if (!class(modFit_SX2)[1] == 'mirt_df') {
+          rm(modFit_SX2)
+        }
+      }
+
+      if (exists('modFit_PVQ1')) {
+        if (!class(modFit_PVQ1)[1] == 'mirt_df') {
+          rm(modFit_PVQ1)
+        }
+      }
+
+      if (exists('modFit_infit')) {
+        if (!class(modFit_infit)[1] == 'mirt_df') {
+          rm(modFit_infit)
+        }
+      }
+
       itemFitList <-
         c('modFit_Zh',
           'modFit_SX2',

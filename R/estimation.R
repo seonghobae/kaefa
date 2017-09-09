@@ -1,5 +1,26 @@
 # estimation.R
 
+#' estimate full-information item factor analysis models with combinating random effects
+#'
+#' @param data insert data.frame object.
+#' @param model specify the mirt model if want to calibrate. accepting mirt::mirt.model() object.
+#' @param GCEvms insert google computing engine virtual machine information.
+#' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
+#' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
+#' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
+#' @param SEMCYCLES N Cycles of Metro-hastings burnin stage (stage 2). Default is 1000.
+#' @param covdata insert covariate data frame where use to fixed and random effect term. if not inserted, ignoring fixed and random effect estimation.
+#' @param fixed a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.
+#' @param random a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.
+#' @param key item key vector of multiple choices test.
+#' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
+#' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
+#'
+#' @return possible optimal combinations of models in list
+#' @export
+#'
+#' @examples
+#' testMod1 <- estIRT(mirt::Science, model = 1)
 estIRT <- function(data,
                    model = 1,
                    GCEvms = NULL,
@@ -13,8 +34,6 @@ estIRT <- function(data,
                    key = NULL,
                    accelerate = 'squarem',
                    symmetric = F) {
-
-
   combine <- function (x, y) {
     combn (y, x, paste, collapse = ", ")
   }
@@ -244,6 +263,29 @@ estIRT <- function(data,
 }
 
 # exploratoryIRT.R
+#' estimate appropriate exploratory full-information item factor analysis models with combinating random effects by number of factors
+#'
+#' @param data insert data.frame object.
+#' @param minExtraction specify the minimum number of factors to calibrate. defaults is 1 but can change this.
+#' @param maxExtraction specify the maximum number of factors to calibrate. defaults is 10 but can change this.
+#' @param GCEvms insert google computing engine virtual machine information.
+#' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
+#' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
+#' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
+#' @param SEMCYCLES N Cycles of Metro-hastings burnin stage (stage 2). Default is 1000.
+#' @param covdata insert covariate data frame where use to fixed and random effect term. if not inserted, ignoring fixed and random effect estimation.
+#' @param fixed a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.
+#' @param random a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.
+#' @param key item key vector of multiple choices test.
+#' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
+#' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
+#'
+#'
+#' @return possible optimal combinations of models in list
+#' @export
+#'
+#' @examples
+#' testMod1 <- exploratoryIRT(mirt::Science, minExtraction = 1, maxExtraction = 2)
 exploratoryIRT <-
   function(data,
            minExtraction = 1,
@@ -262,8 +304,6 @@ exploratoryIRT <-
            key = NULL,
            accelerate = 'squarem',
            symmetric = F) {
-
-
     estModels <- listenv::listenv()
     for (i in minExtraction:maxExtraction) {
       estModels[[i]] %<-%
@@ -308,6 +348,33 @@ exploratoryIRT <-
 
   }
 
+#' Title
+#'
+#' @param data insert data.frame object.
+#' @param model specify the mirt model if you have want to calibrate. default is NULL to run exploratory models, but accepting mirt::mirt.model() object.
+#' @param minExtraction specify the minimum number of factors to calibrate. defaults is 1 but can change this. if model is not NULL, aefa will ignoring this.
+#' @param maxExtraction specify the maximum number of factors to calibrate. defaults is 10 but can change this. if model is not NULL, aefa will ignoring this.
+#' @param GCEvms insert google computing engine virtual machine information.
+#' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
+#' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
+#' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
+#' @param SEMCYCLES N Cycles of Metro-hastings burnin stage (stage 2). Default is 1000.
+#' @param covdata insert covariate data frame where use to fixed and random effect term. if not inserted, ignoring fixed and random effect estimation.
+#' @param fixed a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.
+#' @param random a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.
+#' @param key item key vector of multiple choices test.
+#' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
+#' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
+#'
+#' @param saveModelHistory Will you save the model calibration historys? default is TRUE
+#' @param filename If you want to save the model calibration historys, Which one want you save file name? default is aefa.RDS, However can change this.
+#' @param printItemFit Will you printing item fit indices during the calibrations? default is TRUE.
+#' @param rotate set the rotate critera if mirt model is exploratory model. default is bifactorQ, however you can change this what you want to, like 'geominQ', 'bifactorT', 'geominT'. In current, Target rotation not supporting.
+#'
+#' @return
+#' @export
+#'
+#' @examples
 aefa <- function(data,
                  model = NULL,
                  minExtraction = 1,

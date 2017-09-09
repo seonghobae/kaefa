@@ -20,7 +20,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' testMod1 <- estIRT(mirt::Science, model = 1)
+#'
+#' }
 estIRT <- function(data,
                    model = 1,
                    GCEvms = NULL,
@@ -289,7 +292,10 @@ estIRT <- function(data,
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' testMod1 <- exploratoryIRT(mirt::Science, minExtraction = 1, maxExtraction = 2)
+#'
+#' }
 exploratoryIRT <-
   function(data,
            minExtraction = 1,

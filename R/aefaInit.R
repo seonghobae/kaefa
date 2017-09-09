@@ -9,6 +9,10 @@
 #' @export
 #'
 #' @examples
+#'\dontrun{
+#' .conn <- aefaInit()
+#'
+#'}
 aefaInit <- function(GCEvms = NULL, debug = F) {
   options(future.debug = debug)
 

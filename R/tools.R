@@ -15,10 +15,14 @@
 #' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
 #' @param itemtype set the calibration item type
 #'
-#' @return
+#' @return appropriate mirt::mixedeffect models in list vector
 #' @export
 #'
 #' @examples
+#'\dontrun{
+#'testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
+#'
+#'}
 fitMLIRT <-
   function(data = data,
            model = model,
@@ -120,10 +124,14 @@ fitMLIRT <-
 #' @param GCEvms insert google computing engine virtual machine information.
 #' @param rotate set the rotate critera if mirt model is exploratory model. default is bifactorQ
 #'
-#' @return
+#' @return return item fit estimates
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' testModel1 <- estIRT(mirt::Science)
+#' testItemFit1 <- evaluateItemFit(testModel1)
+#' }
 evaluateItemFit <-
   function(mirtModel,
            GCEvms = NULL,

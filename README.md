@@ -1,2 +1,2 @@
 # kaefa
-kwangwoon automated exploratory factor analysis for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment
+The Automated Exploratory Factor Analysis (AEFA) framework for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment.

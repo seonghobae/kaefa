@@ -138,7 +138,7 @@ evaluateItemFit <-
            rotate = 'bifactorQ') {
 
     if(!exists('.conn')){
-      .conn <<- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
+      .conn <- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
     }
 
     if (attr(class(mirtModel), 'package') == 'mirt') {

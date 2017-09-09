@@ -57,7 +57,7 @@ automated exploratory factor analytic models
 Title
 }
 \examples{
-#' \dontrun{
+\dontrun{
 testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 
 }

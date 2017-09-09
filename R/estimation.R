@@ -2,6 +2,13 @@
 
 #' estimate full-information item factor analysis models with combinating random effects
 #'
+#' @importFrom utils combn
+#' @import listenv
+#' @import future
+#' @import mirt
+#' @import psych
+#' @import plyr
+#' @import parallel
 #' @param data insert data.frame object.
 #' @param model specify the mirt model if want to calibrate. accepting mirt::mirt.model() object.
 #' @param GCEvms insert google computing engine virtual machine information.
@@ -38,7 +45,7 @@ estIRT <- function(data,
                    accelerate = 'squarem',
                    symmetric = F) {
   if(!exists('.conn')){
-    .conn <<- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
+    .conn <- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
   }
 
   combine <- function (x, y) {
@@ -316,7 +323,7 @@ exploratoryIRT <-
            symmetric = F) {
 
     if(!exists('.conn')){
-      .conn <<- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
+      .conn <- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
     }
 
     estModels <- listenv::listenv()
@@ -390,7 +397,7 @@ exploratoryIRT <-
 #' @export
 #'
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #'
 #' }
@@ -418,7 +425,7 @@ aefa <- function(data,
                  rotate = 'bifactorQ') {
 
   if(!exists('.conn')){
-    .conn <<- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
+    .conn <- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
   }
 
   badItemNames <- c()

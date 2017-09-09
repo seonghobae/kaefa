@@ -33,7 +33,6 @@ vignettes/*.pdf
 *.knit.md
 
 # for jetbrains
-.idea/
 .idea/*
 kaefa.iml
 .Rproj.user

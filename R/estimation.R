@@ -35,7 +35,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
     SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", 
     symmetric = F) {
     if (!exists(".conn")) {
-        .conn <- aefaInit(GCEvms = GCEvms, debug = getOption("future.debug", FALSE))
+        stop('please run the aefaInit() first')
     }
     
     combine <- function(x, y) {
@@ -208,9 +208,9 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 exploratoryIRT <- function(data, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, 
     GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, 
     fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F) {
-    
+
     if (!exists(".conn")) {
-        .conn <- aefaInit(GCEvms = GCEvms, debug = getOption("future.debug", FALSE))
+        stop('please run the aefaInit() first')
     }
     
     estModels <- listenv::listenv()
@@ -278,9 +278,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, 
     fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, 
     filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ") {
-    
+
     if (!exists(".conn")) {
-        .conn <- aefaInit(GCEvms = GCEvms, debug = getOption("future.debug", FALSE))
+        stop('please run the aefaInit() first')
     }
     
     badItemNames <- c()

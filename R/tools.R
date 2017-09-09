@@ -90,9 +90,9 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 #' testItemFit1 <- evaluateItemFit(testModel1)
 #' }
 evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
-    
+
     if (!exists(".conn")) {
-        .conn <- aefaInit(GCEvms = GCEvms, debug = getOption("future.debug", FALSE))
+        stop('please run the aefaInit() first')
     }
     
     if (attr(class(mirtModel), "package") == "mirt") {

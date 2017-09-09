@@ -19,8 +19,8 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
     
     # setting up cluster
     if (!is.null(GCEvms)) {
-        parallel::mclapply(future::plan(list(conn <- future::tweak(future::cluster, workers = future::as.cluster(GCEvms)), 
-            future::multiprocess)), mc.cores = length(GCEvms))
+        conn <- future::plan(list(future::tweak(future::cluster, workers = future::as.cluster(GCEvms)),
+            future::multiprocess))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas", extSoftVersion()["BLAS"])) > 0) {
             conn <- future::plan(future::multiprocess)

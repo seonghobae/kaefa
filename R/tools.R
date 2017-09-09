@@ -128,12 +128,10 @@ evaluateItemFit <-
   function(mirtModel,
            GCEvms = NULL,
            rotate = 'bifactorQ') {
-    a <- NULL ## To please R CMD check
-    b <- 3.14
-    a %<-% {
-      b + 1
+
+    if(!exists('.conn')){
+      .conn <<- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
     }
-    a
 
     if (attr(class(mirtModel), 'package') == 'mirt') {
       # item fit evaluation

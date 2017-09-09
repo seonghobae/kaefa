@@ -34,6 +34,10 @@ estIRT <- function(data,
                    key = NULL,
                    accelerate = 'squarem',
                    symmetric = F) {
+  if(!exists('.conn')){
+    .conn <<- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
+  }
+
   combine <- function (x, y) {
     combn (y, x, paste, collapse = ", ")
   }
@@ -304,6 +308,11 @@ exploratoryIRT <-
            key = NULL,
            accelerate = 'squarem',
            symmetric = F) {
+
+    if(!exists('.conn')){
+      .conn <<- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
+    }
+
     estModels <- listenv::listenv()
     for (i in minExtraction:maxExtraction) {
       estModels[[i]] %<-%
@@ -397,6 +406,11 @@ aefa <- function(data,
                  filename = 'aefa.RDS',
                  printItemFit = T,
                  rotate = 'bifactorQ') {
+
+  if(!exists('.conn')){
+    .conn <<- aefaInit(GCEvms = GCEvms, debug = getOption('future.debug' , FALSE))
+  }
+
   badItemNames <- c()
 
   modelHistoryCount <- 0

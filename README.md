@@ -21,8 +21,12 @@ This is a basic example which shows you how to solve a common problem:
 mod1 <- exploratoryIRT(mirt::Science)
 ```
 
+## software quality information
+### ubuntu environment
 [![Travis-CI Build Status](https://travis-ci.org/seonghobae/kaefa.svg?branch=master)](https://travis-ci.org/seonghobae/kaefa)
+### windows
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/seonghobae/kaefa?branch=master&svg=true)](https://ci.appveyor.com/project/seonghobae/kaefa)
+### code quality
 [![Coverage Status](https://img.shields.io/codecov/c/github/seonghobae/kaefa/master.svg)](https://codecov.io/github/seonghobae/kaefa?branch=master)
 
 [Contributor Code of Conduct](CONDUCT.md)

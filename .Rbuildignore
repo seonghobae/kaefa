@@ -7,3 +7,6 @@
 ^CONDUCT\.md$
 ^codecov\.yml$
 ^cran-comments\.md$
+^README\.Rmd$
+^README-.*\.png$
+^revdep$

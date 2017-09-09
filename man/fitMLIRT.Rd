@@ -2,7 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{fitMLIRT}
 \alias{fitMLIRT}
-\title{fitMLIRT: fit multilevel item response model}
+\title{fit appropriate multilevel item response model automatically with mirt::mixedmirt}
 \usage{
 fitMLIRT(data = data, model = model, itemtype = NULL,
   accelerate = accelerate, GenRandomPars = GenRandomPars,
@@ -39,7 +39,7 @@ fitMLIRT(data = data, model = model, itemtype = NULL,
 appropriate mirt::mixedeffect models in list vector
 }
 \description{
-fitMLIRT: fit multilevel item response model
+fit appropriate multilevel item response model automatically with mirt::mixedmirt
 }
 \examples{
 \dontrun{

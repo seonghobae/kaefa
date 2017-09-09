@@ -2,7 +2,9 @@
 % Please edit documentation in R/aefaInit.R
 \name{aefaInit}
 \alias{aefaInit}
-\title{aefaInit}
+\title{Initalize aefa engine,
+This function initalise the aefa cluster.
+If someone have Google Computing Engine informaiton, put the information in the argument.}
 \usage{
 aefaInit(GCEvms = NULL, debug = F)
 }
@@ -12,10 +14,12 @@ aefaInit(GCEvms = NULL, debug = F)
 \item{debug}{run with debug mode. default is FALSE}
 }
 \value{
-nothing to return
+nothing to return, just hidden variable to set to run parallelism.
 }
 \description{
-aefaInit
+Initalize aefa engine,
+This function initalise the aefa cluster.
+If someone have Google Computing Engine informaiton, put the information in the argument.
 }
 \examples{
 \dontrun{

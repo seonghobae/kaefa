@@ -1,13 +1,9 @@
 Package: kaefa
 Type: Package
-Title: kaefa: kwangwoon automated exploratory factor
-    analysis for research capability to identify
-    unexplained factor structure with complexly
-    cross-classified multilevel structured
-    data in R environment
+Title: kwangwoon automated exploratory factor analysis
 Version: 0.1.0
 Authors@R: c(person("Seongho", family="Bae", role = c("aut", "cre"),
-                     email = "seongho@kw.ac.kr"),
+                     email = c("seongho@kw.ac.kr", "seonghobae@me.com")),
               person("Tae-Yong", family="Yoo", role = "ctb",
                      email = "tyyoo@kw.ac.kr"),
               person("Kyosoo", family="Shin", role = "ctb",

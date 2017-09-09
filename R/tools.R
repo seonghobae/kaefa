@@ -1,6 +1,6 @@
 # tools.R
 
-#' fitMLIRT: fit multilevel item response model
+#' fit appropriate multilevel item response model automatically with mirt::mixedmirt
 #'
 #' @param data insert data.frame object.
 #' @param model specify the mirt model if want to calibrate. accepting mirt::mirt.model() object.
@@ -118,7 +118,7 @@ fitMLIRT <-
   }
 
 
-#' evaluateItemFit
+#' assessment of fit indices of the calibrated model
 #'
 #' @param mirtModel insert estimated mirt::mirt or mirt::mixedmirt model.
 #' @param GCEvms insert google computing engine virtual machine information.

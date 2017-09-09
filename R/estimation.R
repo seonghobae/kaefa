@@ -370,8 +370,7 @@ exploratoryIRT <-
 
   }
 
-#' Title
-#'
+#' doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment
 #' @param data insert data.frame object.
 #' @param model specify the mirt model if you have want to calibrate. default is NULL to run exploratory models, but accepting mirt::mirt.model() object.
 #' @param minExtraction specify the minimum number of factors to calibrate. defaults is 1 but can change this. if model is not NULL, aefa will ignoring this.

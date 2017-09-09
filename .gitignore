@@ -37,3 +37,4 @@ vignettes/*.pdf
 .idea/*
 kaefa.iml
 .Rproj.user
+packrat/lib*/

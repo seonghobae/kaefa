@@ -386,10 +386,14 @@ exploratoryIRT <-
 #' @param printItemFit Will you printing item fit indices during the calibrations? default is TRUE.
 #' @param rotate set the rotate critera if mirt model is exploratory model. default is bifactorQ, however you can change this what you want to, like 'geominQ', 'bifactorT', 'geominT'. In current, Target rotation not supporting.
 #'
-#' @return
+#' @return automated exploratory factor analytic models
 #' @export
 #'
 #' @examples
+#' #' \dontrun{
+#' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
+#'
+#' }
 aefa <- function(data,
                  model = NULL,
                  minExtraction = 1,

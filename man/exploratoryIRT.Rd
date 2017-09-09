@@ -38,6 +38,15 @@ exploratoryIRT(data, minExtraction = 1, maxExtraction = if (ncol(data) < 10)
 
 \item{symmetric}{force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.}
 }
+\value{
+possible optimal combinations of models in list
+}
 \description{
 estimate appropriate exploratory full-information item factor analysis models with combinating random effects by number of factors
+}
+\examples{
+\dontrun{
+testMod1 <- exploratoryIRT(mirt::Science, minExtraction = 1, maxExtraction = 2)
+
+}
 }

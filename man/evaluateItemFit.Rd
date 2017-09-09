@@ -13,6 +13,15 @@ evaluateItemFit(mirtModel, GCEvms = NULL, rotate = "bifactorQ")
 
 \item{rotate}{set the rotate critera if mirt model is exploratory model. default is bifactorQ}
 }
+\value{
+return item fit estimates
+}
 \description{
 evaluateItemFit
+}
+\examples{
+\dontrun{
+testModel1 <- estIRT(mirt::Science)
+testItemFit1 <- evaluateItemFit(testModel1)
+}
 }

@@ -35,6 +35,15 @@ fitMLIRT(data = data, model = model, itemtype = NULL,
 
 \item{random}{a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
 }
+\value{
+appropriate mirt::mixedeffect models in list vector
+}
 \description{
 fitMLIRT: fit multilevel item response model
+}
+\examples{
+\dontrun{
+testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
+
+}
 }

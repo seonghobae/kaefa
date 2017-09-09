@@ -43,5 +43,8 @@ possible optimal combinations of models in list
 estimate full-information item factor analysis models with combinating random effects
 }
 \examples{
-estIRT(mirt::Science)
+\dontrun{
+testMod1 <- estIRT(mirt::Science, model = 1)
+
+}
 }

@@ -11,6 +11,15 @@ aefaInit(GCEvms = NULL, debug = F)
 
 \item{debug}{run with debug mode. default is FALSE}
 }
+\value{
+nothing to return
+}
 \description{
 aefaInit
+}
+\examples{
+\dontrun{
+.conn <- aefaInit()
+
+}
 }

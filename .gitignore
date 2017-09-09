@@ -34,4 +34,6 @@ vignettes/*.pdf
 
 # for jetbrains
 .idea/
+.idea/*
 kaefa.iml
+.Rproj.user

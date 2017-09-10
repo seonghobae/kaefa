@@ -361,20 +361,25 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 
   finalEstModels <- list()
   noNullEstModels <- list()
-  for (i in 1:NROW(estModels)) {
-    if (!is.null(estModels[[i]])) {
-      noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[i]]
-    }
-  }
-
-  for (i in 1:NROW(noNullEstModels)) {
-    if (sum(c("MixedClass", "SingleGroupClass") %in% class(noNullEstModels[[i]])) > 0) {
-      if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
-        finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
+  if(NROW(estModels) != 0){
+    for (i in 1:NROW(estModels)) {
+      if (!is.null(estModels[[i]])) {
+        noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[i]]
       }
+    }
 
+    for (i in 1:NROW(noNullEstModels)) {
+      if (sum(c("MixedClass", "SingleGroupClass") %in% class(noNullEstModels[[i]])) > 0) {
+        if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
+          finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
+        }
+
+      }
     }
   }
+
+
+
   if (NROW(finalEstModels) != 0) {
     return(finalEstModels)
   }

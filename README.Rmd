@@ -32,7 +32,6 @@ This is a basic example which shows you how to solve a common problem:
 ```{r example}
 ## basic example code
 library('kaefa')
-.conn <- aefaInit(GCEvms = NULL, debug = F)
 mod1 <- estIRT(mirt::Science)
 ```
 

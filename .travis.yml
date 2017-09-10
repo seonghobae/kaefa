@@ -4,6 +4,26 @@ language: R
 sudo: false
 cache: packages
 
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+  - clang
+
+addons:
+  apt:
+    packages:
+      - libzmq3-dev
+
+before_install:
+  - echo "deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/release-stable/Debian_9.0/ ./" >> /etc/apt/sources.list
+  - wget https://download.opensuse.org/repositories/network:/messaging:/zeromq:/release-stable/Debian_9.0/Release.key -O- | sudo apt-key add
+  - apt-get install libzmq3-dev -y
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update     ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install zeromq; fi
+
 r_packages:
   - covr
 

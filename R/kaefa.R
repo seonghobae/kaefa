@@ -3,6 +3,7 @@
 #' Initalize aefa engine,
 #' This function initalise the aefa cluster.
 #' If someone have Google Computing Engine informaiton, put the information in the argument.
+#' @import rzmq
 #' @param GCEvms insert google computing engine virtual machine information.
 #' @param debug run with debug mode. default is FALSE
 #'

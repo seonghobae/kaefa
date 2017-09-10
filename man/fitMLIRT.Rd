@@ -13,7 +13,7 @@ fitMLIRT(data = data, model = model, itemtype = NULL,
 \arguments{
 \item{data}{insert \code{data.frame} object.}
 
-\item{model}{specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model()} object.}
+\item{model}{specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.}
 
 \item{itemtype}{set the calibration item type}
 

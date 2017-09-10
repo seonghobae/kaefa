@@ -34,7 +34,7 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
 
   }
 
-  return(conn)
+  return(options(aefaConn = conn))
 
 }
 
@@ -42,7 +42,7 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
 #' fit appropriate multilevel item response model automatically with \code{mirt::mixedmirt}
 #'
 #' @param data insert \code{data.frame} object.
-#' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model()} object.
+#' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.
 #' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
 #' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
 #' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
@@ -130,8 +130,8 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 #' }
 evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 
-  if (!exists(".conn")) {
-    stop('please run the aefaInit() first')
+  if (is.null(getOption('aefaConn'))) {
+    getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = F))
   }
 
   if (attr(class(mirtModel), "package") == "mirt") {
@@ -214,7 +214,7 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #' @import plyr
 #' @import parallel
 #' @param data insert \code{data.frame} object.
-#' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model()} object.
+#' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.
 #' @param GCEvms insert google computing engine virtual machine information.
 #' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
 #' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
@@ -238,8 +238,8 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500,
                    SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
                    symmetric = F) {
-  if (!exists(".conn")) {
-    stop('please run the aefaInit() first')
+  if (is.null(getOption('aefaConn'))) {
+    getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = F))
   }
 
   combine <- function(x, y) {
@@ -413,8 +413,8 @@ exploratoryIRT <- function(data, minExtraction = 1, maxExtraction = if (ncol(dat
                            GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
                            fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F) {
 
-  if (!exists(".conn")) {
-    stop('please run the aefaInit() first')
+  if (is.null(getOption('aefaConn'))) {
+    getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = F))
   }
 
   estModels <- listenv::listenv()
@@ -450,7 +450,7 @@ exploratoryIRT <- function(data, minExtraction = 1, maxExtraction = if (ncol(dat
 
 #' doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment
 #' @param data insert \code{data.frame} object.
-#' @param model specify the mirt model if you have want to calibrate. default is NULL to run exploratory models, but accepting \code{mirt::mirt.model()} object.
+#' @param model specify the mirt model if you have want to calibrate. default is NULL to run exploratory models, but accepting \code{mirt::mirt.model} object.
 #' @param minExtraction specify the minimum number of factors to calibrate. defaults is 1 but can change this. if model is not NULL, aefa will ignoring this.
 #' @param maxExtraction specify the maximum number of factors to calibrate. defaults is 10 but can change this. if model is not NULL, aefa will ignoring this.
 #' @param GCEvms insert google computing engine virtual machine information.
@@ -483,8 +483,8 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                  fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
                  filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ") {
 
-  if (!exists(".conn")) {
-    stop('please run the aefaInit() first')
+  if (is.null(getOption('aefaConn'))) {
+    getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = F))
   }
 
   badItemNames <- c()

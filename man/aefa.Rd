@@ -14,7 +14,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \arguments{
 \item{data}{insert \code{data.frame} object.}
 
-\item{model}{specify the mirt model if you have want to calibrate. default is NULL to run exploratory models, but accepting \code{mirt::mirt.model()} object.}
+\item{model}{specify the mirt model if you have want to calibrate. default is NULL to run exploratory models, but accepting \code{mirt::mirt.model} object.}
 
 \item{minExtraction}{specify the minimum number of factors to calibrate. defaults is 1 but can change this. if model is not NULL, aefa will ignoring this.}
 

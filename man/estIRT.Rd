@@ -12,7 +12,7 @@ estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
 \arguments{
 \item{data}{insert \code{data.frame} object.}
 
-\item{model}{specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model()} object.}
+\item{model}{specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.}
 
 \item{GCEvms}{insert google computing engine virtual machine information.}
 

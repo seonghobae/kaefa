@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimation.R
 \name{aefa}
 \alias{aefa}
-\title{Title}
+\title{doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment}
 \usage{
 aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T,
@@ -50,6 +50,15 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 
 \item{rotate}{set the rotate critera if mirt model is exploratory model. default is bifactorQ, however you can change this what you want to, like 'geominQ', 'bifactorT', 'geominT'. In current, Target rotation not supporting.}
 }
+\value{
+automated exploratory factor analytic models
+}
 \description{
-Title
+doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment
+}
+\examples{
+\dontrun{
+testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
+
+}
 }

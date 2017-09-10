@@ -1,2 +1,12 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^packrat/
+^\.Rprofile$
+^\.travis\.yml$
+^appveyor\.yml$
+^CONDUCT\.md$
+^codecov\.yml$
+^cran-comments\.md$
+^README\.Rmd$
+^README-.*\.png$
+^revdep$

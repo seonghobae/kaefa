@@ -2,7 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{evaluateItemFit}
 \alias{evaluateItemFit}
-\title{evaluateItemFit}
+\title{assessment of fit indices of the calibrated model}
 \usage{
 evaluateItemFit(mirtModel, GCEvms = NULL, rotate = "bifactorQ")
 }
@@ -17,7 +17,7 @@ evaluateItemFit(mirtModel, GCEvms = NULL, rotate = "bifactorQ")
 return item fit estimates
 }
 \description{
-evaluateItemFit
+assessment of fit indices of the calibrated model
 }
 \examples{
 \dontrun{

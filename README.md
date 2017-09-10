@@ -1,3 +1,11 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+
+
 # kaefa
 
 The goal of kaefa is to improving research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment with automatory exploratory factor analysis (aefa) framework
@@ -7,7 +15,7 @@ The goal of kaefa is to improving research capability to identify unexplained fa
 You can install kaefa from github with:
 
 
-``` r
+```r
 # install.packages("devtools")
 devtools::install_github("seonghobae/kaefa")
 ```
@@ -16,10 +24,10 @@ devtools::install_github("seonghobae/kaefa")
 
 This is a basic example which shows you how to solve a common problem:
 
-``` r
+
+```r
 ## basic example code
 library('kaefa')
-.conn <- aefaInit(GCEvms = NULL, debug = F)
 mod1 <- estIRT(mirt::Science)
 ```
 

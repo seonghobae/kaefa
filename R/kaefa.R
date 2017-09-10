@@ -20,21 +20,19 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
 
   # setting up cluster
   if (!is.null(GCEvms)) {
-    conn <- future::plan(list(future::tweak(future::cluster, workers = future::as.cluster(GCEvms)),
-                              future::multiprocess))
+    options(aefaConn = future::plan(list(future::tweak(future::cluster, workers = future::as.cluster(GCEvms)),
+                              future::multiprocess)))
   } else if (NROW(future::plan("list")) == 1) {
     if (length(grep("openblas", extSoftVersion()["BLAS"])) > 0) {
-      conn <- future::plan(future::multiprocess)
+      options(aefaConn = future::plan(future::multiprocess))
     } else if (length(future::availableWorkers()) == 1) {
-      conn <- future::plan(future::sequential)
+      options(aefaConn = future::plan(future::sequential))
     } else {
-      conn <- suppressMessages(try(future::plan(strategy = list(future::tweak(future::cluster),
-                                                                future::multiprocess)), silent = T))
+      options(aefaConn = (try(future::plan(strategy = list(future::tweak(future::cluster),
+                                                                future::multiprocess)), silent = T)))
     }
 
   }
-
-  return(options(aefaConn = conn))
 
 }
 

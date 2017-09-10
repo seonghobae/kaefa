@@ -2,7 +2,7 @@
 % Please edit documentation in R/kaefa.R
 \name{fitMLIRT}
 \alias{fitMLIRT}
-\title{fit appropriate multilevel item response model automatically with mirt::mixedmirt}
+\title{fit appropriate multilevel item response model automatically with \code{mirt::mixedmirt}}
 \usage{
 fitMLIRT(data = data, model = model, itemtype = NULL,
   accelerate = accelerate, GenRandomPars = GenRandomPars,
@@ -11,9 +11,9 @@ fitMLIRT(data = data, model = model, itemtype = NULL,
   random = random)
 }
 \arguments{
-\item{data}{insert data.frame object.}
+\item{data}{insert \code{data.frame} object.}
 
-\item{model}{specify the mirt model if want to calibrate. accepting mirt::mirt.model() object.}
+\item{model}{specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model()} object.}
 
 \item{itemtype}{set the calibration item type}
 
@@ -33,13 +33,13 @@ fitMLIRT(data = data, model = model, itemtype = NULL,
 
 \item{fixed}{a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.}
 
-\item{random}{a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
+\item{random}{a right sided formula or list of formulas containing crossed random effects of the form \code{v1 + ... v_n | G}, where \code{G} is the grouping variable and \code{v_n} are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
 }
 \value{
-appropriate mirt::mixedeffect models in list vector
+appropriate \code{mirt::mixedeffect} models in list vector
 }
 \description{
-fit appropriate multilevel item response model automatically with mirt::mixedmirt
+fit appropriate multilevel item response model automatically with \code{mirt::mixedmirt}
 }
 \examples{
 \dontrun{

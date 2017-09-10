@@ -10,7 +10,7 @@ exploratoryIRT(data, minExtraction = 1, maxExtraction = if (ncol(data) < 10)
   random = list(), key = NULL, accelerate = "squarem", symmetric = F)
 }
 \arguments{
-\item{data}{insert data.frame object.}
+\item{data}{insert \code{data.frame} object.}
 
 \item{minExtraction}{specify the minimum number of factors to calibrate. defaults is 1 but can change this.}
 
@@ -30,7 +30,7 @@ exploratoryIRT(data, minExtraction = 1, maxExtraction = if (ncol(data) < 10)
 
 \item{fixed}{a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.}
 
-\item{random}{a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
+\item{random}{a right sided formula or list of formulas containing crossed random effects of the form \code{v1 + ... v_n | G}, where \code{G} is the grouping variable and \code{v_n} are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
 
 \item{key}{item key vector of multiple choices test.}
 

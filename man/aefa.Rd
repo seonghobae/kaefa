@@ -12,9 +12,9 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   printItemFit = T, rotate = "bifactorQ")
 }
 \arguments{
-\item{data}{insert data.frame object.}
+\item{data}{insert \code{data.frame} object.}
 
-\item{model}{specify the mirt model if you have want to calibrate. default is NULL to run exploratory models, but accepting mirt::mirt.model() object.}
+\item{model}{specify the mirt model if you have want to calibrate. default is NULL to run exploratory models, but accepting \code{mirt::mirt.model()} object.}
 
 \item{minExtraction}{specify the minimum number of factors to calibrate. defaults is 1 but can change this. if model is not NULL, aefa will ignoring this.}
 
@@ -34,7 +34,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 
 \item{fixed}{a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.}
 
-\item{random}{a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
+\item{random}{a right sided formula or list of formulas containing crossed random effects of the form \code{v1 + ... v_n | G}, where \code{G} is the grouping variable and \code{v_n} are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
 
 \item{key}{item key vector of multiple choices test.}
 

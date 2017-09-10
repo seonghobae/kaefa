@@ -7,7 +7,7 @@
 evaluateItemFit(mirtModel, GCEvms = NULL, rotate = "bifactorQ")
 }
 \arguments{
-\item{mirtModel}{insert estimated mirt::mirt or mirt::mixedmirt model.}
+\item{mirtModel}{insert estimated \code{mirt::mirt} or \code{mirt::mixedmirt} model.}
 
 \item{GCEvms}{insert google computing engine virtual machine information.}
 

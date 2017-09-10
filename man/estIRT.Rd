@@ -10,9 +10,9 @@ estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
   symmetric = F)
 }
 \arguments{
-\item{data}{insert data.frame object.}
+\item{data}{insert \code{data.frame} object.}
 
-\item{model}{specify the mirt model if want to calibrate. accepting mirt::mirt.model() object.}
+\item{model}{specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model()} object.}
 
 \item{GCEvms}{insert google computing engine virtual machine information.}
 
@@ -28,7 +28,7 @@ estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
 
 \item{fixed}{a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.}
 
-\item{random}{a right sided formula or list of formulas containing crossed random effects of the form v1 + ... v_n | G, where G is the grouping variable and v_n are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
+\item{random}{a right sided formula or list of formulas containing crossed random effects of the form \code{v1 + ... v_n | G}, where \code{G} is the grouping variable and \code{v_n} are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.}
 
 \item{key}{item key vector of multiple choices test.}
 

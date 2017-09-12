@@ -411,11 +411,14 @@ exploratoryIRT <- function(data, minExtraction = 1, maxExtraction = if (ncol(dat
 
     if (NROW(estModels) != 0) {
         for (i in 1:NROW(estModels)) {
+
+          if (!is.null(estModels[[i]]) | length(estModels[[i]]) != 0) {
             for (j in 1:NROW(estModels[[i]])) {
-                if (!is.null(estModels[[i]][[j]]) | length(estModels[[i]][[j]]) != 0) {
-                  noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[i]][[j]]
-                }
+              noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[i]][[j]]
             }
+
+          }
+
         }
 
         if (NROW(noNullEstModels) != 0) {

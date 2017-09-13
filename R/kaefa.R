@@ -481,14 +481,14 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
     while (!STOP) {
         # estimate
-        if (is.null(model) && class(data) == "data.frame") {
+        if (is.null(model) && (class(data) == "data.frame" | class(data) == "matrix")) {
             # run exploratory IRT
-            try(estModel <- exploratoryIRT(data = data[!colnames(data) %in% badItemNames], minExtraction = minExtraction, maxExtraction = maxExtraction, GCEvms = GCEvms, GenRandomPars = GenRandomPars,
+            try(estModel <- exploratoryIRT(data = data.frame(data[,!colnames(data) %in% badItemNames]), minExtraction = minExtraction, maxExtraction = maxExtraction, GCEvms = GCEvms, GenRandomPars = GenRandomPars,
                 NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric))
 
         } else if (attr(class(model), "class") == "mirt.model" && class(data) == "data.frame") {
             # run confirmatory IRT
-            try(estModel <- estIRT(data = data, model = model, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata,
+            try(estModel <- estIRT(data = data.frame(data[,!colnames(data) %in% badItemNames]), model = model, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata,
                 fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric))
         }
 

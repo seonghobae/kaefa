@@ -492,6 +492,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric))
         }
 
+      # Model Selection if model exists in data
         if (class(data) == "list" && NROW(data) > 0) {
             if (sum(c("MixedClass", "SingleGroupClass") %in% class(data[[1]])) > 0) {
                 modDIC <- vector()
@@ -501,14 +502,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 estModel <- data[[which(modDIC == min(modDIC, na.rm = T))]]
                 data <- estModel@Data$daata
             }
-        } else {
-            if (attr(class(data), "package") == "mirt") {
-                estModel <- data
-                data <- estModel@Data$data
-            }
-        }
-
-        if (class(estModel) == "list" && NROW(estModel) > 0) {
+        } else if (class(estModel) == "list" && NROW(estModel) > 0) {
             if (sum(c("MixedClass", "SingleGroupClass") %in% class(estModel[[1]])) > 0) {
                 modDIC <- vector()
                 for (i in 1:NROW(estModel)) {
@@ -517,9 +511,12 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 estModel <- estModel[[which(modDIC == min(modDIC, na.rm = T))]]
                 data <- estModel@Data$daata
             }
+        } else if(sum(c("MixedClass", "SingleGroupClass") %in% class(data)) > 0) {
+          estModel <- data
+          data <- estModel@Data$data
         }
 
-        if (exists("estModel")) {
+        if (exists("estModel") && sum(c("MixedClass", "SingleGroupClass") %in% class(estModel)) > 0) {
             # evaluate model save model
             if (saveModelHistory) {
                 modelHistoryCount <- modelHistoryCount + 1
@@ -547,7 +544,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 }
             }
 
-            # adjust model if that is not exploratory model
+            # adjust model if supplied model is confirmatory model
             if (attr(class(model), "class") == "mirt.model" && class(data) == "data.frame") {
                 for (i in 1:NROW(model)) {
                   model$x[i, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model$x[i, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":", model$x[i, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh ==
@@ -565,5 +562,12 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             STOP <- T
         }
 
+    }
+
+
+    if(saveModelHistory){
+      return(modelHistory)
+    } else {
+      return(estModel)
     }
 }

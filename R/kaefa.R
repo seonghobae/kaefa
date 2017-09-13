@@ -474,7 +474,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
     modelHistoryCount <- 0
     if (saveModelHistory) {
-        modelHistory <- list(estModelTrials = NULL, itemFitTrials = NULL)
+        modelHistory <- list(estModelTrials = vector(), itemFitTrials = vector())
     }
 
     STOP <- F

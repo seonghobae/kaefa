@@ -474,7 +474,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
     modelHistoryCount <- 0
     if (saveModelHistory) {
-        modelHistory <- list(estModelTrials = vector(), itemFitTrials = vector())
+        modelHistory <- list(estModelTrials = list(), itemFitTrials = list())
     }
 
     STOP <- F
@@ -520,7 +520,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             # evaluate model save model
             if (saveModelHistory) {
                 modelHistoryCount <- modelHistoryCount + 1
-                modelHistory$estModelTrials[modelHistoryCount] <- estModel
+                modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
                 saveRDS(modelHistory, filename)
             }
 
@@ -531,7 +531,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
             # save model
             if (saveModelHistory) {
-                modelHistory$itemFitTrials[modelHistoryCount] <- estItemFit
+                modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit
                 saveRDS(modelHistory, filename)
             }
 

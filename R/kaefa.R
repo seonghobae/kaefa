@@ -466,9 +466,9 @@ exploratoryIRT <- function(data, minExtraction = 1, maxExtraction = if (ncol(dat
 #' }
 aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000,
     covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ") {
-    if (is.null(getOption("aefaConn"))) {
-        getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = F))
-    }
+    # if (is.null(getOption("aefaConn"))) {
+    #     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = F))
+    # }
 
     badItemNames <- c()
 

@@ -20,7 +20,7 @@ The goal of kaefa is to improving research capability to identify unexplained fa
 
 You can install kaefa from github with:
 
-```{r gh-installation, eval = FALSE}
+```{r gh-installation, eval = TRUE}
 # install.packages("devtools")
 devtools::install_github("seonghobae/kaefa")
 ```
@@ -32,14 +32,18 @@ This is a basic example which shows you how to solve a common problem:
 ```{r example}
 ## basic example code
 library('kaefa')
-mod1 <- estIRT(mirt::Science)
+mod1 <- kaefa::aefa(mirt::Science)
+mod1
 ```
 
 ## software quality information
+
 ### ubuntu and mac environment
 [![Travis-CI Build Status](https://travis-ci.org/seonghobae/kaefa.svg?branch=master)](https://travis-ci.org/seonghobae/kaefa)
+
 ### windows environment
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/seonghobae/kaefa?branch=master&svg=true)](https://ci.appveyor.com/project/seonghobae/kaefa)
+
 ### code quality
 [![Coverage Status](https://img.shields.io/codecov/c/github/seonghobae/kaefa/master.svg)](https://codecov.io/github/seonghobae/kaefa?branch=master)
 

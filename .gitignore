@@ -1,7 +1,6 @@
 # History files
 .Rhistory
 .Rapp.history
-
 # Session Data files
 .RData
 # Example code in package build process
@@ -30,3 +29,4 @@ kaefa.iml
 packrat/lib*/
 /revdep/.cache.rds
 inst/doc
+aefa.RDS

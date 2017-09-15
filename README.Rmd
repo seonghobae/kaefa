@@ -3,6 +3,7 @@ output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- run rmarkdown::render('README.Rmd', output_file = 'README.md', encoding = 'utf8') -->
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(

@@ -26,24 +26,38 @@ body {
 <body>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- run rmarkdown::render('README.Rmd', output_file = 'README.md', encoding = 'utf8') -->
 <h1 id="kaefa">kaefa</h1>
 <p>The goal of kaefa is to improving research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment with automatory exploratory factor analysis (aefa) framework</p>
 <h2 id="installation">Installation</h2>
 <p>You can install kaefa from github with:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages(&quot;devtools&quot;)</span>
 devtools::<span class="kw">install_github</span>(<span class="st">&quot;seonghobae/kaefa&quot;</span>)
-<span class="co">#&gt; Skipping install of 'kaefa' from a github remote, the SHA1 (d0a6f41c) has not changed since last install.</span>
-<span class="co">#&gt;   Use `force = TRUE` to force installation</span></code></pre></div>
+<span class="co">#&gt; Downloading GitHub repo seonghobae/kaefa@master</span>
+<span class="co">#&gt; from URL https://api.github.com/repos/seonghobae/kaefa/zipball/master</span>
+<span class="co">#&gt; Installing kaefa</span>
+<span class="co">#&gt; '/usr/lib/R/bin/R' --no-site-file --no-environ --no-save --no-restore  \</span>
+<span class="co">#&gt;   --quiet CMD INSTALL  \</span>
+<span class="co">#&gt;   '/tmp/Rtmp4s2vBj/devtools49e077f0096f/seonghobae-kaefa-4ee128e'  \</span>
+<span class="co">#&gt;   --library='/home/seongho_iopsy/kaefa/packrat/lib/x86_64-pc-linux-gnu/3.4.1'  \</span>
+<span class="co">#&gt;   --install-tests</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Reloading installed kaefa</span></code></pre></div>
 <h2 id="example">Example</h2>
 <p>This is a basic example which shows you how to solve a common problem:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## basic example code
 <span class="kw">library</span>(<span class="st">'kaefa'</span>)
 mod1 &lt;-<span class="st"> </span>kaefa::<span class="kw">aefa</span>(mirt::Science)
-<span class="co">#&gt;      item        Zh      S_X2 df.S_X2    p.S_X2    PV_Q1 df.PV_Q1   p.PV_Q1</span>
-<span class="co">#&gt; 1 Comfort 0.7866104  4.184038       5 0.5232348 12.76940     10.7 0.2864025</span>
-<span class="co">#&gt; 2    Work 1.9401849 10.677309      10 0.3832049 19.74770     17.0 0.2873372</span>
-<span class="co">#&gt; 3  Future 5.3370136  7.669541       8 0.4663975 13.76204     10.3 0.2019186</span>
-<span class="co">#&gt; 4 Benefit 1.9005341  9.988865      11 0.5313891 19.51184     17.3 0.3178982</span>
+<span class="co">#&gt;      item        Zh      S_X2 df.S_X2    p.S_X2    PV_Q1 df.PV_Q1</span>
+<span class="co">#&gt; 1 Comfort 0.8306699  4.767522       6 0.5739572 12.45069 10.90000</span>
+<span class="co">#&gt; 2    Work 1.9598670 10.500243      10 0.3977535 21.09088 17.06667</span>
+<span class="co">#&gt; 3  Future 5.4155546  7.599225       8 0.4735642 12.75249 10.03333</span>
+<span class="co">#&gt; 4 Benefit 1.8726442 10.034175      11 0.5273158 21.37382 17.26667</span>
+<span class="co">#&gt;     p.PV_Q1</span>
+<span class="co">#&gt; 1 0.3229984</span>
+<span class="co">#&gt; 2 0.2256005</span>
+<span class="co">#&gt; 3 0.2401209</span>
+<span class="co">#&gt; 4 0.2230962</span>
 mod1
 <span class="co">#&gt; $estModelTrials</span>
 <span class="co">#&gt; $estModelTrials[[1]]</span>
@@ -55,28 +69,33 @@ mod1
 <span class="co">#&gt;         BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Full-information item factor analysis with 1 factor(s).</span>
-<span class="co">#&gt; Converged within 0.001 tolerance after 57 MHRM iterations.</span>
+<span class="co">#&gt; Converged within 0.001 tolerance after 132 MHRM iterations.</span>
 <span class="co">#&gt; mirt version: 1.25.2 </span>
 <span class="co">#&gt; M-step optimizer: NR1 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Information matrix estimated with method: MHRM</span>
-<span class="co">#&gt; Condition number of information matrix = 108.615</span>
+<span class="co">#&gt; Condition number of information matrix = 51.41857</span>
 <span class="co">#&gt; Second-order test: model is a possible local maximum</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Log-likelihood = -1609.199, SE = 0.022</span>
+<span class="co">#&gt; Log-likelihood = -1608.54, SE = 0.022</span>
 <span class="co">#&gt; Estimated parameters: 16 </span>
-<span class="co">#&gt; AIC = 3250.399; AICc = 3251.849</span>
-<span class="co">#&gt; BIC = 3313.939; SABIC = 3263.172</span>
-<span class="co">#&gt; G2 (239) = 214.14, p = 0.8746</span>
-<span class="co">#&gt; RMSEA = 0, CFI = 1, TLI = 1.188</span>
+<span class="co">#&gt; AIC = 3249.081; AICc = 3250.531</span>
+<span class="co">#&gt; BIC = 3312.621; SABIC = 3261.853</span>
+<span class="co">#&gt; G2 (239) = 212.78, p = 0.8879</span>
+<span class="co">#&gt; RMSEA = 0, CFI = 1, TLI = 1.199</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $itemFitTrials</span>
 <span class="co">#&gt; $itemFitTrials[[1]]</span>
-<span class="co">#&gt;      item        Zh      S_X2 df.S_X2    p.S_X2    PV_Q1 df.PV_Q1   p.PV_Q1</span>
-<span class="co">#&gt; 1 Comfort 0.7866104  4.184038       5 0.5232348 12.76940     10.7 0.2864025</span>
-<span class="co">#&gt; 2    Work 1.9401849 10.677309      10 0.3832049 19.74770     17.0 0.2873372</span>
-<span class="co">#&gt; 3  Future 5.3370136  7.669541       8 0.4663975 13.76204     10.3 0.2019186</span>
-<span class="co">#&gt; 4 Benefit 1.9005341  9.988865      11 0.5313891 19.51184     17.3 0.3178982</span></code></pre></div>
+<span class="co">#&gt;      item        Zh      S_X2 df.S_X2    p.S_X2    PV_Q1 df.PV_Q1</span>
+<span class="co">#&gt; 1 Comfort 0.8306699  4.767522       6 0.5739572 12.45069 10.90000</span>
+<span class="co">#&gt; 2    Work 1.9598670 10.500243      10 0.3977535 21.09088 17.06667</span>
+<span class="co">#&gt; 3  Future 5.4155546  7.599225       8 0.4735642 12.75249 10.03333</span>
+<span class="co">#&gt; 4 Benefit 1.8726442 10.034175      11 0.5273158 21.37382 17.26667</span>
+<span class="co">#&gt;     p.PV_Q1</span>
+<span class="co">#&gt; 1 0.3229984</span>
+<span class="co">#&gt; 2 0.2256005</span>
+<span class="co">#&gt; 3 0.2401209</span>
+<span class="co">#&gt; 4 0.2230962</span></code></pre></div>
 <h2 id="software-quality-information">software quality information</h2>
 <h3 id="ubuntu-and-mac-environment">ubuntu and mac environment</h3>
 <p><a href="https://travis-ci.org/seonghobae/kaefa"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NiIgaGVpZ2h0PSIyMCI+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PHJlY3Qgcng9IjMiIHdpZHRoPSI3NiIgaGVpZ2h0PSIyMCIgZmlsbD0iIzU1NSIvPjxyZWN0IHJ4PSIzIiB4PSIzNyIgd2lkdGg9IjM5IiBoZWlnaHQ9IjIwIiBmaWxsPSIjOWY5ZjlmIi8+PHBhdGggZmlsbD0iIzlmOWY5ZiIgZD0iTTM3IDBoNHYyMGgtNHoiLz48cmVjdCByeD0iMyIgd2lkdGg9Ijc2IiBoZWlnaHQ9IjIwIiBmaWxsPSJ1cmwoI2EpIi8+PGcgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLFZlcmRhbmEsR2VuZXZhLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEiPjx0ZXh0IHg9IjE5LjUiIHk9IjE1IiBmaWxsPSIjMDEwMTAxIiBmaWxsLW9wYWNpdHk9Ii4zIj5idWlsZDwvdGV4dD48dGV4dCB4PSIxOS41IiB5PSIxNCI+YnVpbGQ8L3RleHQ+PHRleHQgeD0iNTUuNSIgeT0iMTUiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiPmVycm9yPC90ZXh0Pjx0ZXh0IHg9IjU1LjUiIHk9IjE0Ij5lcnJvcjwvdGV4dD48L2c+PC9zdmc+" alt="Travis-CI Build Status" /></a></p>

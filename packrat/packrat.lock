@@ -128,8 +128,8 @@ Hash: 258cf79a8dbeedf1c981cdb53837d2af
 
 Package: future
 Source: CRAN
-Version: 1.6.0
-Hash: 85ec8387055b16dd981be5ac5bf746b3
+Version: 1.6.1
+Hash: 81c47d9aa17b39d8f5dea6071a593da9
 Requires: digest, globals, listenv
 
 Package: git2r
@@ -268,8 +268,8 @@ Hash: 77da8f1df873a4b91e5c4a68fe2fb1b6
 
 Package: psych
 Source: CRAN
-Version: 1.7.5
-Hash: 0c076a96de916d0d26d866e83909d961
+Version: 1.7.8
+Hash: a9e7713423365e42e06413285a89e610
 Requires: foreign, lattice, mnormt, nlme
 
 Package: rex

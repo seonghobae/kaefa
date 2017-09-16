@@ -3,7 +3,8 @@ Type: Package
 Title: kwangwoon automated exploratory factor analysis
 Version: 0.1.10
 Authors@R: c(person("Seongho", family="Bae", role = c("aut", "cre"),
-                     email = c("seongho@kw.ac.kr", "seonghobae@me.com")),
+                     email = c("seongho@kw.ac.kr", "seonghobae@me.com"),
+                     comment = "PsyD candidate in Work psychology for large-scale assessment and measurement")),
               person("Tae-Yong", family="Yoo", role = "ctb",
                      email = "tyyoo@kw.ac.kr"),
               person("Kyosoo", family="Shin", role = "ctb",

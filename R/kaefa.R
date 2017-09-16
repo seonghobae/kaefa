@@ -246,7 +246,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 
     # resampling
     if(resampling && is.null(covdata)){
-      data <- data[sample(data, samples, replace = T), ]
+      data <- data[sample(1:nrow(data), samples, replace = T), ]
     }
 
     # exclude range == 0

@@ -215,7 +215,6 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #' @import psych
 #' @import plyr
 #' @import parallel
-#' @import Matrix
 #' @param data insert \code{data.frame} object.
 #' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.
 #' @param GCEvms insert google computing engine virtual machine information.

@@ -10,7 +10,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
   symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
   printItemFit = T, rotate = "bifactorQ", resampling = T,
-  samples = 5000)
+  samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC",
+  saveRawEstModels = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -54,6 +55,12 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{resampling}{Do you want to do resampling with replace? default is TRUE, and it will be activate under unconditional model only.}
 
 \item{samples}{specify the number samples with resampling. default is 5000.}
+
+\item{printDebugMsg}{Do you want to see the debugging messeages? default is FALSE}
+
+\item{modelSelectionCriteria}{Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available.}
+
+\item{saveRawEstModels}{Do you want to save raw estimated models before model selection work? default is FALSE}
 }
 \value{
 automated exploratory factor analytic models

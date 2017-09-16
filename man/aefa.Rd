@@ -9,7 +9,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
   fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
   symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
-  printItemFit = T, rotate = "bifactorQ")
+  printItemFit = T, rotate = "bifactorQ", resampling = T,
+  samples = 5000)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -49,6 +50,10 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{printItemFit}{Will you printing item fit indices during the calibrations? default is TRUE.}
 
 \item{rotate}{set the rotate critera if mirt model is exploratory model. default is bifactorQ, however you can change this what you want to, like 'geominQ', 'bifactorT', 'geominT'. In current, Target rotation not supporting.}
+
+\item{resampling}{Do you want to do resampling with replace? default is TRUE, and it will be activate under unconditional model only.}
+
+\item{samples}{specify the number samples with resampling. default is 5000.}
 }
 \value{
 automated exploratory factor analytic models

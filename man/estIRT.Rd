@@ -7,7 +7,7 @@
 estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
   NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
   fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
-  symmetric = F)
+  symmetric = F, resampling = T, samples = 5000)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -35,6 +35,10 @@ estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
 \item{accelerate}{a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)}
 
 \item{symmetric}{force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.}
+
+\item{resampling}{Do you want to do resampling with replace? default is TRUE, and it will be activate under unconditional model only.}
+
+\item{samples}{specify the number samples with resampling. default is 5000.}
 }
 \value{
 possible optimal combinations of models in list

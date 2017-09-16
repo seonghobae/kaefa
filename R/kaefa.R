@@ -559,8 +559,6 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     }
 
     STOP <- F
-    modelFound <- F
-    dfFound <- F
 
     while (!STOP) {
         # estimate run exploratory IRT and confirmatory IRT
@@ -642,9 +640,12 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
           # select model
           estModel <- estModel[[(which(modModelFit == min(modModelFit, na.rm = T))[1])]]
-          if (modelFound | dfFound) {
-            data <- estModel@Data$data  # to switch general condition
-          } # End Of Model selection
+
+          if(exists('modelFound')){
+            data <- estModel@Data$data
+          } else if(exists('dfFound')){
+            data <- estModel@Data$data
+          }
 
 
 

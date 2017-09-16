@@ -569,7 +569,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             try(estModel <- exploratoryIRT(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, minExtraction = minExtraction, maxExtraction = maxExtraction,
                 GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key,
                 accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg))
-        } else if (is.list(data)) {
+        } else if (is.list(data) && !is.data.frame(data)) {
             # Some weird condition: user specified pre-calibrated model or list of data.frame in data
 
             estModel <- list()

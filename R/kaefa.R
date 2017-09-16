@@ -614,104 +614,105 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
         if (exists("estModel")) {
 
           # check ncol(estModel@Data$data) > 3 Model Selection: if estModel is not NULL, run this procedure
-          if (is.list(estModel) && NROW(estModel) > 0)
-          {
-            # model fit evaluation
-            modModelFit <- vector()
-            for (i in 1:NROW(estModel)) {
-              if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(estModel[[i]])) > 0) {
-                if (estModel[[i]]@OptimInfo$secondordertest) {
-                  if (toupper(modelSelectionCriteria) %in% c("DIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$DIC
-                  } else if (toupper(modelSelectionCriteria) %in% c("AIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AIC
-                  } else if (toupper(modelSelectionCriteria) %in% c("AICC", "CAIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AICc
-                  } else if (toupper(modelSelectionCriteria) %in% c("BIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$BIC
-                  } else if (toupper(modelSelectionCriteria) %in% c("SABIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$SABIC
-                  } else {
-                    stop("please specify model fit type correctly: DIC (default), AIC, BIC, AICc (aka cAIC), saBIC")
-                  }
+
+          # model fit evaluation
+          modModelFit <- vector()
+          for (i in 1:NROW(estModel)) {
+            if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(estModel[[i]])) > 0) {
+              if (estModel[[i]]@OptimInfo$secondordertest) {
+                if (toupper(modelSelectionCriteria) %in% c("DIC")) {
+                  modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$DIC
+                } else if (toupper(modelSelectionCriteria) %in% c("AIC")) {
+                  modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AIC
+                } else if (toupper(modelSelectionCriteria) %in% c("AICC", "CAIC")) {
+                  modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AICc
+                } else if (toupper(modelSelectionCriteria) %in% c("BIC")) {
+                  modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$BIC
+                } else if (toupper(modelSelectionCriteria) %in% c("SABIC")) {
+                  modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$SABIC
                 } else {
-                  modModelFit[[length(modModelFit) + 1]] <- NA  # prevent unexpected event
+                  stop("please specify model fit type correctly: DIC (default), AIC, BIC, AICc (aka cAIC), saBIC")
+                }
+              } else {
+                modModelFit[[length(modModelFit) + 1]] <- NA  # prevent unexpected event
+              }
+            }
+          }
+
+          # select model
+          estModel <- estModel[[(which(modModelFit == min(modModelFit, na.rm = T))[1])]]
+          if (modelFound | dfFound) {
+            data <- estModel@Data$data  # to switch general condition
+          } # End Of Model selection
+
+
+
+          if (class(estModel) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
+            # evaluate model save model
+            if (saveModelHistory) {
+              modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
+              try(saveRDS(modelHistory, filename))
+            }
+
+            estItemFit <- evaluateItemFit(estModel, GCEvms = GCEvms, rotate = rotate)
+            if (printItemFit) {
+              try(print(estItemFit))
+            }
+
+            # save model
+            if (saveModelHistory) {
+              modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit
+              try(saveRDS(modelHistory, filename))
+            }
+
+            # find bad item
+            if ("Zh" %in% colnames(estItemFit)) {
+              # set Zh as default item fit index
+              if (sum(estItemFit$Zh < -1.96) != 0) {
+                badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))])
+              } else {
+                STOP <- T
+              }
+            } else if ("p.PV_Q1" %in% colnames(estItemFit)) {
+              # prevent unexpected situation
+              if (sum(is.na(estItemFit$p.PV_Q1)) != 0) {
+                badItemNames <- c(badItemNames, estItemFit$item[which(is.na(estItemFit$p.PV_Q1))])
+              } else if (sum(estItemFit$p.PV_Q1 < 0.025) != 0) {
+                badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$p.PV_Q1 == min(estItemFit$p.PV_Q1, na.rm = T))])
+              } else {
+                STOP <- T
+              }
+            } else if ("p.S_X2" %in% colnames(estItemFit)) {
+              # prevent unexpected situation and DiscreteClass evaluation
+              if (sum(is.na(estItemFit$p.S_X2)) != 0) {
+                badItemNames <- c(badItemNames, estItemFit$item[which(is.na(estItemFit$p.S_X2))])
+              } else if (sum(estItemFit$p.S_X2 < 0.025) != 0) {
+                badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$p.S_X2 == min(estItemFit$p.S_X2, na.rm = T))])
+              } else {
+                STOP <- T
+              }
+            }
+
+            # adjust model if supplied model is confirmatory model
+            if (!is.null(model) && (!is.numeric(model) | !is.integer(model))) {
+              for (i in 1:NROW(model)) {
+                for (j in 1:nrow(model[[i]])) {
+                  if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
+                    model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j,
+                                                                                                                                                                                2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]]  # convert elements
+                  }
                 }
               }
             }
 
-            # select model
-            estModel <- estModel[[which(modModelFit == min(modModelFit, na.rm = T))[1]]]
-            if (modelFound | dfFound) {
-              data <- estModel@Data$data  # to switch general condition
-            }
-          }  # End Of Model selection
+          }
 
-            if (ncol(estModel@Data$data) > 3) {
+            # if (ncol(estModel@Data$data) > 3) {} else {
+            #     message("model is not fit well")
+            #     STOP <- T  # set flag of 'stop while loop'
+            # }
 
-              if (class(estModel) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
-                # evaluate model save model
-                if (saveModelHistory) {
-                  modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
-                  try(saveRDS(modelHistory, filename))
-                }
 
-                estItemFit <- evaluateItemFit(estModel, GCEvms = GCEvms, rotate = rotate)
-                if (printItemFit) {
-                  try(print(estItemFit))
-                }
-
-                # save model
-                if (saveModelHistory) {
-                  modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit
-                  try(saveRDS(modelHistory, filename))
-                }
-
-                # find bad item
-                if ("Zh" %in% colnames(estItemFit)) {
-                  # set Zh as default item fit index
-                  if (sum(estItemFit$Zh < -1.96) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))])
-                  } else {
-                    STOP <- T
-                  }
-                } else if ("p.PV_Q1" %in% colnames(estItemFit)) {
-                  # prevent unexpected situation
-                  if (sum(is.na(estItemFit$p.PV_Q1)) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(is.na(estItemFit$p.PV_Q1))])
-                  } else if (sum(estItemFit$p.PV_Q1 < 0.025) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$p.PV_Q1 == min(estItemFit$p.PV_Q1, na.rm = T))])
-                  } else {
-                    STOP <- T
-                  }
-                } else if ("p.S_X2" %in% colnames(estItemFit)) {
-                  # prevent unexpected situation and DiscreteClass evaluation
-                  if (sum(is.na(estItemFit$p.S_X2)) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(is.na(estItemFit$p.S_X2))])
-                  } else if (sum(estItemFit$p.S_X2 < 0.025) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$p.S_X2 == min(estItemFit$p.S_X2, na.rm = T))])
-                  } else {
-                    STOP <- T
-                  }
-                }
-
-                # adjust model if supplied model is confirmatory model
-                if (!is.null(model) && (!is.numeric(model) | !is.integer(model))) {
-                  for (i in 1:NROW(model)) {
-                    for (j in 1:nrow(model[[i]])) {
-                      if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
-                        model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j,
-                                                                                                                                                                                    2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]]  # convert elements
-                      }
-                    }
-                  }
-                }
-
-              }
-            } else {
-                message("model is not fit well")
-                STOP <- T  # set flag of 'stop while loop'
-            }
 
         } else {
             stop("estimations were failed. please retry with check your data or models")

@@ -559,6 +559,8 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     }
 
     STOP <- F
+    modelFound <- F
+    dfFound <- F
 
     while (!STOP) {
         # estimate run exploratory IRT and confirmatory IRT
@@ -569,8 +571,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg))
         } else if (is.list(data)) {
             # Some weird condition: user specified pre-calibrated model or list of data.frame in data
-            modelFound <- F
-            dfFound <- F
+
             estModel <- list()
             for (i in 1:NROW(data)) {
                 if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(data[[i]])) != 0) {

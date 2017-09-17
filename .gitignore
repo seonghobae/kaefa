@@ -30,3 +30,4 @@ packrat/lib*/
 /revdep/.cache.rds
 inst/doc
 aefa.RDS
+README.html

@@ -12,15 +12,15 @@ compiler:
   - gcc
   - clang
 
-addons:
-  apt:
-    packages:
-      - libzmq3-dev
-
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo chmod -R a+w /usr/local/Cellar; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew uninstall --force zeromq && brew cleanup --force -s zeromq && brew prune; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link zeromq && brew install zeromq; fi
+# addons:
+#   apt:
+#   packages:
+#   - libzmq3-dev
+#
+# before_install:
+#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo chmod -R a+w /usr/local/Cellar; fi
+# - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew uninstall --force zeromq && brew cleanup --force -s zeromq && brew prune; fi
+# - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link zeromq && brew install zeromq; fi
 
 r_packages:
   - covr

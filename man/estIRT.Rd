@@ -7,7 +7,7 @@
 estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
   NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
   fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
-  symmetric = F, resampling = T, samples = 5000, printDebugMsg = F)
+  symmetric = F, resampling = F, samples = 5000, printDebugMsg = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -36,7 +36,7 @@ estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
 
 \item{symmetric}{force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.}
 
-\item{resampling}{Do you want to do resampling with replace? default is TRUE, and it will be activate under unconditional model only.}
+\item{resampling}{Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.}
 
 \item{samples}{specify the number samples with resampling. default is 5000.}
 

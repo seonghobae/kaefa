@@ -9,7 +9,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
   fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
   symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
-  printItemFit = T, rotate = "bifactorQ", resampling = T,
+  printItemFit = T, rotate = "bifactorQ", resampling = F,
   samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC",
   saveRawEstModels = F)
 }
@@ -52,7 +52,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 
 \item{rotate}{set the rotate critera if mirt model is exploratory model. default is bifactorQ, however you can change this what you want to, like 'geominQ', 'bifactorT', 'geominT'. In current, Target rotation not supporting.}
 
-\item{resampling}{Do you want to do resampling with replace? default is TRUE, and it will be activate under unconditional model only.}
+\item{resampling}{Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.}
 
 \item{samples}{specify the number samples with resampling. default is 5000.}
 

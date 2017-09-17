@@ -3,7 +3,7 @@
 #' Initalize aefa engine,
 #' This function initalise the aefa cluster.
 #' If someone have Google Computing Engine informaiton, put the information in the argument.
-#' @import rzmq
+#'
 #' @param GCEvms insert google computing engine virtual machine information.
 #' @param debug run with debug mode. default is FALSE
 #'
@@ -227,7 +227,7 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
 #' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
 #'
-#' @param resampling Do you want to do resampling with replace? default is TRUE, and it will be activate under unconditional model only.
+#' @param resampling Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.
 #' @param samples specify the number samples with resampling. default is 5000.
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
 #'
@@ -240,7 +240,7 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #'
 #' }
 estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL,
-    accelerate = "squarem", symmetric = F, resampling = T, samples = 5000, printDebugMsg = F) {
+    accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F) {
     # data management: resampling
     if (resampling && is.null(covdata)) {
         resampleCaseNumber <- sample(1:nrow(data), samples, replace = T)
@@ -443,7 +443,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 #' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
 #' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
 #'
-#' @param resampling Do you want to do resampling with replace? default is TRUE, and it will be activate under unconditional model only.
+#' @param resampling Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.
 #' @param samples specify the number samples with resampling. default is 5000.
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
 
@@ -456,7 +456,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 #'
 #' }
 exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500,
-    SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = T, samples = 5000, printDebugMsg = F) {
+    SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F) {
     if (is.null(getOption("aefaConn"))) {
         getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
     }
@@ -532,7 +532,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 #' @param printItemFit Will you printing item fit indices during the calibrations? default is TRUE.
 #' @param rotate set the rotate critera if mirt model is exploratory model. default is bifactorQ, however you can change this what you want to, like 'geominQ', 'bifactorT', 'geominT'. In current, Target rotation not supporting.
 #'
-#' @param resampling Do you want to do resampling with replace? default is TRUE, and it will be activate under unconditional model only.
+#' @param resampling Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.
 #' @param samples specify the number samples with resampling. default is 5000.
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
 #' @param modelSelectionCriteria Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available.
@@ -548,14 +548,18 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 #' }
 aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500,
     SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS", printItemFit = T,
-    rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F) {
+    rotate = "bifactorQ", resampling = F, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F) {
     # if (is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = F)) }
 
     badItemNames <- c()
 
     modelHistoryCount <- 0
     if (saveModelHistory) {
+      if(saveRawEstModels){
         modelHistory <- list(rawEstModels = list(), estModelTrials = list(), itemFitTrials = list())
+      } else {
+        modelHistory <- list(estModelTrials = list(), itemFitTrials = list())
+      }
     }
 
     STOP <- F
@@ -699,7 +703,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 for (j in 1:nrow(model[[i]])) {
                   if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
                     model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j,
-                                                                                                                                                                                2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]]  # convert elements
+                                                                                                                                                                                2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]]  ## FIXME # convert elements
                   }
                 }
               }

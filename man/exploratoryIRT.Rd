@@ -13,6 +13,8 @@ exploratoryIRT(data, model = NULL, minExtraction = 1, maxExtraction = if
 \arguments{
 \item{data}{insert \code{data.frame} object.}
 
+\item{model}{specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.}
+
 \item{minExtraction}{specify the minimum number of factors to calibrate. defaults is 1 but can change this.}
 
 \item{maxExtraction}{specify the maximum number of factors to calibrate. defaults is 10 but can change this.}

@@ -429,6 +429,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 #' estimate appropriate exploratory full-information item factor analysis models with combinating random effects by number of factors
 #'
 #' @param data insert \code{data.frame} object.
+#' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.
 #' @param minExtraction specify the minimum number of factors to calibrate. defaults is 1 but can change this.
 #' @param maxExtraction specify the maximum number of factors to calibrate. defaults is 10 but can change this.
 #' @param GCEvms insert google computing engine virtual machine information.

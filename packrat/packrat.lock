@@ -19,6 +19,12 @@ Version: 1.2-11
 Hash: 3a02b9fca85b799a55f553a4ba4b003c
 Requires: lattice
 
+Package: NCmisc
+Source: CRAN
+Version: 1.1.5
+Hash: 36271fad0da381be25d6794c68f2e702
+Requires: proftools
+
 Package: R6
 Source: CRAN
 Version: 2.2.2
@@ -265,6 +271,11 @@ Package: praise
 Source: CRAN
 Version: 1.0.0
 Hash: 77da8f1df873a4b91e5c4a68fe2fb1b6
+
+Package: proftools
+Source: CRAN
+Version: 0.99-2
+Hash: 784b0c6eb94b37e20a2678c7bf31a813
 
 Package: psych
 Source: CRAN

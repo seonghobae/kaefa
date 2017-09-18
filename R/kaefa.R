@@ -4,6 +4,8 @@
 #' This function initalise the aefa cluster.
 #' If someone have Google Computing Engine informaiton, put the information in the argument.
 #'
+#' @import NCmisc
+#' @import future
 #' @param GCEvms insert google computing engine virtual machine information.
 #' @param debug run with debug mode. default is FALSE
 #'
@@ -18,16 +20,40 @@
 aefaInit <- function(GCEvms = NULL, debug = F) {
     options(future.debug = debug)
 
+  if(is.null(suppressWarnings(NCmisc::top()$CPU$idle))){
+    parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE) / 2)
+    if(2 >= parallelProcessors){
+      parallelProcessors <- 2
+    }
+  } else if(suppressWarnings(NCmisc::top()$CPU$idle) > 80){
+    parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE) / 2)
+    if(2 >= parallelProcessors){
+      parallelProcessors <- 2
+    }
+  } else if(suppressWarnings(NCmisc::top()$CPU$idle) > 50){
+    parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE) / 2.5)
+    if(2 >= parallelProcessors){
+      parallelProcessors <- 2
+    }
+  } else if(suppressWarnings(NCmisc::top()$CPU$idle) < 30){
+    parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE) / 3)
+    if(2 >= parallelProcessors){
+      parallelProcessors <- 2
+    }
+  } else if(suppressWarnings(NCmisc::top()$CPU$idle) < 10){
+    parallelProcessors <- 2
+  }
+
     # setting up cluster
     if (!is.null(GCEvms)) {
-        options(aefaConn = future::plan(list(future::tweak(future::cluster, workers = future::as.cluster(GCEvms)), future::multiprocess)))
+        options(aefaConn = future::plan(list(future::tweak(future::cluster, workers = parallelProcessors), future::multiprocess(workers = parallelProcessors))))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas", extSoftVersion()["BLAS"])) > 0) {
-            options(aefaConn = future::plan(future::multiprocess, workers = parallel::detectCores(all.tests = FALSE, logical = FALSE)))
+            options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors))
         } else if (length(future::availableWorkers()) == 1) {
             options(aefaConn = future::plan(future::sequential))
         } else {
-            options(aefaConn = (try(future::plan(strategy = list(future::tweak(future::cluster(workers = parallel::detectCores(all.tests = FALSE, logical = FALSE))), future::multiprocess(workers = parallel::detectCores(all.tests = FALSE, logical = FALSE)))), silent = T)))
+            options(aefaConn = (try(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)), future::multiprocess(workers = parallelProcessors))), silent = T)))
         }
 
     }

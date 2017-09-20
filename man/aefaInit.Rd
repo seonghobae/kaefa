@@ -9,7 +9,7 @@ If someone have Google Computing Engine informaiton, put the information in the 
 aefaInit(GCEvms = NULL, debug = F)
 }
 \arguments{
-\item{GCEvms}{insert google computing engine virtual machine information.}
+\item{GCEvms}{insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.}
 
 \item{debug}{run with debug mode. default is FALSE}
 }

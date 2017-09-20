@@ -13,7 +13,6 @@ Author: Seongho Bae [aut, cre]
 Maintainer: Seongho Bae <seongho@kw.ac.kr>
 Depends: R (>= 3.4.0)
 Imports: future, mirt (>= 1.25), psych, plyr, listenv, parallel, NCmisc
-Suggests: Rmpi, snow
 Description: the software of automated exploratory
     factor analysis (aefa) framework,
     to exploring unexplained factor structure
@@ -30,5 +29,7 @@ RoxygenNote: 6.0.1
 Suggests: covr,
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    Rmpi,
+    snow
 VignetteBuilder: knitr

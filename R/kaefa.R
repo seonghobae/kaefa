@@ -25,11 +25,6 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
         if (2 >= parallelProcessors) {
             parallelProcessors <- 2
         }
-    } else if (suppressWarnings(NCmisc::top()$CPU$idle) > 80) {
-        parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE))
-        if (2 >= parallelProcessors) {
-            parallelProcessors <- 2
-        }
     } else if (suppressWarnings(NCmisc::top()$CPU$idle) > 50) {
         parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/2)
         if (2 >= parallelProcessors) {

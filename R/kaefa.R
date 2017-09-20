@@ -53,7 +53,7 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
     if (!is.null(GCEvms)) {
         options(aefaConn = future::plan(list(future::tweak(future::cluster, workers = parallelProcessors), future::multiprocess(workers = parallelProcessors))))
     } else if (NROW(future::plan("list")) == 1) {
-        if (require("Rmpi")) {
+        if (requireNamespace("Rmpi", quietly = TRUE)) {
           if(!is.null(GCEvms)){
             parallelProcessors <- GCEvms
           }
@@ -161,9 +161,9 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 #' testItemFit1 <- evaluateItemFit(testModel1)
 #' }
 evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
-    if (is.null(getOption("aefaConn"))) {
-        getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = F))
-    }
+    # if (is.null(getOption("aefaConn"))) {
+    #     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = F))
+    # }
 
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {
@@ -300,9 +300,9 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
     data <- data[psych::describe(data)$range != 0]
 
     # aefaConn
-    if (is.null(getOption("aefaConn")) && is.null(GCEvms)) {
-        getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
-    }
+    # if (is.null(getOption("aefaConn")) && is.null(GCEvms)) {
+    #     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
+    # }
 
     # tools
     combine <- function(x, y) {
@@ -513,9 +513,9 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL,
     GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL,
     accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F) {
-    if (is.null(getOption("aefaConn"))) {
-        getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
-    }
+    # if (is.null(getOption("aefaConn"))) {
+    #     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
+    # }
 
     estModels <- listenv::listenv()
     for (i in minExtraction:maxExtraction) {
@@ -608,7 +608,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL,
     accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ",
     resampling = F, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F) {
-    # if (is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = F)) }
+  if (is.null(getOption("aefaConn"))) {
+    getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
+  }
 
   # prepare for bad item detection
     badItemNames <- c() # make new null vector

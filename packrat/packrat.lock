@@ -8,6 +8,12 @@ Source: CRAN
 Version: 1.65.0-1
 Hash: 95f62be4d6916aae14a310a8b56a6475
 
+Package: CDM
+Source: CRAN
+Version: 5.8-9
+Hash: 36e9ac6abda4207866999c2420ba2726
+Requires: Rcpp, RcppArmadillo, mvtnorm, polycor, sfsmisc
+
 Package: GPArotation
 Source: CRAN
 Version: 2014.11-1
@@ -41,6 +47,17 @@ Version: 0.7.960.1.2
 Hash: e321d680ed4150e0ba6b95eb88db68b9
 Requires: Rcpp
 
+Package: Rmpi
+Source: CRAN
+Version: 0.6-6
+Hash: eef087ec5eeaaa7ce1a2a5c528ac7404
+
+Package: TAM
+Source: CRAN
+Version: 2.6-2
+Hash: 5a1a7393e045dff4740de62f433bde6d
+Requires: CDM, Rcpp, RcppArmadillo, coda, mvtnorm, sfsmisc
+
 Package: assertthat
 Source: CRAN
 Version: 0.2.0
@@ -71,6 +88,12 @@ Source: CRAN
 Version: 1.17.1
 Hash: 97cb6f6293cd18d17df77a6383cc6763
 Requires: bitops
+
+Package: coda
+Source: CRAN
+Version: 0.19-1
+Hash: e5aff7792ef292cd4306e58e25e403fe
+Requires: lattice
 
 Package: codetools
 Source: CRAN
@@ -182,6 +205,18 @@ Source: CRAN
 Version: 0.20-35
 Hash: 26b9d7f0d0cb4e1d1bbb97f867c82d89
 
+Package: lavaan
+Source: CRAN
+Version: 0.5-23.1097
+Hash: 3acbd8e4f2b2ff32317763019c0f3c9f
+Requires: mnormt, numDeriv, pbivnorm, quadprog
+
+Package: lavaan.survey
+Source: CRAN
+Version: 1.1.3.1
+Hash: 8d2f91d1003bf16cbd6eeb041628037b
+Requires: lavaan, survey
+
 Package: lazyeval
 Source: CRAN
 Version: 0.2.0
@@ -236,6 +271,11 @@ Source: CRAN
 Version: 1.5-5
 Hash: d0d5efbb1fb26d2dc5f9394c223084b5
 
+Package: mvtnorm
+Source: CRAN
+Version: 1.0-6
+Hash: 1f55cdac387721d4eda1126ac9aba73b
+
 Package: nlme
 Source: CRAN
 Version: 3.1-131
@@ -261,11 +301,22 @@ GithubUsername: rstudio
 GithubRef: master
 GithubSha1: df5dd5b6cb9f72010e07ccd3f4f813ab036d42c2
 
+Package: pbivnorm
+Source: CRAN
+Version: 0.6.0
+Hash: 49a3782a63f861575cd5e3ad0559690f
+
 Package: plyr
 Source: CRAN
 Version: 1.8.4
 Hash: 8fbaff6962e3421b5c9652eebae36159
 Requires: Rcpp
+
+Package: polycor
+Source: CRAN
+Version: 0.7-9
+Hash: 2510f040851857643c9a21abf2a30512
+Requires: Matrix, mvtnorm
 
 Package: praise
 Source: CRAN
@@ -282,6 +333,11 @@ Source: CRAN
 Version: 1.7.8
 Hash: a9e7713423365e42e06413285a89e610
 Requires: foreign, lattice, mnormt, nlme
+
+Package: quadprog
+Source: CRAN
+Version: 1.5-5
+Hash: 69000b7dc41b09977dcf781f909d235c
 
 Package: rex
 Source: CRAN
@@ -324,6 +380,18 @@ Source: CRAN
 Version: 1.1-1
 Hash: 00af82c1c08f9a5fb278ca3469b6eaf4
 
+Package: sirt
+Source: CRAN
+Version: 2.1-24
+Hash: e896114a4d3e98a64e31a37f6c046772
+Requires: CDM, Rcpp, RcppArmadillo, TAM, coda, lavaan, lavaan.survey,
+    mirt, mvtnorm, sfsmisc, survey
+
+Package: snow
+Source: CRAN
+Version: 0.4-2
+Hash: bf705214a3d32b037dd24940931c289e
+
 Package: stringi
 Source: CRAN
 Version: 1.1.5
@@ -334,6 +402,12 @@ Source: CRAN
 Version: 1.2.0
 Hash: 25a86d7f410513ebb7c0bc6a5e16bdc3
 Requires: magrittr, stringi
+
+Package: survey
+Source: CRAN
+Version: 3.32-1
+Hash: e0d6920f9e5b04015ca679f6621e6416
+Requires: Matrix, lattice
 
 Package: testthat
 Source: CRAN

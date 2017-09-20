@@ -54,8 +54,10 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
         options(aefaConn = future::plan(list(future::tweak(future::cluster, workers = parallelProcessors), future::multiprocess(workers = parallelProcessors))))
     } else if (NROW(future::plan("list")) == 1) {
         if (require("Rmpi")) {
-            options(aefaConn = future::plan(future::cluster, workers = parallel::makeCluster(spec = if (is.null(GCEvms))
-                GCEvms else parallel::detectCores(all.tests = FALSE, logical = FALSE), type = "MPI")), gc = T)
+          if(!is.null(GCEvms)){
+            parallelProcessors <- GCEvms
+          }
+            options(aefaConn = future::plan(future::cluster, workers = parallel::makeCluster(spec = parallelProcessors, type = "MPI")), gc = T)
         } else if (length(grep("openblas", extSoftVersion()["BLAS"])) > 0) {
             options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors), gc = T)
         } else if (length(future::availableWorkers()) == 1) {
@@ -770,6 +772,13 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                           gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh,
                           na.rm = T))]]  ## FIXME
 
+                        for(k in length(model[[i]]$x[j, 2])){
+                          if(is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 2][k])){
+                            model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[, !colnames(data) %in% badItemNames]))[model[[i]]$x[j, 2][k]])
+                          }
+                        }
+
+                        # FIXME
 
                       }
                     }

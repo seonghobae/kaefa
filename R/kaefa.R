@@ -767,7 +767,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                     for (j in 1:nrow(model[[i]])) {
                       if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
 
-                        # convert elements
+                        # convert elements # FIXME
                         model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(",
                           gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh,
                           na.rm = T))]]  ## FIXME
@@ -779,6 +779,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                         }
 
                         # FIXME
+                        model[[i]]$x[j, 2] <- paste(as.character(model[[i]]$x[j, 2]),collapse=", ",sep="")
 
                       }
                     }

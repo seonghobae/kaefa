@@ -8,6 +8,7 @@
 #' @import future
 #' @param GCEvms insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.
 #' @param debug run with debug mode. default is FALSE
+#' @param useMPI if you want to use MPI clusters if you can? default is TRUE, and it requires Rmpi and snow.
 #'
 #' @return nothing to return, just hidden variable to set to run parallelism.
 #' @export
@@ -17,7 +18,7 @@
 #' .conn <- aefaInit()
 #'
 #'}
-aefaInit <- function(GCEvms = NULL, debug = F) {
+aefaInit <- function(GCEvms = NULL, debug = F, useMPI = T) {
     options(future.debug = debug)
 
     if (is.null(suppressWarnings(NCmisc::top()$CPU$idle))) {
@@ -48,7 +49,7 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
     if (!is.null(GCEvms)) {
         options(aefaConn = future::plan(list(future::tweak(future::cluster, workers = parallelProcessors), future::multiprocess(workers = parallelProcessors))))
     } else if (NROW(future::plan("list")) == 1) {
-        if (requireNamespace("Rmpi", quietly = TRUE)) {
+        if (requireNamespace("Rmpi", quietly = TRUE) && useMPI) {
           if(!is.null(GCEvms)){
             parallelProcessors <- GCEvms
           }
@@ -92,6 +93,9 @@ aefaInit <- function(GCEvms = NULL, debug = F) {
 #'}
 fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = accelerate, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES,
     BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, random = random) {
+
+  options(future.globals.maxSize = 500*1024^3)
+
     modMLIRT_itemLevel <- mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T,
         GenRandomPars = GenRandomPars, covdata = covdata, fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES,
             BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))
@@ -159,6 +163,9 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
     # if (is.null(getOption("aefaConn"))) {
     #     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = F))
     # }
+
+    options(future.globals.maxSize = 500*1024^3)
+
 
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {

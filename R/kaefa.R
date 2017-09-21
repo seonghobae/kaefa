@@ -282,6 +282,9 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #' }
 estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
     fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F) {
+
+  options(future.globals.maxSize = 500*1024^3)
+
     # data management: resampling
     if (resampling && is.null(covdata)) {
         resampleCaseNumber <- sample(1:nrow(data), samples, replace = T)
@@ -508,6 +511,9 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL,
     GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL,
     accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F) {
+
+  options(future.globals.maxSize = 500*1024^3)
+
     # if (is.null(getOption("aefaConn"))) {
     #     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
     # }
@@ -606,6 +612,8 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
   if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption("aefaConn")) | is.null(getOption("aefaConn"))) {
     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
   }
+
+  options(future.globals.maxSize = 500*1024^3)
 
   # prepare for bad item detection
     badItemNames <- c() # make new null vector

@@ -295,7 +295,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 
     # data management: resampling
     if (resampling && is.null(covdata)) {
-        resampleCaseNumber <- sample(1:nrow(data), samples, replace = T)
+        resampleCaseNumber <- sample(1:nrow(data), samples, replace = F)
         data <- data[resampleCaseNumber, ]
         if (!is.null(covdata)) {
             covdata <- covdata[resampleCaseNumber, ]

@@ -6,16 +6,16 @@ cache: packages
 
 os:
   - linux
-  - osx
+#  - osx
 
 compiler:
   - gcc
-  - clang
+#  - clang
 
-# addons:
-#   apt:
-#   packages:
-#   - libzmq3-dev
+addons:
+  apt:
+  packages:
+  - r-cran-rmpi r-cran-rsprng mpi-default-dev
 #
 # before_install:
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo chmod -R a+w /usr/local/Cellar; fi

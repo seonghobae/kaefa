@@ -11,7 +11,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
   printItemFit = T, rotate = "bifactorQ", resampling = F,
   samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC",
-  saveRawEstModels = F)
+  saveRawEstModels = F, fitEMatUIRT = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -61,6 +61,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{modelSelectionCriteria}{Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available.}
 
 \item{saveRawEstModels}{Do you want to save raw estimated models before model selection work? default is FALSE}
+
+\item{fitEMatUIRT}{Do you want to fit the model with EM at UIRT? default is FALSE}
 }
 \value{
 automated exploratory factor analytic models

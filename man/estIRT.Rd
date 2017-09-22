@@ -7,7 +7,8 @@
 estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
   NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
   fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
-  symmetric = F, resampling = F, samples = 5000, printDebugMsg = F)
+  symmetric = F, resampling = F, samples = 5000, printDebugMsg = F,
+  fitEMatUIRT = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -41,6 +42,8 @@ estIRT(data, model = 1, GCEvms = NULL, GenRandomPars = T,
 \item{samples}{specify the number samples with resampling. default is 5000.}
 
 \item{printDebugMsg}{Do you want to see the debugging messeages? default is FALSE}
+
+\item{fitEMatUIRT}{Do you want to fit the model with EM at UIRT? default is FALSE}
 }
 \value{
 possible optimal combinations of models in list

@@ -6,12 +6,14 @@
 This function initalise the aefa cluster.
 If someone have Google Computing Engine informaiton, put the information in the argument.}
 \usage{
-aefaInit(GCEvms = NULL, debug = F)
+aefaInit(GCEvms = NULL, debug = F, useMPI = T)
 }
 \arguments{
 \item{GCEvms}{insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.}
 
 \item{debug}{run with debug mode. default is FALSE}
+
+\item{useMPI}{if you want to use MPI clusters if you can? default is TRUE, and it requires Rmpi and snow.}
 }
 \value{
 nothing to return, just hidden variable to set to run parallelism.

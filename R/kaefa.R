@@ -245,7 +245,7 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
         return(suppressMessages(plyr::join_all(fitList)))
 
     } else {
-        message("That's seems not MIRT model, so that trying to estimate new model")
+        message("That's seems not MIRT model, so that trying to estimate new model with default settings")
         estModel <- exploratoryIRT(data = mirtModel)
         return(estModel)
     }
@@ -278,6 +278,7 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #' @param resampling Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.
 #' @param samples specify the number samples with resampling. default is 5000.
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
+#' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
 #'
 #' @return possible optimal combinations of models in list
 #' @export
@@ -288,7 +289,7 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #'
 #' }
 estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
-    fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F) {
+    fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F) {
 
   options(future.globals.maxSize = 500*1024^3)
 
@@ -406,7 +407,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
     # UnConditional Model
     for (j in estItemtype) {
         l <- l + 1
-        if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
+        if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0 | !fitEMatUIRT) {
             modUnConditional[[l]] %<-% try(mirt::mirt(data = data, model = model, method = "MHRM", itemtype = j, accelerate = accelerate,
                 SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN,
                   SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
@@ -506,7 +507,8 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 #' @param resampling Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.
 #' @param samples specify the number samples with resampling. default is 5000.
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
-
+#' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
+#'
 #' @return possible optimal combinations of models in list
 #' @export
 #'
@@ -517,7 +519,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 #' }
 exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL,
     GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL,
-    accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F) {
+    accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F) {
 
   options(future.globals.maxSize = 500*1024^3)
 
@@ -530,7 +532,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
         # EFA
         estModels[[i]] %<-% try(estIRT(data = data, model = i, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES,
             BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate,
-            symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg))
+            symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
     }
 
     if (!is.null(model)) {
@@ -541,7 +543,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
             if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
                 estModels[[j + i]] %<-% try(estIRT(data = data, model = model[[i]], GCEvms = GCEvms, GenRandomPars = GenRandomPars,
                   NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random,
-                  key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg))
+                  key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
             }
         }
     }
@@ -603,7 +605,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
 #' @param modelSelectionCriteria Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available.
 #' @param saveRawEstModels Do you want to save raw estimated models before model selection work? default is FALSE
-#'
+#' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
 #' @return automated exploratory factor analytic models
 #' @export
 #'
@@ -615,7 +617,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL,
     GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL,
     accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ",
-    resampling = F, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F) {
+    resampling = F, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F) {
   if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption("aefaConn")) | is.null(getOption("aefaConn"))) {
     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
   }
@@ -645,7 +647,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             try(estModel <- exploratoryIRT(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, minExtraction = minExtraction,
                 maxExtraction = maxExtraction, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
                 SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate,
-                symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg))
+                symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
         } else if (is.list(data) && !is.data.frame(data)) {
             # Some weird condition: user specified pre-calibrated model or list of data.frame in data
 
@@ -664,7 +666,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                     badItemNames]), model = model, minExtraction = minExtraction, maxExtraction = maxExtraction, GCEvms = GCEvms,
                     GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata,
                     fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling,
-                    samples = samples, printDebugMsg = printDebugMsg))
+                    samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
                   if (!dfFound) {
                     # set dfFound flag
                     dfFound <- T

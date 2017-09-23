@@ -618,9 +618,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL,
     accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ",
     resampling = F, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F) {
-  if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption("aefaConn")) | is.null(getOption("aefaConn"))) {
-    getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
-  }
+  # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption("aefaConn")) | is.null(getOption("aefaConn"))) {
+  #   getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))
+  # }
 
   options(future.globals.maxSize = 500*1024^3)
 

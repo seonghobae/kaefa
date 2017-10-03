@@ -15,25 +15,15 @@ compiler:
 addons:
   apt:
   packages:
-  - r-cran-rsprng mpi-default-dev
+  - mpi-default-dev r-cran-Rmpi r-cran-rsprng
 #
 # before_install:
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo chmod -R a+w /usr/local/Cellar; fi
 # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew uninstall --force zeromq && brew cleanup --force -s zeromq && brew prune; fi
 # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link zeromq && brew install zeromq; fi
 
-before_install:
-  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-  - chmod 755 ./travis-tool.sh
-  - ./travis-tool.sh bootstrap
-  - ./travis-tool.sh install_aptget r-cran-rmpi
-# Alternatively install the libopenmpi-dev package and install Rmpi from CRAN
-install:
-  - ./travis-tool.sh install_deps
-script: ./travis-tool.sh run_tests
-
 r_packages:
-  - covr
+  - covr, Rmpi
 
 after_success:
   - Rscript -e 'covr::codecov()'

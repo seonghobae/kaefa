@@ -15,7 +15,7 @@ compiler:
 addons:
   apt:
   packages:
-  - mpi-default-dev r-cran-Rmpi r-cran-rsprng
+  - mpi-default-dev r-cran-rmpi r-cran-rsprng
 #
 # before_install:
 #   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo chmod -R a+w /usr/local/Cellar; fi

@@ -49,12 +49,7 @@ aefaInit <- function(GCEvms = NULL, debug = F, useMPI = T) {
     if (!is.null(GCEvms)) {
         options(aefaConn = future::plan(list(future::tweak(future::cluster, workers = parallelProcessors), future::multiprocess(workers = parallelProcessors))))
     } else if (NROW(future::plan("list")) == 1) {
-        if (requireNamespace("Rmpi", quietly = TRUE) && useMPI) {
-          if(!is.null(GCEvms)){
-            parallelProcessors <- GCEvms
-          }
-            options(aefaConn = future::plan(future::cluster, workers = parallel::makeCluster(spec = parallelProcessors, type = "MPI")), gc = T)
-        } else if (length(grep("openblas", extSoftVersion()["BLAS"])) > 0) {
+        if (length(grep("openblas", extSoftVersion()["BLAS"])) > 0) {
             options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors), gc = T)
         } else if (length(future::availableWorkers()) == 1) {
             options(aefaConn = future::plan(future::sequential), gc = T)

@@ -305,6 +305,13 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
     # data management: exclude range == 0
     data <- data[psych::describe(data)$range != 0]
 
+    # data management: exclude k > 30
+    testLength <- vector()
+    for(i in 1:ncol(data)){
+      testLength[i] <- length(attributes(factor(missingDat[,i]))$levels) > 30
+    }
+    data <- data[!testLength]
+
     # aefaConn
     # if (is.null(getOption("aefaConn")) && is.null(GCEvms)) {
     #     getOption("aefaConn", aefaInit(GCEvms = GCEvms, debug = printDebugMsg))

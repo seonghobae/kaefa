@@ -23,7 +23,8 @@ addons:
 # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link zeromq && brew install zeromq; fi
 
 r_packages:
-  - covr, Rmpi
+  - covr
+  - Rmpi
 
 after_success:
   - Rscript -e 'covr::codecov()'

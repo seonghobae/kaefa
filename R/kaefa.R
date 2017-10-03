@@ -409,7 +409,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
     # UnConditional Model
     for (j in estItemtype) {
         l <- l + 1
-        if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0 | !fitEMatUIRT) {
+        if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0 | (!fitEMatUIRT && model != 1)) {
             modUnConditional[[l]] %<-% try(mirt::mirt(data = data, model = model, method = "MHRM", itemtype = j, accelerate = accelerate,
                 SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN,
                   SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
@@ -532,7 +532,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
     estModels <- listenv::listenv()
     for (i in minExtraction:maxExtraction) {
         # EFA
-        estModels[[i]] %<-% try(estIRT(data = data, model = i, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES,
+        estModels[[i]] <- try(estIRT(data = data, model = i, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES,
             BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate,
             symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
     }
@@ -547,7 +547,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
         model <- unlist(list(model))
         for (i in 1:NROW(model)) {
             if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
-                estModels[[j + i]] %<-% try(estIRT(data = data, model = model[[i]], GCEvms = GCEvms, GenRandomPars = GenRandomPars,
+                estModels[[j + i]] <- try(estIRT(data = data, model = model[[i]], GCEvms = GCEvms, GenRandomPars = GenRandomPars,
                   NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random,
                   key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
             }

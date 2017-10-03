@@ -428,7 +428,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
             for (n in c(T, F)) {
                 mm <- mm + 1
                 modDiscrete[[mm]] %<-% try(mirt::mdirt(data = data, model = model, SE = T, SE.type = m, accelerate = accelerate,
-                  GenRandomPars = GenRandomPars, empiricalhist = n, calcNull = T, technical = list(NCYCLES = NCYCLES,
+                  GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES,
                     BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, formula = if (fixed ==
                       ~1) NULL else fixed)))
             }

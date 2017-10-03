@@ -402,11 +402,11 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 
 
     if (class(model) == "numeric") {
-        mm <- 0
-        for (m in c("sandwich", "Oakes", "sandwich.Louis", "SEM")) {
+        # mm <- 0
+        for (m in c("sandwich", "Oakes")) {
             for (n in c(T, F)) {
-                mm <- mm + 1
-                modDiscrete[[mm]] %<-% try(mirt::mdirt(data = data, model = model, SE = T, SE.type = m, accelerate = accelerate, GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES,
+                # mm <- mm + 1
+                modDiscrete[[NROW(as.list(modDiscrete))+1]] %<-% try(mirt::mdirt(data = data, model = model, SE = T, SE.type = m, accelerate = accelerate, GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES,
                   BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), covdata = covdata, formula = if (fixed == ~1)
                   NULL else fixed))
             }
@@ -417,7 +417,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 
     # solve results
     if (!is.null(covdata)) {
-        modConditional <- try(future::values(modConditional))
+        modConditional <- try(as.list(modConditional))
         if(exists('modConditional')){
           if (NROW(modConditional) != 0) {
             for (j in 1:NROW(modConditional)) {
@@ -427,7 +427,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
         }
     }
 
-    modUnConditional <- try(future::values(modUnConditional))
+    modUnConditional <- try(as.list(modUnConditional))
     if(exists('modUnConditional')){
       if (NROW(modUnConditional) != 0) {
         for (k in 1:NROW(modUnConditional)) {
@@ -437,7 +437,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
     }
 
 
-    modDiscrete <- try(future::values(modDiscrete))
+    modDiscrete <- try(as.list(modDiscrete))
     if(exists('modDiscrete')){
       if (NROW(modDiscrete) != 0) {
         for (k in 1:NROW(modDiscrete)) {

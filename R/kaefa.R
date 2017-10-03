@@ -90,10 +90,10 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 
     options(future.globals.maxSize = 500 * 1024^3)
 
-    modMLIRT_itemLevel <- mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata, fixed = fixed, random = random,
-        calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))
-    modMLIRT_latentLevel <- mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata, lr.fixed = fixed, lr.random = random,
-        calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))
+    modMLIRT_itemLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata, fixed = fixed, random = random,
+        calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+    modMLIRT_latentLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata, lr.fixed = fixed, lr.random = random,
+        calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
 
     # evaluate model
     if (exists("modMLIRT_itemLevel")) {

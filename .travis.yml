@@ -24,7 +24,6 @@ addons:
 
 r_packages:
   - covr
-  - Rmpi
 
 after_success:
   - Rscript -e 'covr::codecov()'

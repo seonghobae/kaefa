@@ -29,7 +29,5 @@ RoxygenNote: 6.0.1
 Suggests: covr,
     testthat,
     knitr,
-    rmarkdown,
-    Rmpi,
-    snow
+    rmarkdown
 VignetteBuilder: knitr

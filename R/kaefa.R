@@ -308,7 +308,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
     # data management: exclude k > 30
     testLength <- vector()
     for(i in 1:ncol(data)){
-      testLength[i] <- length(attributes(factor(missingDat[,i]))$levels) > 30
+      testLength[i] <- length(attributes(factor(data[,i]))$levels) > 30
     }
     data <- data[!testLength]
 
@@ -541,6 +541,10 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
             BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate,
             symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
     }
+
+    # estModels <- future_lapply(x = minExtraction:maxExtraction, FUN = kaefa::estIRT, data = data, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES,
+    #                            BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate,
+    #                            symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT)
 
     if (!is.null(model)) {
         # user specified EFA or CFA

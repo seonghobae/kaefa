@@ -262,6 +262,7 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #' @param samples specify the number samples with resampling. default is 5000.
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
 #' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
+#' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
 #'
 #' @return possible optimal combinations of models in list
 #' @export
@@ -272,7 +273,7 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #'
 #' }
 estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
-    symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F) {
+    symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T) {
 
     options(future.globals.maxSize = 500 * 1024^3)
 
@@ -302,7 +303,12 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
         combn(y, x, paste, collapse = ", ")
     }
 
-    randomEffectCandidates <- paste0("list(", unlist(lapply(0:NROW(random), combine, random)), ")")
+    if(ranefautocomb){
+      randomEffectCandidates <- paste0("list(", unlist(lapply(0:NROW(random), combine, random)), ")")
+    } else {
+      randomEffectCandidates <- paste0("list(", unlist(lapply(NROW(random):NROW(random), combine, random)), ")")
+    }
+
 
     # config
     if (is.numeric(model)) {
@@ -495,6 +501,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 #' @param samples specify the number samples with resampling. default is 5000.
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
 #' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
+#' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
 #'
 #' @return possible optimal combinations of models in list
 #' @export
@@ -505,7 +512,7 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 #'
 #' }
 exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000,
-    covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F) {
+    covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T) {
 
     options(future.globals.maxSize = 500 * 1024^3)
 
@@ -592,6 +599,8 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 #' @param modelSelectionCriteria Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available.
 #' @param saveRawEstModels Do you want to save raw estimated models before model selection work? default is FALSE
 #' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
+#' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
+#'
 #' @return automated exploratory factor analytic models
 #' @export
 #'
@@ -602,7 +611,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 #' }
 aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
     fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ", resampling = F, samples = 5000,
-    printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F) {
+    printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T) {
     # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug =
     # printDebugMsg)) }
 

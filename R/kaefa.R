@@ -522,7 +522,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
     for (i in minExtraction:maxExtraction) {
         # EFA
         estModels[[i]] <- try(estIRT(data = data, model = i, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed,
-            random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
+            random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
     }
 
     # estModels <- future_lapply(x = minExtraction:maxExtraction, FUN = kaefa::estIRT, data = data, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES =
@@ -536,7 +536,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
         for (i in 1:NROW(model)) {
             if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
                 estModels[[j + i]] <- try(estIRT(data = data, model = model[[i]], GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata,
-                  fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
+                  fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
             }
         }
     }
@@ -639,7 +639,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             # general condition
             try(estModel <- exploratoryIRT(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, minExtraction = minExtraction, maxExtraction = maxExtraction, GCEvms = GCEvms,
                 GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
-                resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
+                resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
         } else if (is.list(data) && !is.data.frame(data)) {
             # Some weird condition: user specified pre-calibrated model or list of data.frame in data
 
@@ -656,7 +656,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   # if list contains dataframe, try to estimate them anyway; even this behaviour seems weird
                   estModel[[NROW(estModel) + 1]] <- try(exploratoryIRT(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]), model = model, minExtraction = minExtraction, maxExtraction = maxExtraction,
                     GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate,
-                    symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT))
+                    symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
                   if (!dfFound) {
                     # set dfFound flag
                     dfFound <- T

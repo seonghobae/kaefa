@@ -151,7 +151,7 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 #'
 #' @examples
 #' \dontrun{
-#' testModel1 <- estIRT(mirt::Science)
+#' testModel1 <- engineAEFA(mirt::Science)
 #' testItemFit1 <- evaluateItemFit(testModel1)
 #' }
 evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
@@ -239,373 +239,9 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 
     } else {
         message("That's seems not MIRT model, so that trying to estimate new model with default settings")
-        estModel <- exploratoryIRT(data = mirtModel)
+        estModel <- engineAEFA(data = mirtModel)
         return(estModel)
     }
-}
-
-
-#' estimate full-information item factor analysis models with combinating random effects
-#'
-#' @importFrom utils combn
-#' @import future
-#' @import listenv
-#' @import mirt
-#' @import psych
-#' @import plyr
-#' @import parallel
-#' @param data insert \code{data.frame} object.
-#' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.
-#' @param GCEvms insert google computing engine virtual machine information.
-#' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
-#' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
-#' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
-#' @param SEMCYCLES N Cycles of Metro-hastings burnin stage (stage 2). Default is 1000.
-#' @param covdata insert covariate data frame where use to fixed and random effect term. if not inserted, ignoring fixed and random effect estimation.
-#' @param fixed a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.
-#' @param random a right sided formula or list of formulas containing crossed random effects of the form \code{v1 + ... v_n | G}, where \code{G} is the grouping variable and \code{v_n} are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.
-#' @param key item key vector of multiple choices test.
-#' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
-#' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
-#'
-#' @param resampling Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.
-#' @param samples specify the number samples with resampling. default is 5000.
-#' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
-#' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
-#' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
-#'
-#' @return possible optimal combinations of models in list
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' testMod1 <- estIRT(mirt::Science, model = 1)
-#'
-#' }
-estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
-    fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F,
-    fitEMatUIRT = F, ranefautocomb = T) {
-
-    options(future.globals.maxSize = 500 * 1024^3)
-
-    # data management: resampling
-    if (resampling && is.null(covdata)) {
-        resampleCaseNumber <- sample(1:nrow(data), samples, replace = F)
-        data <- data[resampleCaseNumber, ]
-        if (!is.null(covdata)) {
-            covdata <- covdata[resampleCaseNumber, ]
-        }
-    }
-
-    # data management: exclude range == 0
-    data <- data[psych::describe(data)$range != 0]
-
-    # data management: exclude k > 30
-    testLength <- vector()
-    nK <- vector()
-    for (i in 1:ncol(data)) {
-        nK[i] <- length(attributes(factor(data[, i]))$levels)
-        testLength[i] <- nK[i] > 30
-    }
-    data <- data[!testLength]
-    nK <- nK[!testLength]
-
-    # aefaConn if (is.null(getOption('aefaConn')) && is.null(GCEvms)) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug =
-    # printDebugMsg)) }
-
-    # tools
-    combine <- function(x, y) {
-        combn(y, x, paste, collapse = ", ")
-    }
-
-    if (ranefautocomb) {
-        randomEffectCandidates <- paste0("list(", unlist(lapply(0:NROW(random), combine, random)), ")")
-    } else {
-        randomEffectCandidates <- paste0("list(", unlist(lapply(NROW(random):NROW(random), combine, random)), ")")
-    }
-
-
-    # config
-    if (is.numeric(model)) {
-        if (model == 1) {
-            # UIRT
-            if (max(psych::describe(data)$range) != 1) {
-                # poly UIRT
-                if (!is.null(key)) {
-                  # with key
-                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT",
-                    "Rasch", "rsm")
-                } else {
-                  # without key
-                  estItemtype <- c("nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
-                }
-            } else {
-                # dich UIRT
-                estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch", "spline")
-            }
-        } else {
-            # MIRT
-            if (max(psych::describe(data)$range) != 1) {
-                # poly MIRT
-                if (!is.null(key)) {
-                  # poly MIRT with key
-                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "graded", "grsm")
-                } else {
-                  # poly MIRT without key
-                  estItemtype <- c("nominal", "gpcm", "graded", "grsm")
-                }
-            } else {
-                # dich MIRT
-                estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal")
-            }
-        }
-
-        if (sum(max(nK) == nK) != length(nK)) {
-            if (length(grep("rsm", estItemtype)) > 0) {
-                estItemtype <- estItemtype[-grep("rsm", estItemtype)]
-            }
-        }
-
-    } else if (class(model) == "mirt.model") {
-        # CFA
-        if (max(psych::describe(data)$range) != 1) {
-            # poly CFA
-            if (!is.null(key)) {
-                # with key
-                estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "graded", "Rasch")
-            } else {
-                # without key
-                estItemtype <- c("nominal", "gpcm", "graded", "Rasch")
-            }
-        } else {
-            # dich
-            estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "PC3PL", "PC2PL", "ideal", "Rasch")
-        }
-    } else {
-        stop("model is not correctly provided")
-    }
-
-    modConditional <- listenv::listenv()
-    modUnConditional <- listenv::listenv()
-    modDiscrete <- listenv::listenv()
-    k <- 0
-
-    # Conditional Model
-    if (!is.null(covdata)) {
-        for (i in 1:length(randomEffectCandidates)) {
-            for (j in estItemtype) {
-                if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM") %in% j) > 0) {
-                  k <- k + 1
-                  modConditional[[k]] %<-% try(fitMLIRT(accelerate = accelerate, data = mirt::key2binary(data, key), model = model,
-                    itemtype = if (j == "4PLNRM")
-                      "4PL" else if (j == "3PLNRM")
-                      "3PL" else if (j == "3PLuNRM")
-                      "3PLu" else if (j == "2PLNRM")
-                      "2PL" else j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric,
-                    covdata = covdata, fixed = fixed, random = eval(parse(text = randomEffectCandidates[i]))))
-                } else {
-                  k <- k + 1
-                  if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                    modConditional[[k]] %<-% try(fitMLIRT(accelerate = accelerate, data = data, model = model, itemtype = j, GenRandomPars = GenRandomPars,
-                      NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed,
-                      random = eval(parse(text = randomEffectCandidates[i]))))
-                  } else {
-                    # Skipping, see https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
-                  }
-
-                }
-            }
-        }
-    }
-
-    l <- 0
-    # UnConditional Model
-    for (j in estItemtype) {
-        l <- l + 1
-        if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0 | (!fitEMatUIRT && model != 1)) {
-            modUnConditional[[l]] %<-% try(mirt::mirt(data = data, model = model, method = "MHRM", itemtype = j, accelerate = accelerate,
-                SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN,
-                  SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
-        } else {
-            modUnConditional[[l]] %<-% try(mirt::mirt(data = data, model = model, method = "EM", itemtype = j, accelerate = accelerate,
-                SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN,
-                  SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
-        }
-
-    }
-
-
-    if (class(model) == "numeric") {
-        # mm <- 0
-        for (m in c("sandwich", "Oakes")) {
-            for (n in c(T, F)) {
-                # mm <- mm + 1
-                modDiscrete[[NROW(as.list(modDiscrete)) + 1]] %<-% try(mirt::mdirt(data = data, model = model, SE = T, SE.type = m,
-                  accelerate = accelerate, GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN,
-                    SEMCYCLES = SEMCYCLES, symmetric = symmetric), covdata = covdata, formula = if (fixed == ~1)
-                    NULL else fixed))
-            }
-        }
-    }
-
-    estModels <- list()
-
-    # solve results
-    if (!is.null(covdata)) {
-        modConditional <- try(as.list(modConditional))
-        if (exists("modConditional")) {
-            if (NROW(modConditional) != 0) {
-                for (j in 1:NROW(modConditional)) {
-                  estModels[[NROW(estModels) + 1]] <- modConditional[[j]]
-                }
-            }
-        }
-    }
-
-    modUnConditional <- try(as.list(modUnConditional))
-    if (exists("modUnConditional")) {
-        if (NROW(modUnConditional) != 0) {
-            for (k in 1:NROW(modUnConditional)) {
-                estModels[[NROW(estModels) + 1]] <- modUnConditional[[k]]
-            }
-        }
-    }
-
-
-    modDiscrete <- try(as.list(modDiscrete))
-    if (exists("modDiscrete")) {
-        if (NROW(modDiscrete) != 0) {
-            for (k in 1:NROW(modDiscrete)) {
-                estModels[[NROW(estModels) + 1]] <- modDiscrete[[k]]
-            }
-        }
-    }
-
-    finalEstModels <- list()
-    noNullEstModels <- list()
-
-    if (NROW(estModels) != 0) {
-        for (i in 1:NROW(estModels)) {
-            if (!is.null(estModels[[i]]) | length(estModels[[i]]) != 0) {
-                noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[i]]
-            }
-        }
-
-        if (NROW(noNullEstModels) != 0) {
-            for (i in 1:NROW(noNullEstModels)) {
-                if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
-                  if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
-                    finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
-                  }
-
-                }
-            }
-        }
-
-    }
-
-    return(finalEstModels)
-}
-
-# exploratoryIRT.R
-#' estimate appropriate exploratory full-information item factor analysis models with combinating random effects by number of factors
-#'
-#' @param data insert \code{data.frame} object.
-#' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.
-#' @param minExtraction specify the minimum number of factors to calibrate. defaults is 1 but can change this.
-#' @param maxExtraction specify the maximum number of factors to calibrate. defaults is 10 but can change this.
-#' @param GCEvms insert google computing engine virtual machine information.
-#' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
-#' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
-#' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
-#' @param SEMCYCLES N Cycles of Metro-hastings burnin stage (stage 2). Default is 1000.
-#' @param covdata insert covariate data frame where use to fixed and random effect term. if not inserted, ignoring fixed and random effect estimation.
-#' @param fixed a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.
-#' @param random a right sided formula or list of formulas containing crossed random effects of the form \code{v1 + ... v_n | G}, where \code{G} is the grouping variable and \code{v_n} are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.
-#' @param key item key vector of multiple choices test.
-#' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
-#' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
-#'
-#' @param resampling Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.
-#' @param samples specify the number samples with resampling. default is 5000.
-#' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
-#' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
-#' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
-#'
-#' @return possible optimal combinations of models in list
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' testMod1 <- exploratoryIRT(mirt::Science, minExtraction = 1, maxExtraction = 2)
-#'
-#' }
-exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL,
-    GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
-    symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T) {
-
-    options(future.globals.maxSize = 500 * 1024^3)
-
-    # if (is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = printDebugMsg)) }
-
-    estModels <- listenv::listenv()
-    calibModel <- as.list(minExtraction:maxExtraction)
-    if (!is.null(model)) {
-        # user specified EFA or CFA
-        j <- maxExtraction
-        model <- unlist(list(model))
-        for (i in 1:NROW(model)) {
-            if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
-                calibModel[[j + i]] <- try(model[[i]])
-            }
-        }
-    }
-
-    estModels %<-% {
-      calibrationList <- listenv::listenv()
-      for (i in calibModel) {
-        calibrationList[[i]] %<-% {
-          try(engineAEFA(data = data, model = i, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
-                                    SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
-                                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
-          }
-      }
-      unlist(as.list(calibrationList))
-    }
-
-
-        # estModels <- future::future_lapply(x = calibModel, FUN = engineAEFA, data = data, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
-        #                                    SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
-        #                                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, future.scheduling = Inf)
-
-    estModels <- unlist(as.list(estModels))
-
-    finalEstModels <- list()
-    noNullEstModels <- list()
-
-    if (NROW(estModels) != 0) {
-        for (i in 1:NROW(estModels)) {
-            if (!is.null(estModels[[i]]) | length(estModels[[i]]) != 0) {
-                noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[i]]
-            }
-
-        }
-
-        if (NROW(noNullEstModels) != 0) {
-            for (i in 1:NROW(noNullEstModels)) {
-                if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
-                  if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
-                    finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
-                  }
-
-                }
-            }
-        }
-
-    }
-
-    return(finalEstModels)
-
 }
 
 #' doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment
@@ -668,6 +304,20 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
         }
     }
 
+    calibModel <- as.list(minExtraction:maxExtraction)
+    if (!is.null(model)) {
+      # user specified EFA or CFA
+      j <- maxExtraction
+      model <- unlist(list(model))
+      for (i in 1:NROW(model)) {
+        if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
+          calibModel[[j + i]] <- try(model[[i]])
+        }
+      }
+    }
+
+    model <- calibModel
+
     # prepare for do aefa work
     STOP <- F
 
@@ -675,8 +325,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
             # general condition
-            try(estModel <- exploratoryIRT(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, minExtraction = minExtraction,
-                maxExtraction = maxExtraction, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
+            try(estModel <- engineAEFA(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
                 SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
                 resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
         } else if (is.list(data) && !is.data.frame(data)) {
@@ -693,8 +342,8 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   }
                 } else if (is.data.frame(data[[i]]) | is.matrix(data[[i]])) {
                   # if list contains dataframe, try to estimate them anyway; even this behaviour seems weird
-                  estModel[[NROW(estModel) + 1]] <- try(exploratoryIRT(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]),
-                    model = model, minExtraction = minExtraction, maxExtraction = maxExtraction, GCEvms = GCEvms, GenRandomPars = GenRandomPars,
+                  estModel[[NROW(estModel) + 1]] <- try(engineAEFA(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]),
+                    model = model, GenRandomPars = GenRandomPars,
                     NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random,
                     key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
                     fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))

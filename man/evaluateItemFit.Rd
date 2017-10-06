@@ -21,7 +21,7 @@ assessment of fit indices of the calibrated model
 }
 \examples{
 \dontrun{
-testModel1 <- estIRT(mirt::Science)
+testModel1 <- engineAEFA(mirt::Science)
 testItemFit1 <- evaluateItemFit(testModel1)
 }
 }

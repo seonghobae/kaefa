@@ -570,7 +570,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 
         estModels <- future::future_lapply(x = calibModel, FUN = engineAEFA, data = data, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
                                            SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
-                                           resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb)
+                                           resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, future.scheduling = Inf)
 
     estModels <- unlist(as.list(estModels))
 

@@ -11,7 +11,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
   printItemFit = T, rotate = "bifactorQ", resampling = F,
   samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC",
-  saveRawEstModels = F, fitEMatUIRT = F)
+  saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -63,6 +63,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{saveRawEstModels}{Do you want to save raw estimated models before model selection work? default is FALSE}
 
 \item{fitEMatUIRT}{Do you want to fit the model with EM at UIRT? default is FALSE}
+
+\item{ranefautocomb}{Do you want to find global-optimal random effect combination? default is TRUE}
 }
 \value{
 automated exploratory factor analytic models

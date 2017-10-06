@@ -11,7 +11,7 @@ Hash: 95f62be4d6916aae14a310a8b56a6475
 Package: CDM
 Source: CRAN
 Version: 5.8-9
-Hash: 36e9ac6abda4207866999c2420ba2726
+Hash: ea52a7d8252542a21d29a51303d84ea3
 Requires: Rcpp, RcppArmadillo, mvtnorm, polycor, sfsmisc
 
 Package: GPArotation
@@ -38,13 +38,13 @@ Hash: b2366cd9d2f3851a5704b4e192b985c2
 
 Package: Rcpp
 Source: CRAN
-Version: 0.12.12
-Hash: 8b3d5ebb9a9a4ab5c86b3a81b0cfb774
+Version: 0.12.13
+Hash: b9d8d89ff10ca2d8bfdaccdf83045ba1
 
 Package: RcppArmadillo
 Source: CRAN
 Version: 0.7.960.1.2
-Hash: e321d680ed4150e0ba6b95eb88db68b9
+Hash: f30c3d312ac1b1d26f960d5fd08c1baa
 Requires: Rcpp
 
 Package: Rmpi
@@ -55,7 +55,7 @@ Hash: eef087ec5eeaaa7ce1a2a5c528ac7404
 Package: TAM
 Source: CRAN
 Version: 2.6-2
-Hash: 5a1a7393e045dff4740de62f433bde6d
+Hash: 574644006270dad095ba0a0544ae2198
 Requires: CDM, Rcpp, RcppArmadillo, coda, mvtnorm, sfsmisc
 
 Package: assertthat
@@ -65,8 +65,8 @@ Hash: e8805df54c65ac96d50235c44a82615c
 
 Package: backports
 Source: CRAN
-Version: 1.1.0
-Hash: 3f754426ca2b7dbbf63951fe5075373b
+Version: 1.1.1
+Hash: add136c9d4540b96290e9cc438763da7
 
 Package: base64enc
 Source: CRAN
@@ -113,8 +113,8 @@ Requires: crayon, httr, jsonlite, rex, withr
 
 Package: crayon
 Source: CRAN
-Version: 1.3.2
-Hash: 576a9d297a567d6a5ebd164ca5221590
+Version: 1.3.4
+Hash: ff2840dd9b0d563fc80377a5a45510cd
 
 Package: curl
 Source: CRAN
@@ -180,7 +180,7 @@ Hash: aa3d5b7912b5fed4b546ed5cd2a1760b
 Package: htmltools
 Source: CRAN
 Version: 0.3.6
-Hash: 5b070a04ef8df1953544873db1c5896e
+Hash: 34e5c725d3ae30a76516792edcc16f24
 Requires: Rcpp, digest
 
 Package: httr
@@ -246,8 +246,8 @@ Requires: digest
 
 Package: mgcv
 Source: CRAN
-Version: 1.8-20
-Hash: 54aa0cc3a6ab1d85e17c02893ec729ef
+Version: 1.8-22
+Hash: ce8966e5576ec881696013bc4acc7d97
 Requires: Matrix, nlme
 
 Package: mime
@@ -258,7 +258,7 @@ Hash: 463550cf44fb6f0a2359368f42eebe62
 Package: mirt
 Source: github
 Version: 1.25.2
-Hash: aed4a7a4949f3bbd7469a661441b11f8
+Hash: b635db97ce6002f561c9d1d20f4e5806
 Requires: GPArotation, Rcpp, RcppArmadillo, lattice, mgcv, numDeriv,
     sfsmisc
 GithubRepo: mirt
@@ -289,8 +289,8 @@ Hash: 3a9d0fc99ba2f6aaa500b3d584962be2
 
 Package: openssl
 Source: CRAN
-Version: 0.9.6
-Hash: 5f4711e142a44655dfea4d64fcf2f641
+Version: 0.9.7
+Hash: 225d43f64f60e8996d10efe15b381c66
 
 Package: packrat
 Source: github
@@ -309,7 +309,7 @@ Hash: 49a3782a63f861575cd5e3ad0559690f
 Package: plyr
 Source: CRAN
 Version: 1.8.4
-Hash: 8fbaff6962e3421b5c9652eebae36159
+Hash: 9598fbff0cce13bee89ae3a50230d93f
 Requires: Rcpp
 
 Package: polycor
@@ -355,7 +355,7 @@ Requires: base64enc, caTools, evaluate, htmltools, jsonlite, knitr,
 Package: roxygen2
 Source: CRAN
 Version: 6.0.1
-Hash: 82a85278378502d37455fcfc84951433
+Hash: 2e062ab5f013e29ea37c1702b3fd226e
 Requires: R6, Rcpp, brew, commonmark, desc, digest, stringi, stringr,
     xml2
 
@@ -372,8 +372,8 @@ Hash: e2ebaff8160aff3e6b32e6e78a693c2d
 
 Package: rzmq
 Source: CRAN
-Version: 0.9.2
-Hash: 50d76a7157606f6e5f10e60c09001f93
+Version: 0.9.3
+Hash: b608dc3abfeaf5a62a448d39fc5e16a2
 
 Package: sfsmisc
 Source: CRAN
@@ -382,8 +382,8 @@ Hash: 00af82c1c08f9a5fb278ca3469b6eaf4
 
 Package: sirt
 Source: CRAN
-Version: 2.1-24
-Hash: e896114a4d3e98a64e31a37f6c046772
+Version: 2.2-14
+Hash: ea54613e00cdeceb7378c55a886cc29c
 Requires: CDM, Rcpp, RcppArmadillo, TAM, coda, lavaan, lavaan.survey,
     mirt, mvtnorm, sfsmisc, survey
 
@@ -428,7 +428,7 @@ Hash: cc7e555b8e249aa5cf391592fcae71a2
 Package: xml2
 Source: CRAN
 Version: 1.1.1
-Hash: 534feed3c69280ec9529f1e54fd6c428
+Hash: bb72c0247ccf079bec2c838e54df64da
 Requires: BH, Rcpp
 
 Package: yaml

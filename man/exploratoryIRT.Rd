@@ -9,7 +9,7 @@ exploratoryIRT(data, model = NULL, minExtraction = 1, maxExtraction = if
   NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
   fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
   symmetric = F, resampling = F, samples = 5000, printDebugMsg = F,
-  fitEMatUIRT = F)
+  fitEMatUIRT = F, ranefautocomb = T)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -49,6 +49,8 @@ exploratoryIRT(data, model = NULL, minExtraction = 1, maxExtraction = if
 \item{printDebugMsg}{Do you want to see the debugging messeages? default is FALSE}
 
 \item{fitEMatUIRT}{Do you want to fit the model with EM at UIRT? default is FALSE}
+
+\item{ranefautocomb}{Do you want to find global-optimal random effect combination? default is TRUE}
 }
 \value{
 possible optimal combinations of models in list

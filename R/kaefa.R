@@ -561,16 +561,22 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
         }
     }
 
-    # for (i in calibModel) {
-        # EFA
-        # estModels <- try(engineAEFA(data = data, model = calibModel, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
-        #     SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
-        #     resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
-    # }
+    estModels %<-% {
+      calibrationList <- listenv::listenv()
+      for (i in calibModel) {
+        calibrationList[[i]] %<-% {
+          try(engineAEFA(data = data, model = i, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
+                                    SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
+                                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+          }
+      }
+      unlist(as.list(calibrationList))
+    }
 
-        estModels <- future::future_lapply(x = calibModel, FUN = engineAEFA, data = data, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
-                                           SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
-                                           resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, future.scheduling = Inf)
+
+        # estModels <- future::future_lapply(x = calibModel, FUN = engineAEFA, data = data, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
+        #                                    SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
+        #                                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, future.scheduling = Inf)
 
     estModels <- unlist(as.list(estModels))
 

@@ -458,24 +458,26 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 # adjust model if supplied model is confirmatory model
                 if (!is.null(model) && (!is.numeric(model) | !is.integer(model)) && "Zh" %in% colnames(estItemFit)) {
                   for (i in 1:NROW(model)) {
-                    for (j in 1:nrow(model[[i]])) {
-                      if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
+                    if(class(model) == 'mirt.model'){
+                      for (j in 1:nrow(model[[i]])) {
+                        if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
 
-                        # convert elements # FIXME
-                        model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(",
-                          gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh,
-                          na.rm = T))]]  ## FIXME
+                          # convert elements # FIXME
+                          model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(",
+                                                                                                                                                    gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh,
+                                                                                                                                                                                                                                               na.rm = T))]]  ## FIXME
 
-                        for (k in length(model[[i]]$x[j, 2])) {
-                          if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 2][k])) {
-                            model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[,
-                              !colnames(data) %in% badItemNames]))[model[[i]]$x[j, 2][k]])
+                          for (k in length(model[[i]]$x[j, 2])) {
+                            if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 2][k])) {
+                              model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[,
+                                                                                                                                                         !colnames(data) %in% badItemNames]))[model[[i]]$x[j, 2][k]])
+                            }
                           }
+
+                          # FIXME
+                          model[[i]]$x[j, 2] <- paste(as.character(model[[i]]$x[j, 2]), collapse = ", ", sep = "")
+
                         }
-
-                        # FIXME
-                        model[[i]]$x[j, 2] <- paste(as.character(model[[i]]$x[j, 2]), collapse = ", ", sep = "")
-
                       }
                     }
                   }

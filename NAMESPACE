@@ -2,6 +2,7 @@
 
 export(aefa)
 export(aefaInit)
+export(engineAEFA)
 export(estIRT)
 export(evaluateItemFit)
 export(exploratoryIRT)

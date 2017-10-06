@@ -257,14 +257,14 @@ Hash: 463550cf44fb6f0a2359368f42eebe62
 
 Package: mirt
 Source: github
-Version: 1.25.2
-Hash: b635db97ce6002f561c9d1d20f4e5806
+Version: 1.25.3
+Hash: 49ba5b1bf2a13d6045d433ddd25a424f
 Requires: GPArotation, Rcpp, RcppArmadillo, lattice, mgcv, numDeriv,
     sfsmisc
 GithubRepo: mirt
 GithubUsername: philchalmers
 GithubRef: master
-GithubSha1: a515df7388c528529c82b72f8f7eda65dae6726b
+GithubSha1: 5d6314c6ff884f1f557b8015cd9885e085ec433c
 
 Package: mnormt
 Source: CRAN

@@ -20,7 +20,7 @@
 #'}
 aefaInit <- function(GCEvms = NULL, debug = F, useMPI = T) {
     options(future.debug = debug)
-
+    
     if (is.null(suppressWarnings(NCmisc::top()$CPU$idle))) {
         parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/2)
         if (2 >= parallelProcessors) {
@@ -44,7 +44,7 @@ aefaInit <- function(GCEvms = NULL, debug = F, useMPI = T) {
     } else if (suppressWarnings(NCmisc::top()$CPU$idle) < 10) {
         parallelProcessors <- 2
     }
-
+    
     # setting up cluster
     if (!is.null(GCEvms)) {
         options(aefaConn = future::plan(list(future::tweak(future::cluster, workers = parallelProcessors), future::multiprocess(workers = parallelProcessors))))
@@ -54,11 +54,12 @@ aefaInit <- function(GCEvms = NULL, debug = F, useMPI = T) {
         } else if (length(future::availableWorkers()) == 1) {
             options(aefaConn = future::plan(future::sequential), gc = T)
         } else {
-            options(aefaConn = (try(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)), future::multiprocess(workers = parallelProcessors)), gc = T), silent = T)))
+            options(aefaConn = (try(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)), future::multiprocess(workers = parallelProcessors)), 
+                gc = T), silent = T)))
         }
-
+        
     }
-
+    
 }
 
 
@@ -85,16 +86,18 @@ aefaInit <- function(GCEvms = NULL, debug = F, useMPI = T) {
 #' testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
 #'
 #'}
-fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = accelerate, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric,
-    covdata = covdata, fixed = fixed, random = random) {
-
+fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = accelerate, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, 
+    BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, random = random) {
+    
     options(future.globals.maxSize = 500 * 1024^3)
-
-    modMLIRT_itemLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata, fixed = fixed, random = random,
-        calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
-    modMLIRT_latentLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata, lr.fixed = fixed, lr.random = random,
-        calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
-
+    
+    modMLIRT_itemLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, 
+        covdata = covdata, fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, 
+            symmetric = symmetric)))
+    modMLIRT_latentLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, 
+        GenRandomPars = GenRandomPars, covdata = covdata, lr.fixed = fixed, lr.random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, 
+            BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+    
     # evaluate model
     if (exists("modMLIRT_itemLevel")) {
         if (class(modMLIRT_itemLevel) != "list") {
@@ -104,10 +107,10 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
         } else {
             rm(modMLIRT_itemLevel)
         }
-
+        
     }
-
-
+    
+    
     if (exists("modMLIRT_latentLevel")) {
         if (class(modMLIRT_latentLevel) != "list") {
             if (!modMLIRT_latentLevel@OptimInfo$secondordertest) {
@@ -116,9 +119,9 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
         } else {
             rm(modMLIRT_latentLevel)
         }
-
+        
     }
-
+    
     # decision
     if (exists("modMLIRT_itemLevel") && exists("modMLIRT_latentLevel")) {
         if (modMLIRT_itemLevel@Fit$DIC < modMLIRT_latentLevel@Fit$DIC) {
@@ -133,7 +136,7 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
     } else {
         # stop('no solution')
     }
-
+    
 }
 
 
@@ -153,80 +156,87 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 #' }
 evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
     # if (is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = F)) }
-
+    
     options(future.globals.maxSize = 500 * 1024^3)
-
-
+    
+    
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {
-        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
+        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, SE = T, itemtype = mirtModel@Model$itemtype, 
+            pars = "values")
         modMLM_original <- mirt::mod2values(mirtModel)
         if (sum(modMLM_original$name == "(Intercept)") != 0) {
             modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)", ]
-
+            
         }
-        modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in% colnames(mirtModel@Data$data))]
+        modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in% 
+            colnames(mirtModel@Data$data))]
         modMLM$est <- F
-
-        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T)
+        
+        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, itemtype = mirtModel@Model$itemtype, pars = modMLM, 
+            method = "QMCEM", SE = F, calcNull = T)
     }
-
+    
     if (attr(class(mirtModel), "package") == "mirt") {
         # item fit evaluation
         modFit_Zh <- listenv()
-        modFit_Zh %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
+        modFit_Zh %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 
+            0) 
             100 else 0), silent = T)
-
+        
         modFit_SX2 <- listenv()
-        modFit_SX2 %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
+        modFit_SX2 %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 
+            0) 
             100 else 0), silent = T)
-
+        
         if (mirtModel@Model$nfact == 1) {
             modFit_PVQ1 <- listenv()
             modFit_PVQ1 %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "PV_Q1", QMC = T, method = "MAP"), silent = T)
-
+            
         }
-
+        
         if (sum(mirtModel@Model$itemtype %in% "Rasch") > 0 && mirtModel@Model$nfact == 1) {
             modFit_infit <- listenv()
-            modFit_infit %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "infit", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
+            modFit_infit %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "infit", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 
+                0) 
                 100 else 0), silent = T)
         }
-
+        
         # check item fit indices are exists
-
+        
         if (exists("modFit_Zh")) {
             if (!class(modFit_Zh)[1] == "mirt_df") {
                 rm(modFit_Zh)
             }
         }
-
+        
         if (exists("modFit_SX2")) {
             if (!class(modFit_SX2)[1] == "mirt_df") {
                 rm(modFit_SX2)
             }
         }
-
+        
         if (exists("modFit_PVQ1")) {
             if (!class(modFit_PVQ1)[1] == "mirt_df") {
                 rm(modFit_PVQ1)
             }
         }
-
+        
         if (exists("modFit_infit")) {
             if (!class(modFit_infit)[1] == "mirt_df") {
                 rm(modFit_infit)
             }
         }
-
-        itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"), exists("modFit_SX2"), exists("modFit_PVQ1"), exists("modFit_infit"))]
-
+        
+        itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"), exists("modFit_SX2"), exists("modFit_PVQ1"), 
+            exists("modFit_infit"))]
+        
         fitList <- list()
         for (i in 1:length(itemFitList)) {
             fitList[[i]] <- (eval(parse(text = itemFitList[i])))
         }
         return(suppressMessages(plyr::join_all(fitList)))
-
+        
     } else {
         message("That's seems not MIRT model, so that trying to estimate new model with default settings")
         estModel <- exploratoryIRT(data = mirtModel)
@@ -272,11 +282,12 @@ evaluateItemFit <- function(mirtModel, GCEvms = NULL, rotate = "bifactorQ") {
 #' testMod1 <- estIRT(mirt::Science, model = 1)
 #'
 #' }
-estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
-    symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T) {
-
+estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, 
+    fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, 
+    fitEMatUIRT = F, ranefautocomb = T) {
+    
     options(future.globals.maxSize = 500 * 1024^3)
-
+    
     # data management: resampling
     if (resampling && is.null(covdata)) {
         resampleCaseNumber <- sample(1:nrow(data), samples, replace = F)
@@ -285,34 +296,35 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
             covdata <- covdata[resampleCaseNumber, ]
         }
     }
-
+    
     # data management: exclude range == 0
     data <- data[psych::describe(data)$range != 0]
-
+    
     # data management: exclude k > 30
     testLength <- vector()
     nK <- vector()
     for (i in 1:ncol(data)) {
-      nK[i] <- length(attributes(factor(data[, i]))$levels)
-      testLength[i] <-  nK[i] > 30
+        nK[i] <- length(attributes(factor(data[, i]))$levels)
+        testLength[i] <- nK[i] > 30
     }
     data <- data[!testLength]
     nK <- nK[!testLength]
-
-    # aefaConn if (is.null(getOption('aefaConn')) && is.null(GCEvms)) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = printDebugMsg)) }
-
+    
+    # aefaConn if (is.null(getOption('aefaConn')) && is.null(GCEvms)) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug =
+    # printDebugMsg)) }
+    
     # tools
     combine <- function(x, y) {
         combn(y, x, paste, collapse = ", ")
     }
-
-    if(ranefautocomb){
-      randomEffectCandidates <- paste0("list(", unlist(lapply(0:NROW(random), combine, random)), ")")
+    
+    if (ranefautocomb) {
+        randomEffectCandidates <- paste0("list(", unlist(lapply(0:NROW(random), combine, random)), ")")
     } else {
-      randomEffectCandidates <- paste0("list(", unlist(lapply(NROW(random):NROW(random), combine, random)), ")")
+        randomEffectCandidates <- paste0("list(", unlist(lapply(NROW(random):NROW(random), combine, random)), ")")
     }
-
-
+    
+    
     # config
     if (is.numeric(model)) {
         if (model == 1) {
@@ -321,7 +333,8 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
                 # poly UIRT
                 if (!is.null(key)) {
                   # with key
-                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", 
+                    "Rasch", "rsm")
                 } else {
                   # without key
                   estItemtype <- c("nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
@@ -346,13 +359,13 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
                 estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal")
             }
         }
-
-      if(sum(max(nK) == nK) != length(nK)){
-        if(length(grep('rsm', estItemtype)) > 0){
-          estItemtype <- estItemtype[-grep('rsm', estItemtype)]
+        
+        if (sum(max(nK) == nK) != length(nK)) {
+            if (length(grep("rsm", estItemtype)) > 0) {
+                estItemtype <- estItemtype[-grep("rsm", estItemtype)]
+            }
         }
-      }
-
+        
     } else if (class(model) == "mirt.model") {
         # CFA
         if (max(psych::describe(data)$range) != 1) {
@@ -371,120 +384,126 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
     } else {
         stop("model is not correctly provided")
     }
-
+    
     modConditional <- listenv::listenv()
     modUnConditional <- listenv::listenv()
     modDiscrete <- listenv::listenv()
     k <- 0
-
+    
     # Conditional Model
     if (!is.null(covdata)) {
         for (i in 1:length(randomEffectCandidates)) {
             for (j in estItemtype) {
                 if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM") %in% j) > 0) {
                   k <- k + 1
-                  modConditional[[k]] %<-% try(fitMLIRT(accelerate = accelerate, data = mirt::key2binary(data, key), model = model, itemtype = if (j == "4PLNRM")
-                    "4PL" else if (j == "3PLNRM")
-                    "3PL" else if (j == "3PLuNRM")
-                    "3PLu" else if (j == "2PLNRM")
-                    "2PL" else j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, random = eval(parse(text = randomEffectCandidates[i]))))
+                  modConditional[[k]] %<-% try(fitMLIRT(accelerate = accelerate, data = mirt::key2binary(data, key), model = model, 
+                    itemtype = if (j == "4PLNRM") 
+                      "4PL" else if (j == "3PLNRM") 
+                      "3PL" else if (j == "3PLuNRM") 
+                      "3PLu" else if (j == "2PLNRM") 
+                      "2PL" else j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, 
+                    covdata = covdata, fixed = fixed, random = eval(parse(text = randomEffectCandidates[i]))))
                 } else {
                   k <- k + 1
                   if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                    modConditional[[k]] %<-% try(fitMLIRT(accelerate = accelerate, data = data, model = model, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES,
-                      symmetric = symmetric, covdata = covdata, fixed = fixed, random = eval(parse(text = randomEffectCandidates[i]))))
+                    modConditional[[k]] %<-% try(fitMLIRT(accelerate = accelerate, data = data, model = model, itemtype = j, GenRandomPars = GenRandomPars, 
+                      NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, 
+                      random = eval(parse(text = randomEffectCandidates[i]))))
                   } else {
                     # Skipping, see https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
                   }
-
+                  
                 }
             }
         }
     }
-
+    
     l <- 0
     # UnConditional Model
     for (j in estItemtype) {
         l <- l + 1
         if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0 | (!fitEMatUIRT && model != 1)) {
-            modUnConditional[[l]] %<-% try(mirt::mirt(data = data, model = model, method = "MHRM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,
-                technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+            modUnConditional[[l]] %<-% try(mirt::mirt(data = data, model = model, method = "MHRM", itemtype = j, accelerate = accelerate, 
+                SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, 
+                  SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
         } else {
-            modUnConditional[[l]] %<-% try(mirt::mirt(data = data, model = model, method = "EM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,
-                technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+            modUnConditional[[l]] %<-% try(mirt::mirt(data = data, model = model, method = "EM", itemtype = j, accelerate = accelerate, 
+                SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, 
+                  SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
         }
-
+        
     }
-
-
+    
+    
     if (class(model) == "numeric") {
         # mm <- 0
         for (m in c("sandwich", "Oakes")) {
             for (n in c(T, F)) {
                 # mm <- mm + 1
-                modDiscrete[[NROW(as.list(modDiscrete))+1]] %<-% try(mirt::mdirt(data = data, model = model, SE = T, SE.type = m, accelerate = accelerate, GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES,
-                  BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), covdata = covdata, formula = if (fixed == ~1)
-                  NULL else fixed))
+                modDiscrete[[NROW(as.list(modDiscrete)) + 1]] %<-% try(mirt::mdirt(data = data, model = model, SE = T, SE.type = m, 
+                  accelerate = accelerate, GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, 
+                    SEMCYCLES = SEMCYCLES, symmetric = symmetric), covdata = covdata, formula = if (fixed == ~1) 
+                    NULL else fixed))
             }
         }
     }
-
+    
     estModels <- list()
-
+    
     # solve results
     if (!is.null(covdata)) {
         modConditional <- try(as.list(modConditional))
-        if(exists('modConditional')){
-          if (NROW(modConditional) != 0) {
-            for (j in 1:NROW(modConditional)) {
-              estModels[[NROW(estModels) + 1]] <- modConditional[[j]]
+        if (exists("modConditional")) {
+            if (NROW(modConditional) != 0) {
+                for (j in 1:NROW(modConditional)) {
+                  estModels[[NROW(estModels) + 1]] <- modConditional[[j]]
+                }
             }
-          }
         }
     }
-
+    
     modUnConditional <- try(as.list(modUnConditional))
-    if(exists('modUnConditional')){
-      if (NROW(modUnConditional) != 0) {
-        for (k in 1:NROW(modUnConditional)) {
-          estModels[[NROW(estModels) + 1]] <- modUnConditional[[k]]
+    if (exists("modUnConditional")) {
+        if (NROW(modUnConditional) != 0) {
+            for (k in 1:NROW(modUnConditional)) {
+                estModels[[NROW(estModels) + 1]] <- modUnConditional[[k]]
+            }
         }
-      }
     }
-
-
+    
+    
     modDiscrete <- try(as.list(modDiscrete))
-    if(exists('modDiscrete')){
-      if (NROW(modDiscrete) != 0) {
-        for (k in 1:NROW(modDiscrete)) {
-          estModels[[NROW(estModels) + 1]] <- modDiscrete[[k]]
+    if (exists("modDiscrete")) {
+        if (NROW(modDiscrete) != 0) {
+            for (k in 1:NROW(modDiscrete)) {
+                estModels[[NROW(estModels) + 1]] <- modDiscrete[[k]]
+            }
         }
-      }
     }
-
+    
     finalEstModels <- list()
     noNullEstModels <- list()
-
+    
     if (NROW(estModels) != 0) {
         for (i in 1:NROW(estModels)) {
             if (!is.null(estModels[[i]]) | length(estModels[[i]]) != 0) {
                 noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[i]]
             }
         }
-
+        
         if (NROW(noNullEstModels) != 0) {
             for (i in 1:NROW(noNullEstModels)) {
                 if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
                   if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
                     finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
                   }
-
+                  
                 }
             }
         }
-
+        
     }
-
+    
     return(finalEstModels)
 }
 
@@ -521,60 +540,62 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 #' testMod1 <- exploratoryIRT(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #'
 #' }
-exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000,
-    covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T) {
-
+exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, 
+    GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", 
+    symmetric = F, resampling = F, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T) {
+    
     options(future.globals.maxSize = 500 * 1024^3)
-
+    
     # if (is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = printDebugMsg)) }
-
+    
     estModels <- listenv::listenv()
     calibModel <- as.list(minExtraction:maxExtraction)
     if (!is.null(model)) {
-      # user specified EFA or CFA
-      j <- maxExtraction
-      model <- unlist(list(model))
-      for (i in 1:NROW(model)) {
-        if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
-          calibModel[[j + i]] <- try(model[[i]])
+        # user specified EFA or CFA
+        j <- maxExtraction
+        model <- unlist(list(model))
+        for (i in 1:NROW(model)) {
+            if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
+                calibModel[[j + i]] <- try(model[[i]])
+            }
         }
-      }
     }
-
+    
     for (i in calibModel) {
         # EFA
-        estModels[[i]] <- try(estIRT(data = data, model = i, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed,
-            random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+        estModels[[i]] <- try(estIRT(data = data, model = i, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, 
+            SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, 
+            resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
     }
-
+    
     estModels <- unlist(as.list(estModels))
-
+    
     finalEstModels <- list()
     noNullEstModels <- list()
-
+    
     if (NROW(estModels) != 0) {
         for (i in 1:NROW(estModels)) {
             if (!is.null(estModels[[i]]) | length(estModels[[i]]) != 0) {
                 noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[i]]
             }
-
+            
         }
-
+        
         if (NROW(noNullEstModels) != 0) {
             for (i in 1:NROW(noNullEstModels)) {
                 if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
                   if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
                     finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
                   }
-
+                  
                 }
             }
         }
-
+        
     }
-
+    
     return(finalEstModels)
-
+    
 }
 
 #' doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment
@@ -615,17 +636,18 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #'
 #' }
-aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
-    fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ", resampling = F, samples = 5000,
+aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T, 
+    NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", 
+    symmetric = F, saveModelHistory = T, filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ", resampling = F, samples = 5000, 
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T) {
-    # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug =
-    # printDebugMsg)) }
-
+    # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) |
+    # is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = printDebugMsg)) }
+    
     options(future.globals.maxSize = 500 * 1024^3)
-
+    
     # prepare for bad item detection
     badItemNames <- c()  # make new null vector
-
+    
     # prepare for save model history
     modelHistoryCount <- 0
     if (saveModelHistory) {
@@ -635,20 +657,21 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             modelHistory <- list(estModelTrials = list(), itemFitTrials = list())
         }
     }
-
+    
     # prepare for do aefa work
     STOP <- F
-
+    
     while (!STOP) {
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
             # general condition
-            try(estModel <- exploratoryIRT(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, minExtraction = minExtraction, maxExtraction = maxExtraction, GCEvms = GCEvms,
-                GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
+            try(estModel <- exploratoryIRT(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, minExtraction = minExtraction, 
+                maxExtraction = maxExtraction, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, 
+                SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, 
                 resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
         } else if (is.list(data) && !is.data.frame(data)) {
             # Some weird condition: user specified pre-calibrated model or list of data.frame in data
-
+            
             estModel <- list()
             for (i in 1:NROW(data)) {
                 if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(data[[i]])) != 0) {
@@ -660,9 +683,11 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   }
                 } else if (is.data.frame(data[[i]]) | is.matrix(data[[i]])) {
                   # if list contains dataframe, try to estimate them anyway; even this behaviour seems weird
-                  estModel[[NROW(estModel) + 1]] <- try(exploratoryIRT(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]), model = model, minExtraction = minExtraction, maxExtraction = maxExtraction,
-                    GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate,
-                    symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+                  estModel[[NROW(estModel) + 1]] <- try(exploratoryIRT(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]), 
+                    model = model, minExtraction = minExtraction, maxExtraction = maxExtraction, GCEvms = GCEvms, GenRandomPars = GenRandomPars, 
+                    NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, 
+                    key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, 
+                    fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
                   if (!dfFound) {
                     # set dfFound flag
                     dfFound <- T
@@ -675,9 +700,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             estModel <- data
             data <- estModel@Data$data
         }
-
+        
         # save model history (raw model, before model selection)
-        if (saveModelHistory)
+        if (saveModelHistory) 
             modelHistoryCount <- modelHistoryCount + 1
         if (exists("estModel")) {
             if (saveModelHistory && saveRawEstModels) {
@@ -685,13 +710,13 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 try(saveRDS(modelHistory, filename))
             }
         }
-
-
-
-
+        
+        
+        
+        
         if (exists("estModel")) {
             # check ncol(estModel@Data$data) > 3 Model Selection: if estModel is not NULL, run this procedure
-
+            
             # model fit evaluation
             modModelFit <- vector()
             for (i in 1:NROW(estModel)) {
@@ -715,34 +740,34 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   }
                 }
             }
-
+            
             # select model
             estModel <- estModel[[(which(modModelFit == min(modModelFit, na.rm = T))[1])]]
-
+            
             if (exists("modelFound")) {
                 data <- estModel@Data$data
             } else if (exists("dfFound")) {
                 data <- estModel@Data$data
             }
-
+            
             if (class(estModel) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
                 # evaluate model save model
                 if (saveModelHistory) {
                   modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
                   try(saveRDS(modelHistory, filename))
                 }
-
+                
                 estItemFit <- evaluateItemFit(estModel, GCEvms = GCEvms, rotate = rotate)
                 if (printItemFit) {
                   try(print(estItemFit))
                 }
-
+                
                 # save model
                 if (saveModelHistory) {
                   modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit
                   try(saveRDS(modelHistory, filename))
                 }
-
+                
                 # find bad item
                 if ("Zh" %in% colnames(estItemFit)) {
                   # set Zh as default item fit index
@@ -770,44 +795,45 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                     STOP <- T
                   }
                 }
-
+                
                 # adjust model if supplied model is confirmatory model
                 if (!is.null(model) && (!is.numeric(model) | !is.integer(model)) && "Zh" %in% colnames(estItemFit)) {
                   for (i in 1:NROW(model)) {
                     for (j in 1:nrow(model[[i]])) {
                       if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
-
+                        
                         # convert elements # FIXME
-                        model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in%
-                          estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]]  ## FIXME
-
+                        model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", 
+                          gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, 
+                          na.rm = T))]]  ## FIXME
+                        
                         for (k in length(model[[i]]$x[j, 2])) {
                           if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 2][k])) {
-                            model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[, !colnames(data) %in% badItemNames]))[model[[i]]$x[j,
-                              2][k]])
+                            model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[, 
+                              !colnames(data) %in% badItemNames]))[model[[i]]$x[j, 2][k]])
                           }
                         }
-
+                        
                         # FIXME
                         model[[i]]$x[j, 2] <- paste(as.character(model[[i]]$x[j, 2]), collapse = ", ", sep = "")
-
+                        
                       }
                     }
                   }
                 }
-
+                
             }
-
+            
             # if (ncol(estModel@Data$data) > 3) {} else { message('model is not fit well') STOP <- T # set flag of 'stop while loop' }
-
-
-
+            
+            
+            
         } else {
             stop("estimations were failed. please retry with check your data or models")
         }
     }  # the end of while loop
-
-
+    
+    
     if (saveModelHistory) {
         return(modelHistory)
     } else {

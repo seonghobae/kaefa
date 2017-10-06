@@ -563,7 +563,7 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
 
     # for (i in calibModel) {
         # EFA
-        estModels <- try(engineAEFA(data = data, model = calibModel, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
+        estModels <- try(engineAEFA(data = data, model = calibModel, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
             SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
             resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
     # }

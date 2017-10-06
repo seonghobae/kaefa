@@ -291,10 +291,13 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
 
     # data management: exclude k > 30
     testLength <- vector()
+    nK <- vector()
     for (i in 1:ncol(data)) {
-        testLength[i] <- length(attributes(factor(data[, i]))$levels) > 30
+      nK[i] <- length(attributes(factor(data[, i]))$levels)
+      testLength[i] <-  nK[i] > 30
     }
     data <- data[!testLength]
+    nK <- nK[!testLength]
 
     # aefaConn if (is.null(getOption('aefaConn')) && is.null(GCEvms)) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = printDebugMsg)) }
 
@@ -343,6 +346,13 @@ estIRT <- function(data, model = 1, GCEvms = NULL, GenRandomPars = T, NCYCLES = 
                 estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal")
             }
         }
+
+      if(sum(max(nK) == nK) != length(nK)){
+        if(length(grep('rsm', estItemtype)) > 0){
+          estItemtype <- estItemtype[-grep('rsm', estItemtype)]
+        }
+      }
+
     } else if (class(model) == "mirt.model") {
         # CFA
         if (max(psych::describe(data)$range) != 1) {
@@ -519,26 +529,22 @@ exploratoryIRT <- function(data, model = NULL, minExtraction = 1, maxExtraction 
     # if (is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(GCEvms = GCEvms, debug = printDebugMsg)) }
 
     estModels <- listenv::listenv()
-    for (i in minExtraction:maxExtraction) {
+    calibModel <- as.list(minExtraction:maxExtraction)
+    if (!is.null(model)) {
+      # user specified EFA or CFA
+      j <- maxExtraction
+      model <- unlist(list(model))
+      for (i in 1:NROW(model)) {
+        if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
+          calibModel[[j + i]] <- try(model[[i]])
+        }
+      }
+    }
+
+    for (i in calibModel) {
         # EFA
         estModels[[i]] <- try(estIRT(data = data, model = i, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed,
             random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
-    }
-
-    # estModels <- future_lapply(x = minExtraction:maxExtraction, FUN = kaefa::estIRT, data = data, GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES =
-    # SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
-    # fitEMatUIRT = fitEMatUIRT)
-
-    if (!is.null(model)) {
-        # user specified EFA or CFA
-        j <- maxExtraction
-        model <- unlist(list(model))
-        for (i in 1:NROW(model)) {
-            if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
-                estModels[[j + i]] <- try(estIRT(data = data, model = model[[i]], GCEvms = GCEvms, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata,
-                  fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
-            }
-        }
     }
 
     estModels <- unlist(as.list(estModels))

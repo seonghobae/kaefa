@@ -116,12 +116,6 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 }
             }
 
-            if (sum(max(nK) == nK) != length(nK)) {
-                if (length(grep("rsm", estItemtype)) > 0) {
-                  estItemtype <- estItemtype[-grep("rsm", estItemtype)]
-                }
-            }
-
         } else if (class(i) == "mirt.model") {
             # CFA
             if (max(nK) != 1) {
@@ -140,6 +134,13 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         } else {
             stop("model is not correctly provided")
         }
+
+
+      if (sum(max(nK) == nK) != length(nK)) {
+        if (length(grep("rsm", estItemtype)) > 0) {
+          estItemtype <- estItemtype[-grep("rsm", estItemtype)]
+        }
+      }
 
         exploratoryModels[[i]] %<-% {
             modConditional <- listenv::listenv()
@@ -193,12 +194,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   modDiscreteTemp <- listenv::listenv()
                   for (m in c("sandwich", "Oakes")) {
                     for (n in c(T, F)) {
-                      modDiscreteTemp[[NROW(as.list(modDiscreteTemp)) + 1]] %<-% {
+                      modDiscreteTemp[[NROW(as.list(modDiscreteTemp)) + 1]] %<-%
                         try(mirt::mdirt(data = data, model = i, SE = T, SE.type = m, accelerate = accelerate, GenRandomPars = GenRandomPars,
                           empiricalhist = n, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
                           covdata = covdata, formula = if (fixed == ~1)
                             NULL else fixed))
-                      }
+
                     }
                   }
                   unlist(as.list(modDiscreteTemp))

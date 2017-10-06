@@ -458,7 +458,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 # adjust model if supplied model is confirmatory model
                 if (!is.null(model) && (!is.numeric(model) | !is.integer(model)) && "Zh" %in% colnames(estItemFit)) {
                   for (i in 1:NROW(model)) {
-                    if(class(model) == 'mirt.model'){
+                    if(class(model[[i]]) == 'mirt.model'){
                       for (j in 1:nrow(model[[i]])) {
                         if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
 

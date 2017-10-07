@@ -206,61 +206,62 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 }
             }
 
-            # wrap up i th model
-            estModels <- list()
-
-            # solve results
-            if (!is.null(covdata)) {
-                modConditional <- try(unlist(as.list(modConditional)))
-                if (exists("modConditional")) {
-                  if (NROW(modConditional) != 0) {
-                    for (jj in 1:NROW(modConditional)) {
-                      estModels[[NROW(estModels) + 1]] <- modConditional[[jj]]
-                    }
-                  }
-                }
+            # # wrap up i th model
+            # estModels <- list()
+            #
+            # # solve results
+            # if (!is.null(covdata)) {
+            #     modConditional <- try(unlist(as.list(modConditional)))
+            #     if (exists("modConditional")) {
+            #       if (NROW(modConditional) != 0) {
+            #         for (jj in 1:NROW(modConditional)) {
+            #           estModels[[NROW(estModels) + 1]] <- modConditional[[jj]]
+            #         }
+            #       }
+            #     }
+            # }
+            #
+            # modUnConditional <- try(unlist(as.list(modUnConditional)))
+            # if (exists("modUnConditional")) {
+            #     if (NROW(modUnConditional) != 0) {
+            #       for (kk in 1:NROW(modUnConditional)) {
+            #         estModels[[NROW(estModels) + 1]] <- modUnConditional[[kk]]
+            #       }
+            #     }
+            # }
+            #
+            # modDiscrete <- try(unlist(as.list(modDiscrete)))
+            # if (exists("modDiscrete")) {
+            #     if (NROW(modDiscrete) != 0) {
+            #       for (kk in 1:NROW(modDiscrete)) {
+            #         estModels[[NROW(estModels) + 1]] <- modDiscrete[[kk]]
+            #       }
+            #     }
+            # }
+            #
+            # finalEstModels <- list()
+            # noNullEstModels <- list()
+            #
+            # if (NROW(estModels) != 0) {
+            #     for (ii in 1:NROW(estModels)) {
+            #       if (!is.null(estModels[[ii]]) | length(estModels[[ii]]) != 0) {
+            #         noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[ii]]
+            #       }
+            #     }
+            #
+            #     if (NROW(noNullEstModels) != 0) {
+            #       for (i in 1:NROW(noNullEstModels)) {
+            #         if (class(noNullEstModels[[ii]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
+            #           if (noNullEstModels[[ii]]@OptimInfo$secondordertest) {
+            #             finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[ii]]
+            #           }
+            #
+            #         }
+            #       }
+            #     }
             }
-
-            modUnConditional <- try(unlist(as.list(modUnConditional)))
-            if (exists("modUnConditional")) {
-                if (NROW(modUnConditional) != 0) {
-                  for (kk in 1:NROW(modUnConditional)) {
-                    estModels[[NROW(estModels) + 1]] <- modUnConditional[[kk]]
-                  }
-                }
-            }
-
-            modDiscrete <- try(unlist(as.list(modDiscrete)))
-            if (exists("modDiscrete")) {
-                if (NROW(modDiscrete) != 0) {
-                  for (kk in 1:NROW(modDiscrete)) {
-                    estModels[[NROW(estModels) + 1]] <- modDiscrete[[kk]]
-                  }
-                }
-            }
-
-            finalEstModels <- list()
-            noNullEstModels <- list()
-
-            if (NROW(estModels) != 0) {
-                for (ii in 1:NROW(estModels)) {
-                  if (!is.null(estModels[[ii]]) | length(estModels[[ii]]) != 0) {
-                    noNullEstModels[[NROW(noNullEstModels) + 1]] <- estModels[[ii]]
-                  }
-                }
-
-                if (NROW(noNullEstModels) != 0) {
-                  for (i in 1:NROW(noNullEstModels)) {
-                    if (class(noNullEstModels[[ii]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
-                      if (noNullEstModels[[ii]]@OptimInfo$secondordertest) {
-                        finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[ii]]
-                      }
-
-                    }
-                  }
-                }
-            }
-            finalEstModels
+            # finalEstModels
+            (list(as.list(modConditional), as.list(modUnConditional), as.list(modDiscrete)))
         }  # EOF of exploratoryModels i
     }  # EOF of for loop
 

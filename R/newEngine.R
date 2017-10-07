@@ -150,7 +150,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             for (j in estItemtype) {
                 # itemtype j for model i
                 modUnConditional[[j]] %<-% {
-                  if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0 | (!fitEMatUIRT && i != 1)) {
+                  if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
                     try(mirt::mirt(data = data, model = i, method = "MHRM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
                       key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
                   } else {

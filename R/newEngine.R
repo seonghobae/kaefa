@@ -259,10 +259,9 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             #         }
             #       }
             #     }
-            unlist(list(as.list(modConditional), as.list(modUnConditional), as.list(modDiscrete)))
-            }
+            # }
             # finalEstModels
-
+            unlist(list(as.list(modConditional), as.list(modUnConditional), as.list(modDiscrete)))
         }  # EOF of exploratoryModels i
     }  # EOF of for loop
 

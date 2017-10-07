@@ -431,25 +431,25 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 if ("Zh" %in% colnames(estItemFit)) {
                   # set Zh as default item fit index
                   if (sum(estItemFit$Zh < -1.96) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))])
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]))
                   } else {
                     STOP <- T
                   }
                 } else if ("p.PV_Q1" %in% colnames(estItemFit)) {
                   # prevent unexpected situation
                   if (sum(is.na(estItemFit$p.PV_Q1)) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(is.na(estItemFit$p.PV_Q1))])
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$p.PV_Q1))]))
                   } else if (sum(estItemFit$p.PV_Q1 < 0.025) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$p.PV_Q1 == min(estItemFit$p.PV_Q1, na.rm = T))])
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.PV_Q1 == min(estItemFit$p.PV_Q1, na.rm = T))]))
                   } else {
                     STOP <- T
                   }
                 } else if ("p.S_X2" %in% colnames(estItemFit)) {
                   # prevent unexpected situation and DiscreteClass evaluation
                   if (sum(is.na(estItemFit$p.S_X2)) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(is.na(estItemFit$p.S_X2))])
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$p.S_X2))]))
                   } else if (sum(estItemFit$p.S_X2 < 0.025) != 0) {
-                    badItemNames <- c(badItemNames, estItemFit$item[which(estItemFit$p.S_X2 == min(estItemFit$p.S_X2, na.rm = T))])
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.S_X2 == min(estItemFit$p.S_X2, na.rm = T))]))
                   } else {
                     STOP <- T
                   }

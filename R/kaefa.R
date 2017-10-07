@@ -292,7 +292,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     options(future.globals.maxSize = 500 * 1024^3)
 
     # prepare for bad item detection
-    badItemNames <- c()  # make new null vector
+    badItemNames <- vector()  # make new null vector
 
     # prepare for save model history
     modelHistoryCount <- 0

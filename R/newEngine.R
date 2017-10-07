@@ -211,7 +211,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
             # solve results
             if (!is.null(covdata)) {
-                modConditional <- try(as.list(modConditional))
+                modConditional <- try(unlist(as.list(modConditional)))
                 if (exists("modConditional")) {
                   if (NROW(modConditional) != 0) {
                     for (jj in 1:NROW(modConditional)) {
@@ -221,7 +221,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 }
             }
 
-            modUnConditional <- try(as.list(modUnConditional))
+            modUnConditional <- try(unlist(as.list(modUnConditional)))
             if (exists("modUnConditional")) {
                 if (NROW(modUnConditional) != 0) {
                   for (kk in 1:NROW(modUnConditional)) {
@@ -230,7 +230,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 }
             }
 
-            modDiscrete <- try(as.list(modDiscrete))
+            modDiscrete <- try(unlist(as.list(modDiscrete)))
             if (exists("modDiscrete")) {
                 if (NROW(modDiscrete) != 0) {
                   for (kk in 1:NROW(modDiscrete)) {

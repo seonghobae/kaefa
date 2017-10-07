@@ -183,7 +183,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                         }
                       }
                     }
-                    unlist(as.list(modConditionalTemp))  # unlist k
+                    # unlist(as.list(modConditionalTemp))  # unlist k
                   }
                 }
             }
@@ -199,13 +199,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                           empiricalhist = n, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
                           covdata = covdata, formula = if (fixed == ~1)
                             NULL else fixed))
-
                     }
                   }
-                  unlist(as.list(modDiscreteTemp))
+                  # unlist(as.list(modDiscreteTemp))
                 }
             }
-            unlist(list(as.list(modConditional), as.list(modUnConditional), as.list(modDiscrete)))
+            # unlist(list(as.list(modConditional), as.list(modUnConditional), as.list(modDiscrete)))
         }  # EOF of exploratoryModels i
     }  # EOF of for loop
 

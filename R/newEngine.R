@@ -35,8 +35,8 @@
 #' testMod1 <- engineAEFA(mirt::Science, model = 1)
 #'
 #' }
-engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), 
-    key = NULL, accelerate = "squarem", symmetric = F, resampling = T, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T) {
+engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", 
+    symmetric = F, resampling = T, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T) {
     
     # data management: resampling
     if (resampling && nrow(data) > samples) {
@@ -148,11 +148,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 # itemtype j for model i
                 modUnConditional[[j]] %<-% {
                   if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                    try(mirt::mirt(data = data, model = i, method = "MHRM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, 
-                      key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+                    try(mirt::mirt(data = data, model = i, method = "MHRM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T, 
+                      technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
                   } else {
-                    try(mirt::mirt(data = data, model = i, method = "EM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, 
-                      key = key, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+                    try(mirt::mirt(data = data, model = i, method = "EM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T, 
+                      technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
                   }
                 }
                 modConditional[[j]] %<-% {
@@ -166,12 +166,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                             "4PL" else if (j == "3PLNRM") 
                             "3PL" else if (j == "3PLuNRM") 
                             "3PLu" else if (j == "2PLNRM") 
-                            "2PL" else j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, 
-                            covdata = covdata, fixed = fixed, random = eval(parse(text = k))))
+                            "2PL" else j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, 
+                            random = eval(parse(text = k))))
                         } else {
                           if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                            try(fitMLIRT(accelerate = accelerate, data = data, model = model, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, 
-                              BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, random = eval(parse(text = k))))
+                            try(fitMLIRT(accelerate = accelerate, data = data, model = model, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, 
+                              SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, random = eval(parse(text = k))))
                           } else {
                             # Skipping at Conditional Model, see https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
                           }
@@ -190,8 +190,8 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   for (m in c("sandwich", "Oakes")) {
                     for (n in c(T, F)) {
                       modDiscreteTemp[[NROW(as.list(modDiscreteTemp)) + 1]] %<-% try(mirt::mdirt(data = data, model = i, SE = T, SE.type = m, accelerate = accelerate, 
-                        GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, 
-                          symmetric = symmetric), covdata = covdata, formula = if (fixed == ~1) 
+                        GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), 
+                        covdata = covdata, formula = if (fixed == ~1) 
                           NULL else fixed))
                     }
                   }

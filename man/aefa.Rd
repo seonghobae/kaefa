@@ -5,11 +5,11 @@
 \title{doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment}
 \usage{
 aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
-  < 10) ncol(data) else 10, GCEvms = NULL, GenRandomPars = T,
+  < 10) ncol(data) else 10, RemoteClusters = NULL, GenRandomPars = T,
   NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
   fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
   symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
-  printItemFit = T, rotate = "bifactorQ", resampling = F,
+  printItemFit = T, rotate = "bifactorQ", resampling = T,
   samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC",
   saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T)
 }
@@ -22,7 +22,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 
 \item{maxExtraction}{specify the maximum number of factors to calibrate. defaults is 10 but can change this. if model is not NULL, aefa will ignoring this.}
 
-\item{GCEvms}{insert google computing engine virtual machine information.}
+\item{RemoteClusters}{insert google computing engine virtual machine information.}
 
 \item{GenRandomPars}{Try to generate Random Parameters? Default is TRUE}
 
@@ -52,7 +52,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 
 \item{rotate}{set the rotate critera if mirt model is exploratory model. default is bifactorQ, however you can change this what you want to, like 'geominQ', 'bifactorT', 'geominT'. In current, Target rotation not supporting.}
 
-\item{resampling}{Do you want to do resampling with replace? default is FALSE, and it will be activate under unconditional model only.}
+\item{resampling}{Do you want to do resampling with replace? default is TRUE and activate nrow is over samples argument.}
 
 \item{samples}{specify the number samples with resampling. default is 5000.}
 

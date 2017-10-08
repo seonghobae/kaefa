@@ -4,16 +4,14 @@
 \alias{aefaInit}
 \title{Initalize aefa engine,
 This function initalise the aefa cluster.
-If someone have Google Computing Engine informaiton, put the information in the argument.}
+If someone have Remote Cluster informaiton with SSH, put the information in the argument.}
 \usage{
-aefaInit(GCEvms = NULL, debug = F, useMPI = T)
+aefaInit(RemoteClusters = NULL, debug = F)
 }
 \arguments{
-\item{GCEvms}{insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.}
+\item{RemoteClusters}{insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.}
 
 \item{debug}{run with debug mode. default is FALSE}
-
-\item{useMPI}{if you want to use MPI clusters if you can? default is TRUE, and it requires Rmpi and snow.}
 }
 \value{
 nothing to return, just hidden variable to set to run parallelism.
@@ -21,7 +19,7 @@ nothing to return, just hidden variable to set to run parallelism.
 \description{
 Initalize aefa engine,
 This function initalise the aefa cluster.
-If someone have Google Computing Engine informaiton, put the information in the argument.
+If someone have Remote Cluster informaiton with SSH, put the information in the argument.
 }
 \examples{
 \dontrun{

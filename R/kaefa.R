@@ -20,24 +20,23 @@
 aefaInit <- function(RemoteClusters = NULL, debug = F) {
     options(future.debug = debug)
     
-    assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 50, requiredMinimumClusters = round(NROW(serverList)/3)) {
+    assignClusterNodes <- function(serverList, loadPercentage = 50, freeRamPercentage = 50, requiredMinimumClusters = round(NROW(serverList)/3)) {
         STOP <- F
         while (!STOP) {
             statusList <- list()
             decisionList <- list()
             for (i in serverList) {
-                statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", 
-                  "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"), intern = TRUE))
+                statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"), 
+                  intern = TRUE))
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])
-                decisionList[[i]] <- try(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 100 < loadPercentage && statusList[[i]][3] > 
-                  freeRamPercentage)
+                decisionList[[i]] <- try(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 100 < loadPercentage && statusList[[i]][3] > freeRamPercentage)
             }
             
             
             availableCluster <- names(decisionList)[which(unlist(decisionList))]
             
             if (requiredMinimumClusters > length(availableCluster)) {
-                print(statusList)
+                # print(statusList)
                 
                 message("All clusters are busy now. Wait for 60 seconds.")
                 Sys.sleep(60)
@@ -46,7 +45,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F) {
                 for (jj in which(unlist(decisionList))) {
                   nCores <- nCores + as.numeric(statusList[[jj]][2])
                 }
-                print(statusList)
+                # print(statusList)
                 
                 message("get ", nCores, " threads successfully from ", length(availableCluster), " clusters")
                 STOP <- T
@@ -81,7 +80,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F) {
     
     # setting up cluster
     if (!is.null(RemoteClusters)) {
-        future::plan(list(future::tweak(future::cluster, workers = assignClusterNodes(RemoteClusters)), future::multiprocess), gc = T)
+        try(future::plan(list(future::tweak(future::cluster, workers = assignClusterNodes(RemoteClusters)), future::multiprocess), gc = T))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas", extSoftVersion()["BLAS"])) > 0) {
             options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors), gc = T)
@@ -118,17 +117,15 @@ aefaInit <- function(RemoteClusters = NULL, debug = F) {
 #' testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
 #'
 #'}
-fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = accelerate, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, 
-    SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, random = random) {
+fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = accelerate, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, 
+    symmetric = symmetric, covdata = covdata, fixed = fixed, random = random) {
     
     options(future.globals.maxSize = 500 * 1024^3)
     
-    modMLIRT_itemLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, 
-        covdata = covdata, fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, 
-            symmetric = symmetric)))
-    modMLIRT_latentLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, 
-        covdata = covdata, lr.fixed = fixed, lr.random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, 
-            symmetric = symmetric)))
+    modMLIRT_itemLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata, 
+        fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+    modMLIRT_latentLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata, 
+        lr.fixed = fixed, lr.random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
     
     # evaluate model
     if (exists("modMLIRT_itemLevel")) {
@@ -203,20 +200,18 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in% colnames(mirtModel@Data$data))]
         modMLM$est <- F
         
-        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", 
-            SE = F, calcNull = T)
+        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, 
+            calcNull = T)
     }
     
     if (attr(class(mirtModel), "package") == "mirt") {
         # item fit evaluation
         modFit_Zh <- listenv()
         modFit_SX2 <- listenv()
-        modFit_Zh %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 
-            0) 
+        modFit_Zh %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0) 
             100 else 0), silent = T)
         
-        modFit_SX2 %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 
-            0) 
+        modFit_SX2 %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0) 
             100 else 0), silent = T)
         
         if (mirtModel@Model$nfact == 1) {
@@ -258,8 +253,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
             }
         }
         
-        itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"), exists("modFit_SX2"), exists("modFit_PVQ1"), 
-            exists("modFit_infit"))]
+        itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"), exists("modFit_SX2"), exists("modFit_PVQ1"), exists("modFit_infit"))]
         
         fitList <- list()
         for (i in 1:length(itemFitList)) {
@@ -312,12 +306,11 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #'
 #' }
-aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, RemoteClusters = NULL, GenRandomPars = T, 
-    NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, 
-    saveModelHistory = T, filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", 
-    saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T) {
-    # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) {
-    # getOption('aefaConn', aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg)) }
+aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, RemoteClusters = NULL, GenRandomPars = T, NCYCLES = 4000, 
+    BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS", 
+    printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T) {
+    # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) { getOption('aefaConn',
+    # aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg)) }
     
     options(future.globals.maxSize = 500 * 1024^3)
     
@@ -352,12 +345,13 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     STOP <- F
     
     while (!STOP) {
+        aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg)
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
             # general condition
-            try(estModel <- engineAEFA(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars, 
-                NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, 
-                symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+            try(estModel <- engineAEFA(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, 
+                SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, 
+                samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
         } else if (is.list(data) && !is.data.frame(data)) {
             # Some weird condition: user specified pre-calibrated model or list of data.frame in data
             
@@ -372,10 +366,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   }
                 } else if (is.data.frame(data[[i]]) | is.matrix(data[[i]])) {
                   # if list contains dataframe, try to estimate them anyway; even this behaviour seems weird
-                  estModel[[NROW(estModel) + 1]] <- try(engineAEFA(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]), model = model, 
-                    GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, 
-                    key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, 
-                    fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+                  estModel[[NROW(estModel) + 1]] <- try(engineAEFA(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars, 
+                    NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, 
+                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
                   if (!dfFound) {
                     # set dfFound flag
                     dfFound <- T
@@ -492,13 +485,13 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                         if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
                           
                           # convert elements # FIXME
-                          model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", 
-                            gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]]  ## FIXME
+                          model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":", 
+                            model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]]  ## FIXME
                           
                           for (k in length(model[[i]]$x[j, 2])) {
                             if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 2][k])) {
-                              model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[, 
-                                !colnames(data) %in% badItemNames]))[model[[i]]$x[j, 2][k]])
+                              model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[, !colnames(data) %in% 
+                                badItemNames]))[model[[i]]$x[j, 2][k]])
                             }
                           }
                           

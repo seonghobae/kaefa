@@ -161,7 +161,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         modConditional[[j]] %<-% {
           if (!is.null(covdata)) {
             modConditionalTemp <- listenv::listenv()
-            for (k in 1:randomEffectCandidates) {
+            for (k in randomEffectCandidates) {
               # and
               modConditionalTemp[[k]] %<-% {
                 if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM") %in% j) > 0) {

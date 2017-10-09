@@ -28,7 +28,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
             statusList <- list()
             decisionList <- list()
             for (i in serverList) {
-                if(length(grep("localhost", i)) > 0){ # localhost side
+                if(i == 'localhost'){ # localhost side
                   statusList$localhost <- try(system(paste("uptime | awk '{print $11}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                 intern = TRUE))
                 } else { # SSH side

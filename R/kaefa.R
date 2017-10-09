@@ -48,6 +48,8 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                                                   intern = TRUE))
                   }
                 }
+
+              # evaluation
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])
                 decisionList[[i]] <- try(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 100 < loadPercentage && statusList[[i]][3] > freeRamPercentage)
             }

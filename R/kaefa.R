@@ -74,7 +74,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
         }
         unique(names(statusList)[which(unlist(decisionList))])
     }
-
+  }
     if (is.null(suppressWarnings(NCmisc::top()$CPU$idle))) {
         parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/2)
         if (2 >= parallelProcessors) {

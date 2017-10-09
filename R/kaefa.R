@@ -27,7 +27,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F) {
             decisionList <- list()
             for (i in serverList) {
                 if(length(grep("localhost", i)) > 0){
-                  statusList[[i]] <- try(system(paste("uptime | awk '{print $11}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                  statusList$localhost <- try(system(paste("uptime | awk '{print $11}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                 intern = TRUE))
                 } else {
                   statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),

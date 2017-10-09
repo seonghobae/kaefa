@@ -47,13 +47,12 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                     statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                   intern = TRUE))
                   }
-
+                }
               # evaluation
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])
                 decisionList[[i]] <- try(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 100 < loadPercentage && statusList[[i]][3] > freeRamPercentage)
             }
             availableCluster <- names(decisionList)[which(unlist(decisionList))]
-            }
 
             if (requiredMinimumClusters > length(availableCluster)) {
                 # print(statusList)

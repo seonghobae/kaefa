@@ -8,30 +8,40 @@
 #' @import future
 #' @param RemoteClusters insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.
 #' @param debug run with debug mode. default is FALSE
+#' @param sshKeyPath provide the SSH key path, NA is the placeholder.
 #'
 #' @return nothing to return, just hidden variable to set to run parallelism.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' .conn <- aefaInit()
+#' # remote cluster with key -- actually used in aefa() function.
+#' aefaInit(RemoteClusters = c('localhost', 's1', 's2'), sshKeyPath = c(NA, '~/pub.pem', NA))
 #'
 #'}
-aefaInit <- function(RemoteClusters = NULL, debug = F) {
+aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     options(future.debug = debug)
 
-    assignClusterNodes <- function(serverList, loadPercentage = 50, freeRamPercentage = 50, requiredMinimumClusters = round(NROW(serverList)/3)) {
+    assignClusterNodes <- function(serverList, loadPercentage = 50, freeRamPercentage = 50, requiredMinimumClusters = round(NROW(serverList)/3), sshKeyPath = sshKeyPath) {
         STOP <- F
         while (!STOP) {
             statusList <- list()
             decisionList <- list()
             for (i in serverList) {
-                if(length(grep("localhost", i)) > 0){
+                if(length(grep("localhost", i)) > 0){ # localhost side
                   statusList$localhost <- try(system(paste("uptime | awk '{print $11}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                 intern = TRUE))
-                } else {
-                  statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                intern = TRUE))
+                } else { # SSH side
+                  for(jj in 1:length(serverList)){ # if key is provided
+                    if(names(serverList)[[jj]] %in% names(serverList) &&
+                       (length(grep(c('pem'), sshKeyPath[[jj]])) > 0 | length(grep(c('key'), sshKeyPath[[jj]])) > 0)){
+                      statusList[[i]] <- try(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $11}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                                                    intern = TRUE))
+                    } else {
+                      statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                                                    intern = TRUE))
+                    }
+                  }
                 }
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])
                 decisionList[[i]] <- try(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 100 < loadPercentage && statusList[[i]][3] > freeRamPercentage)
@@ -279,6 +289,8 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param minExtraction specify the minimum number of factors to calibrate. defaults is 1 but can change this. if model is not NULL, aefa will ignoring this.
 #' @param maxExtraction specify the maximum number of factors to calibrate. defaults is 10 but can change this. if model is not NULL, aefa will ignoring this.
 #' @param RemoteClusters insert google computing engine virtual machine information.
+#' @param sshKeyPath provide the SSH key path, NA is the placeholder.
+#'
 #' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
 #' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
 #' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
@@ -311,7 +323,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #'
 #' }
-aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, RemoteClusters = NULL, GenRandomPars = T, NCYCLES = 4000,
+aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, RemoteClusters = NULL, sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
     BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
     printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T) {
     # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) { getOption('aefaConn',
@@ -350,7 +362,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     STOP <- F
 
     while (!STOP) {
-        aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg)
+        aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg, sshKeyPath = sshKeyPath)
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
             # general condition

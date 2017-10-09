@@ -52,9 +52,8 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])
                 decisionList[[i]] <- try(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 100 < loadPercentage && statusList[[i]][3] > freeRamPercentage)
             }
-
-
             availableCluster <- names(decisionList)[which(unlist(decisionList))]
+            }
 
             if (requiredMinimumClusters > length(availableCluster)) {
                 # print(statusList)
@@ -71,7 +70,6 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 message("get ", nCores, " threads successfully from ", length(availableCluster), " clusters")
                 STOP <- T
             }
-        }
         }
         unique(names(statusList)[which(unlist(decisionList))])
   }

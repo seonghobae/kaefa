@@ -22,7 +22,7 @@
 aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     options(future.debug = debug)
 
-    assignClusterNodes <- function(serverList, loadPercentage = 50, freeRamPercentage = 50, requiredMinimumClusters = round(NROW(serverList)/3), sshKeyPath = sshKeyPath) {
+    assignClusterNodes <- function(serverList, loadPercentage = 50, freeRamPercentage = 50, requiredMinimumClusters = round(NROW(serverList)/3), sshKeyPath = NULL) {
         STOP <- F
         while (!STOP) {
             statusList <- list()

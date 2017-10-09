@@ -5,13 +5,14 @@
 \title{doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment}
 \usage{
 aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
-  < 10) ncol(data) else 10, RemoteClusters = NULL, GenRandomPars = T,
-  NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
-  fixed = ~1, random = list(), key = NULL, accelerate = "squarem",
-  symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
-  printItemFit = T, rotate = "bifactorQ", resampling = T,
-  samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC",
-  saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T)
+  < 10) ncol(data) else 10, RemoteClusters = NULL, sshKeyPath = NULL,
+  GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000,
+  covdata = NULL, fixed = ~1, random = list(), key = NULL,
+  accelerate = "squarem", symmetric = F, saveModelHistory = T,
+  filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ",
+  resampling = T, samples = 5000, printDebugMsg = F,
+  modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
+  ranefautocomb = T)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -23,6 +24,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{maxExtraction}{specify the maximum number of factors to calibrate. defaults is 10 but can change this. if model is not NULL, aefa will ignoring this.}
 
 \item{RemoteClusters}{insert google computing engine virtual machine information.}
+
+\item{sshKeyPath}{provide the SSH key path, NA is the placeholder.}
 
 \item{GenRandomPars}{Try to generate Random Parameters? Default is TRUE}
 

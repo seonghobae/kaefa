@@ -6,12 +6,14 @@
 This function initalise the aefa cluster.
 If someone have Remote Cluster informaiton with SSH, put the information in the argument.}
 \usage{
-aefaInit(RemoteClusters = NULL, debug = F)
+aefaInit(RemoteClusters = NULL, debug = F, sshKeyPath = NULL)
 }
 \arguments{
 \item{RemoteClusters}{insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.}
 
 \item{debug}{run with debug mode. default is FALSE}
+
+\item{sshKeyPath}{provide the SSH key path, NA is the placeholder.}
 }
 \value{
 nothing to return, just hidden variable to set to run parallelism.
@@ -23,7 +25,8 @@ If someone have Remote Cluster informaiton with SSH, put the information in the 
 }
 \examples{
 \dontrun{
-.conn <- aefaInit()
+# remote cluster with key -- actually used in aefa() function.
+aefaInit(RemoteClusters = c('localhost', 's1', 's2'), sshKeyPath = c(NA, '~/pub.pem', NA))
 
 }
 }

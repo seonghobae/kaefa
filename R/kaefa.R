@@ -38,16 +38,15 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                          (length(grep(c('pem'), sshKeyPath[[jj]])) > 0 | length(grep(c('key'), sshKeyPath[[jj]])) > 0)){
                         statusList[[i]] <- try(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $11}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                       intern = TRUE))
-                      }
-                    } else {
+                      } else {
                       statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                     intern = TRUE))
+                      }
                     }
                   } else {
                     statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                   intern = TRUE))
                   }
-                }
 
               # evaluation
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])

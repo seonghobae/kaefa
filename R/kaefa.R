@@ -365,13 +365,24 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     STOP <- F
 
     while (!STOP) {
-        try(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg, sshKeyPath = sshKeyPath))
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
+
+          if(exists('estModel')){
+            try(rm(estModel))
+          }
+          modelDONE <- FALSE
+          while(!modelDONE){
+            try(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg, sshKeyPath = sshKeyPath))
             # general condition
             estModel <- try(engineAEFA(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
-                SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling,
-                samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+                                       SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling,
+                                       samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+            if(exists('estModel')){
+              modelDONE <- TRUE
+            }
+          }
+
         } else if (is.list(data) && !is.data.frame(data)) {
             # Some weird condition: user specified pre-calibrated model or list of data.frame in data
 
@@ -458,7 +469,17 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   try(saveRDS(modelHistory, filename))
                 }
 
-                estItemFit <- evaluateItemFit(estModel, RemoteClusters = RemoteClusters, rotate = rotate)
+              if(exists('estItemFit')){
+                try(rm(estItemFit))
+              }
+              fitDONE <- FALSE
+              while(!fitDONE){
+                try(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg, sshKeyPath = sshKeyPath))
+                estItemFit <- try(evaluateItemFit(estModel, RemoteClusters = RemoteClusters, rotate = rotate))
+                if(exists('estItemFit')){
+                  fitDONE <- TRUE
+                }
+              }
                 if (printItemFit) {
                   try(print(estItemFit))
                 }

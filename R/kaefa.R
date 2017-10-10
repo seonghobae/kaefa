@@ -226,15 +226,15 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         # item fit evaluation
         modFit_Zh <- listenv()
         modFit_SX2 <- listenv()
-        modFit_Zh %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
-            100 else 0), silent = T)
+        modFit_Zh %<-% suppressWarnings(try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
+            100 else 0), silent = T))
 
-        modFit_SX2 %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
-            100 else 0), silent = T)
+        modFit_SX2 %<-% suppressWarnings(try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
+            100 else 0), silent = T))
 
         if (mirtModel@Model$nfact == 1) {
             modFit_PVQ1 <- listenv()
-            modFit_PVQ1 %<-% try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "PV_Q1", QMC = T, method = "MAP"), silent = T)
+            modFit_PVQ1 %<-% suppressWarnings(try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "PV_Q1", QMC = T, method = "MAP"), silent = T))
 
         }
 

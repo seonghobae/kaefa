@@ -39,6 +39,10 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                     statusList$localhost <- try(system(paste("uptime | awk '{print $10}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                        intern = TRUE))
                   }
+                  if(statusList$localhost[1] == 'load' | statusList$localhost[1] == 'average:'){
+                    statusList$localhost <- try(system(paste("uptime | awk '{print $11}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                                                       intern = TRUE))
+                  }
                 } else { # SSH side
                   if(!is.null(sshKeyPath)){ # if key is provided
                     for(jj in 1:length(serverList)){
@@ -54,6 +58,10 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                           statusList[[i]] <- try(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $10}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                              intern = TRUE))
                         }
+                        if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
+                          statusList[[i]] <- try(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $11}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                                                        intern = TRUE))
+                        }
 
                       } else {
                       statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $8}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
@@ -64,6 +72,10 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                       }
                       if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
                         statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $10}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                                                      intern = TRUE))
+                      }
+                      if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
+                        statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                       intern = TRUE))
                       }
                       }
@@ -77,6 +89,10 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                     }
                     if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
                       statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $10}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                                                    intern = TRUE))
+                    }
+                    if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
+                      statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                     intern = TRUE))
                     }
                   }

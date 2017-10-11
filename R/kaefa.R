@@ -30,18 +30,11 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
             for (i in serverList) {
                 if(i == 'localhost'){ # localhost side
                   statusList$localhost <- try(system(paste("uptime | awk '{print $8}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                intern = TRUE))
-                  if(statusList$localhost[1] == 'load' | statusList$localhost[1] == 'average:'){
-                    statusList$localhost <- try(system(paste("uptime | awk '{print $9}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                       intern = TRUE))
-                  }
-                  if(statusList$localhost[1] == 'load' | statusList$localhost[1] == 'average:'){
-                    statusList$localhost <- try(system(paste("uptime | awk '{print $10}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                       intern = TRUE))
-                  }
-                  if(statusList$localhost[1] == 'load' | statusList$localhost[1] == 'average:'){
+                                                intern = TRUE)) # CentOS
+                  if(length(grep('load', statusList[[i]][1])) > 0 | length(grep('average', statusList[[i]][1])) > 0){
+                    Sys.sleep(30)
                     statusList$localhost <- try(system(paste("uptime | awk '{print $11}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                       intern = TRUE))
+                                                       intern = TRUE)) # Ubuntu
                   }
                 } else { # SSH side
                   if(!is.null(sshKeyPath)){ # if key is provided
@@ -49,51 +42,32 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                       if(names(serverList)[[jj]] %in% names(serverList) &&
                          (length(grep(c('pem'), sshKeyPath[[jj]])) > 0 | length(grep(c('key'), sshKeyPath[[jj]])) > 0)){
                         statusList[[i]] <- try(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $8}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                      intern = TRUE))
-                        if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
-                          statusList[[i]] <- try(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $9}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                             intern = TRUE))
-                        }
-                        if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
-                          statusList[[i]] <- try(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $10}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                             intern = TRUE))
-                        }
-                        if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
+                                                      intern = TRUE)) # CentOS
+                        if(length(grep('load', statusList[[i]][1])) > 0 | length(grep('average', statusList[[i]][1])) > 0){
+                          Sys.sleep(30)
+
                           statusList[[i]] <- try(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $11}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                        intern = TRUE))
+                                                        intern = TRUE)) # Ubuntu
                         }
 
                       } else {
                       statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $8}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                    intern = TRUE))
-                      if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
-                        statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $9}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                      intern = TRUE))
-                      }
-                      if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
-                        statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $10}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                      intern = TRUE))
-                      }
-                      if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
+                                                    intern = TRUE)) # CentOS
+                      if(length(grep('load', statusList[[i]][1])) > 0 | length(grep('average', statusList[[i]][1])) > 0){
+                        Sys.sleep(30)
+
                         statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                      intern = TRUE))
+                                                      intern = TRUE)) # Ubuntu
                       }
                       }
                     }
                   } else {
                     statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $8}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                  intern = TRUE))
-                    if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
-                      statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $9}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                    intern = TRUE))
-                    }
-                    if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
-                      statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $10}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                    intern = TRUE))
-                    }
-                    if(statusList[[i]][1] == 'load' | statusList[[i]][1] == 'average:'){
+                                                  intern = TRUE)) # CentOS
+                    if(length(grep('load', statusList[[i]][1])) > 0 | length(grep('average', statusList[[i]][1])) > 0){
+                      Sys.sleep(30)
                       statusList[[i]] <- try(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
-                                                    intern = TRUE))
+                                                    intern = TRUE)) # Ubuntu
                     }
                   }
                 }

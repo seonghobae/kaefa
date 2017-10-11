@@ -163,14 +163,14 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 
     options(future.globals.maxSize = 500 * 1024^3)
 
-    modMLIRT_itemLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata,
+    modMLIRT_itemLevel %<-% try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata,
         fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
-    modMLIRT_latentLevel <- try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata,
+    modMLIRT_latentLevel %<-% try(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata,
         lr.fixed = fixed, lr.random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
 
     # evaluate model
     if (exists("modMLIRT_itemLevel")) {
-        if (class(modMLIRT_itemLevel) != "list") {
+        if (class(modMLIRT_itemLevel) == "MixedClass") {
             if (!modMLIRT_itemLevel@OptimInfo$secondordertest) {
                 rm(modMLIRT_itemLevel)
             }
@@ -182,7 +182,7 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 
 
     if (exists("modMLIRT_latentLevel")) {
-        if (class(modMLIRT_latentLevel) != "list") {
+        if (class(modMLIRT_latentLevel) == "MixedClass") {
             if (!modMLIRT_latentLevel@OptimInfo$secondordertest) {
                 rm(modMLIRT_latentLevel)
             }
@@ -342,6 +342,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
 #' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
 #' @param PV_Q1 Do you want to get PV_Q1 (Chalmers & Ng, 2017) if can get it? default is TRUE.
+#' @param tryLCA Do you want to try calibrate LCA model if avaliable? default is TRUE
 #'
 #' @return automated exploratory factor analytic models
 #' @export
@@ -353,7 +354,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' }
 aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, RemoteClusters = NULL, sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
     BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
-    printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T) {
+    printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = T) {
     # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) { getOption('aefaConn',
     # aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg)) }
 
@@ -402,7 +403,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             # general condition
             estModel <- try(engineAEFA(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
                                        SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling,
-                                       samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+                                       samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA))
             if(exists('estModel')){
               modelDONE <- TRUE
             }
@@ -424,7 +425,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   # if list contains dataframe, try to estimate them anyway; even this behaviour seems weird
                   estModel[[NROW(estModel) + 1]] <- try(engineAEFA(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars,
                     NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
-                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb))
+                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA))
                   if (!dfFound) {
                     # set dfFound flag
                     dfFound <- T

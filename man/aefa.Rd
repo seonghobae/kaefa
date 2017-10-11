@@ -12,7 +12,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   filename = "aefa.RDS", printItemFit = T, rotate = "bifactorQ",
   resampling = T, samples = 5000, printDebugMsg = F,
   modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
-  ranefautocomb = T, PV_Q1 = T)
+  ranefautocomb = T, PV_Q1 = T, tryLCA = T)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -70,6 +70,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{ranefautocomb}{Do you want to find global-optimal random effect combination? default is TRUE}
 
 \item{PV_Q1}{Do you want to get PV_Q1 (Chalmers & Ng, 2017) if can get it? default is TRUE.}
+
+\item{tryLCA}{Do you want to try calibrate LCA model if avaliable? default is TRUE}
 }
 \value{
 automated exploratory factor analytic models

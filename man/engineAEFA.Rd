@@ -8,7 +8,7 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
   BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1,
   random = list(), key = NULL, accelerate = "squarem", symmetric = F,
   resampling = T, samples = 5000, printDebugMsg = F, fitEMatUIRT = F,
-  ranefautocomb = T)
+  ranefautocomb = T, tryLCA = T)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -44,6 +44,8 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
 \item{fitEMatUIRT}{Do you want to fit the model with EM at UIRT? default is FALSE}
 
 \item{ranefautocomb}{Do you want to find global-optimal random effect combination? default is TRUE}
+
+\item{tryLCA}{Do you want to try calibrate LCA model if avaliable? default is TRUE}
 }
 \value{
 possible optimal combinations of models in list

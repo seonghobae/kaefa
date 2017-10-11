@@ -4,7 +4,8 @@
 \alias{evaluateItemFit}
 \title{assessment of fit indices of the calibrated model}
 \usage{
-evaluateItemFit(mirtModel, RemoteClusters = NULL, rotate = "bifactorQ")
+evaluateItemFit(mirtModel, RemoteClusters = NULL, rotate = "bifactorQ",
+  PV_Q1 = T)
 }
 \arguments{
 \item{mirtModel}{insert estimated \code{mirt::mirt} or \code{mirt::mixedmirt} model.}
@@ -12,6 +13,8 @@ evaluateItemFit(mirtModel, RemoteClusters = NULL, rotate = "bifactorQ")
 \item{RemoteClusters}{insert google computing engine virtual machine information.}
 
 \item{rotate}{set the rotate critera if mirt model is exploratory model. default is bifactorQ}
+
+\item{PV_Q1}{Do you want to get PV_Q1 (Chalmers & Ng, 2017) if can get it? default is TRUE.}
 }
 \value{
 return item fit estimates

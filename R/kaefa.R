@@ -192,6 +192,7 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 #' @param mirtModel insert estimated \code{mirt::mirt} or \code{mirt::mixedmirt} model.
 #' @param RemoteClusters insert google computing engine virtual machine information.
 #' @param rotate set the rotate critera if mirt model is exploratory model. default is bifactorQ
+#' @param PV_Q1 Do you want to get PV_Q1 (Chalmers & Ng, 2017) if can get it? default is TRUE.
 #'
 #' @return return item fit estimates
 #' @export
@@ -201,7 +202,7 @@ fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = a
 #' testModel1 <- engineAEFA(mirt::Science)
 #' testItemFit1 <- evaluateItemFit(testModel1)
 #' }
-evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactorQ") {
+evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactorQ", PV_Q1 = T) {
     # if (is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(RemoteClusters = RemoteClusters, debug = F)) }
 
     options(future.globals.maxSize = 500 * 1024^3)
@@ -232,7 +233,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         modFit_SX2 %<-% suppressWarnings(try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
             100 else 0), silent = T))
 
-        if (mirtModel@Model$nfact == 1) {
+        if (mirtModel@Model$nfact == 1 && PV_Q1) {
             modFit_PVQ1 <- listenv()
             modFit_PVQ1 %<-% suppressWarnings(try(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "PV_Q1", QMC = T, method = "MAP"), silent = T))
 
@@ -317,6 +318,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param saveRawEstModels Do you want to save raw estimated models before model selection work? default is FALSE
 #' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
 #' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
+#' @param PV_Q1 Do you want to get PV_Q1 (Chalmers & Ng, 2017) if can get it? default is TRUE.
 #'
 #' @return automated exploratory factor analytic models
 #' @export
@@ -328,7 +330,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' }
 aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, RemoteClusters = NULL, sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
     BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = ~1, random = list(), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
-    printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T) {
+    printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T) {
     # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) { getOption('aefaConn',
     # aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg)) }
 
@@ -475,7 +477,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
               fitDONE <- FALSE
               while(!fitDONE){
                 try(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg, sshKeyPath = sshKeyPath))
-                estItemFit <- try(evaluateItemFit(estModel, RemoteClusters = RemoteClusters, rotate = rotate))
+                estItemFit <- try(evaluateItemFit(estModel, RemoteClusters = RemoteClusters, rotate = rotate, PV_Q1 = PV_Q1))
                 if(exists('estItemFit')){
                   fitDONE <- TRUE
                 }

@@ -84,7 +84,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         if (is.numeric(i)) {
             if (i == 1) {
                 # UIRT
-                if (max(nK) != 1) {
+                if (max(nK) > 1) {
                   # poly UIRT
                   if (!is.null(key)) {
                     # with key
@@ -99,7 +99,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 }
             } else {
                 # MIRT
-                if (max(nK) != 1) {
+                if (max(nK) > 1) {
                   # poly MIRT
                   if (!is.null(key)) {
                     # poly MIRT with key
@@ -116,7 +116,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
         } else if (class(i) == "mirt.model") {
             # CFA
-            if (max(nK) != 1) {
+            if (max(nK) > 1) {
                 # poly CFA
                 if (!is.null(key)) {
                   # with key

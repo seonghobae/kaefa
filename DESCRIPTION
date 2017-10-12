@@ -1,7 +1,7 @@
 Package: kaefa
 Type: Package
 Title: kwangwoon automated exploratory factor analysis
-Version: 0.1.59
+Version: 0.1.155
 Authors@R: c(person("Seongho", family="Bae", role = c("aut", "cre"),
                      email = c("seongho@kw.ac.kr", "seonghobae@me.com"),
                      comment = "PsyD candidate in Work psychology for large-scale assessment and measurement"),
@@ -13,11 +13,17 @@ Author: Seongho Bae [aut, cre]
 Maintainer: Seongho Bae <seongho@kw.ac.kr>
 Depends: R (>= 3.4.0)
 Imports: future, mirt (>= 1.25), psych, plyr, listenv, parallel, NCmisc
-Description: the software of automated exploratory
+Description: The software of automated exploratory
     factor analysis (aefa) framework,
     to exploring unexplained factor structure
     with complexly cross-classified multilevel
-    structured data in R environment
+    structured data in R environment.
+    This software can be pallelise to
+    multiple computers via LAN even heterogeneous environment,
+    so that applied researchers may expand
+    their research capability more easy with kaefa
+    even data has too complicated structure.
+    This project started in 2013, and restructured in 2017.
 License: GPL-3 + file LICENSE
 URL: https://github.com/seonghobae/kaefa, http://seonghobae.me
 BugReports: https://github.com/seonghobae/kaefa/issues

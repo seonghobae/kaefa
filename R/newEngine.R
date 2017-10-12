@@ -149,11 +149,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 # itemtype j for model i
                 modUnConditional[[j]] %<-% {
                   if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                    try(mirt::mirt(data = data, model = i, method = "MHRM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,
-                      technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+                    tryCatch(mirt::mirt(data = data, model = i, method = "MHRM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,
+                      technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error=function(e){})
                   } else {
-                    try(mirt::mirt(data = data, model = i, method = "EM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,
-                      technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)))
+                    tryCatch(mirt::mirt(data = data, model = i, method = "EM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,
+                      technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error=function(e){})
                   }
                 }
                 modConditional[[j]] %<-% {
@@ -163,16 +163,16 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                       # and
                       modConditionalTemp[[k]] %<-% {
                         if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM") %in% j) > 0) {
-                          try(fitMLIRT(accelerate = accelerate, data = mirt::key2binary(data, key), model = i, itemtype = if (j == "4PLNRM")
+                          tryCatch(fitMLIRT(accelerate = accelerate, data = mirt::key2binary(data, key), model = i, itemtype = if (j == "4PLNRM")
                             "4PL" else if (j == "3PLNRM")
                             "3PL" else if (j == "3PLuNRM")
                             "3PLu" else if (j == "2PLNRM")
                             "2PL" else j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed,
-                            random = eval(parse(text = k))))
+                            random = eval(parse(text = k))), error=function(e){})
                         } else {
                           if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                            try(fitMLIRT(accelerate = accelerate, data = data, model = model, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
-                              SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, random = eval(parse(text = k))))
+                            tryCatch(fitMLIRT(accelerate = accelerate, data = data, model = model, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
+                              SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = fixed, random = eval(parse(text = k))), error=function(e){})
                           } else {
                             # Skipping at Conditional Model, see https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
                           }
@@ -190,10 +190,10 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   modDiscreteTemp <- listenv::listenv()
                   for (m in c("sandwich", "Oakes")) {
                     for (n in c(T, F)) {
-                      modDiscreteTemp[[NROW(as.list(modDiscreteTemp)) + 1]] %<-% try(mirt::mdirt(data = data, model = i, SE = T, SE.type = m, accelerate = accelerate,
+                      modDiscreteTemp[[NROW(as.list(modDiscreteTemp)) + 1]] %<-% tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m, accelerate = accelerate,
                         GenRandomPars = GenRandomPars, empiricalhist = n, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
                         covdata = covdata, formula = if (fixed == ~1)
-                          NULL else fixed))
+                          NULL else fixed), error=function(e){})
                     }
                   }
                   # unlist(as.list(modDiscreteTemp))

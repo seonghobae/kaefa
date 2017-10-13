@@ -4,11 +4,10 @@
 \alias{fitMLIRT}
 \title{fit appropriate multilevel item response model automatically with \code{mirt::mixedmirt}}
 \usage{
-fitMLIRT(data = data, model = model, itemtype = NULL,
-  accelerate = accelerate, GenRandomPars = GenRandomPars,
-  NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES,
-  symmetric = symmetric, covdata = covdata, fixed = fixed,
-  random = random)
+fitMLIRT(data = data, model = 1, itemtype = NULL,
+  accelerate = "squarem", GenRandomPars = T, NCYCLES = 4000,
+  BURNIN = 1500, SEMCYCLES = 1000, symmetric = F, covdata = NULL,
+  fixed = ~1, random = NULL)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}

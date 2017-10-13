@@ -29,11 +29,15 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
             decisionList <- list()
             for (i in serverList) {
                 if(i == 'localhost'){ # localhost side
-                  statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $8}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                  statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $8}' &&",
+                                                                "cat /proc/cpuinfo | grep processor | wc -l &&",
+                                                                "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                 intern = TRUE), error=function(e){}) # CentOS
                   if(length(grep('load', statusList[[i]][1])) > 0 | length(grep('average', statusList[[i]][1])) > 0){
                     Sys.sleep(30)
-                    statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $11}' &&", "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                    statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $11}' &&",
+                                                                  "cat /proc/cpuinfo | grep processor | wc -l &&",
+                                                                  "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                        intern = TRUE), error=function(e){}) # Ubuntu
                   }
                 } else { # SSH side
@@ -41,39 +45,52 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                     for(jj in 1:length(serverList)){
                       if(names(serverList)[[jj]] %in% names(serverList) &&
                          (length(grep(c('pem'), sshKeyPath[[jj]])) > 0 | length(grep(c('key'), sshKeyPath[[jj]])) > 0)){
-                        statusList[[i]] <- tryCatch(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $8}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                        statusList[[i]] <- tryCatch(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $8}' &&",
+                                                                 "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                                                                 "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                       intern = TRUE), error=function(e){}) # CentOS
                         if(length(grep('load', statusList[[i]][1])) > 0 | length(grep('average', statusList[[i]][1])) > 0){
                           Sys.sleep(30)
 
-                          statusList[[i]] <- tryCatch(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $11}' &&", "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                          statusList[[i]] <- tryCatch(system(paste("ssh", i, '-i', sshKeyPath[[jj]], "uptime | awk '{print $11}' &&",
+                                                                   "ssh", i, '-i', jj, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                                                                   "ssh", i, '-i', jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                         intern = TRUE), error=function(e){}) # Ubuntu
                         }
 
                       } else {
-                      statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $8}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                      statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $8}' &&",
+                                                               "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                                                               "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                     intern = TRUE), error=function(e){}) # CentOS
                       if(length(grep('load', statusList[[i]][1])) > 0 | length(grep('average', statusList[[i]][1])) > 0){
                         Sys.sleep(30)
 
-                        statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                        statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&",
+                                                                 "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                                                                 "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                       intern = TRUE), error=function(e){}) # Ubuntu
                       }
                       }
                     }
                   } else {
-                    statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $8}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                    statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $8}' &&",
+                                                             "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                                                             "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                   intern = TRUE), error=function(e){}) # CentOS
                     if(length(grep('load', statusList[[i]][1])) > 0 | length(grep('average', statusList[[i]][1])) > 0){
                       Sys.sleep(30)
-                      statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&", "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
+                      statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&",
+                                                               "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                                                               "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                                                     intern = TRUE), error=function(e){}) # Ubuntu
                     }
                   }
                 }
               # evaluation
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])
-                decisionList[[i]] <- tryCatch(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 100 < loadPercentage && statusList[[i]][3] > freeRamPercentage, error=function(e){})
+                decisionList[[i]] <- tryCatch(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 100 < loadPercentage &&
+                                                statusList[[i]][3] > freeRamPercentage, error=function(e){})
             }
             availableCluster <- names(decisionList)[which(unlist(decisionList))]
 
@@ -121,14 +138,18 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
 
     # setting up cluster
     if (!is.null(RemoteClusters)) {
-        tryCatch(future::plan(list(future::tweak(future::cluster, workers = assignClusterNodes(RemoteClusters)), future::multiprocess), gc = T), error=function(e){})
+        tryCatch(future::plan(list(future::tweak(future::cluster,
+                                                 workers = assignClusterNodes(RemoteClusters)),
+                                   future::multiprocess), gc = T), error=function(e){})
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas", extSoftVersion()["BLAS"])) > 0) {
-            options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors), gc = T)
+            options(aefaConn = future::plan(future::multiprocess,
+                                            workers = parallelProcessors), gc = T)
         } else if (length(future::availableWorkers()) == 1) {
             options(aefaConn = future::plan(future::sequential), gc = T)
         } else {
-            options(aefaConn = (tryCatch(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)), future::multiprocess(workers = parallelProcessors)),
+            options(aefaConn = (tryCatch(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)),
+                                                                      future::multiprocess(workers = parallelProcessors)),
                 gc = T), error=function(e){})))
         }
     }
@@ -158,18 +179,30 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
 #' testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
 #'
 #'}
-fitMLIRT <- function(data = data, model = model, itemtype = NULL, accelerate = accelerate, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES,
-    symmetric = symmetric, covdata = covdata, fixed = fixed, random = random) {
+fitMLIRT <- function(data = data, model = 1, itemtype = NULL,
+                     accelerate = 'squarem', GenRandomPars = T,
+                     NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000,
+                     symmetric = F, covdata = NULL, fixed = ~1, random = NULL) {
 
     options(future.globals.maxSize = 500 * 1024^3)
 
     modMLIRT_itemLevel <- listenv::listenv()
     modMLIRT_latentLevel <- listenv::listenv()
 
-    modMLIRT_itemLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata,
-        fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error=function(e){})
-    modMLIRT_latentLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model, accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, covdata = covdata,
-        lr.fixed = fixed, lr.random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error=function(e){})
+    modMLIRT_itemLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model, accelerate = accelerate,
+                                                     itemtype = itemtype, SE = T,
+                                                     GenRandomPars = GenRandomPars, covdata = covdata,
+                                                     fixed = fixed, random = random, calcNull = T,
+                                                     technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN,
+                                                                      SEMCYCLES = SEMCYCLES, symmetric = symmetric)),
+                                     error=function(e){})
+    modMLIRT_latentLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model, accelerate = accelerate,
+                                                       itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars,
+                                                       covdata = covdata, lr.fixed = fixed, lr.random = random,
+                                                       calcNull = T, technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN,
+                                                                                      SEMCYCLES = SEMCYCLES,
+                                                                                      symmetric = symmetric)),
+                                       error=function(e){})
 
     # evaluate model
     if (exists("modMLIRT_itemLevel")) {
@@ -238,7 +271,8 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {
-        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
+        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                             SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
         modMLM_original <- mirt::mod2values(mirtModel)
         if (sum(modMLM_original$name == "(Intercept)") != 0) {
             modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)", ]
@@ -247,31 +281,38 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in% colnames(mirtModel@Data$data))]
         modMLM$est <- F
 
-        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F,
-            calcNull = T)
+        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T)
     }
 
     if (attr(class(mirtModel), "package") == "mirt") {
         # item fit evaluation
         modFit_Zh <- listenv()
         modFit_SX2 <- listenv()
-        modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
-            100 else 0), error=function(e){}))
+        modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                                                               fit_stats = "Zh", QMC = T, method = "MAP",
+                                                               impute = if (sum(is.na(mirtModel@Data$data)) > 0)
+                                                                 100 else 0), error=function(e){}))
 
-        modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 0)
-            100 else 0), error=function(e){}))
+        modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                                                                fit_stats = "S_X2", QMC = T, method = "MAP",
+                                                                impute = if (sum(is.na(mirtModel@Data$data)) > 0)
+                                                                  100 else 0), error=function(e){}))
 
         if (mirtModel@Model$nfact == 1 && PV_Q1) {
             modFit_PVQ1 <- listenv()
-            modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "PV_Q1", QMC = T, method = "MAP"), error=function(e){}))
+            modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                                                                     fit_stats = "PV_Q1", QMC = T,
+                                                                     method = "MAP"), error=function(e){}))
 
         }
 
         if (sum(mirtModel@Model$itemtype %in% "Rasch") > 0 && mirtModel@Model$nfact == 1) {
             modFit_infit <- listenv()
-            modFit_infit %<-% tryCatch(mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "infit", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
-                0)
-                100 else 0), error=function(e){})
+            modFit_infit %<-% tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                                                     fit_stats = "infit", QMC = T,
+                                                     method = "WLE", impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0),
+                                       error=function(e){})
         }
 
         # check item fit indices are exists
@@ -300,7 +341,10 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
             }
         }
 
-        itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"), exists("modFit_SX2"), exists("modFit_PVQ1"), exists("modFit_infit"))]
+        itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"),
+                                                                                     exists("modFit_SX2"),
+                                                                                     exists("modFit_PVQ1"),
+                                                                                     exists("modFit_infit"))]
 
         fitList <- list()
         for (i in 1:length(itemFitList)) {

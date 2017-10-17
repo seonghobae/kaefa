@@ -571,33 +571,52 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   tryCatch(saveRDS(modelHistory, filename), error=function(e){})
                 }
 
-                # find bad item
-                if ("Zh" %in% colnames(estItemFit)) {
-                  # set Zh as default item fit index
-                  if (sum(estItemFit$Zh < -1.96) != 0) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]))
-                  } else {
-                    STOP <- T
-                  }
-                } else if ("p.PV_Q1" %in% colnames(estItemFit)) {
-                  # prevent unexpected situation
-                  if (sum(is.na(estItemFit$p.PV_Q1)) != 0) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$p.PV_Q1))]))
-                  } else if (sum(estItemFit$p.PV_Q1 < 0.025) != 0) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.PV_Q1 == min(estItemFit$p.PV_Q1, na.rm = T))]))
-                  } else {
-                    STOP <- T
-                  }
-                } else if ("p.S_X2" %in% colnames(estItemFit)) {
-                  # prevent unexpected situation and DiscreteClass evaluation
-                  if (sum(is.na(estItemFit$p.S_X2)) != 0) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$p.S_X2))]))
-                  } else if (sum(estItemFit$p.S_X2 < 0.025) != 0) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.S_X2 == min(estItemFit$p.S_X2, na.rm = T))]))
-                  } else {
-                    STOP <- T
-                  }
-                }
+              # checkup conditions
+              if ("Zh" %in% colnames(estItemFit)){
+                ZhCond <- sum(estItemFit$Zh < -1.96) != 0
+              } else {
+                ZhCond <- FALSE
+              }
+
+              if ("df.PV_Q1" %in% colnames(estItemFit)){
+                PVCond1 <- sum(is.na(estItemFit$df.PV_Q1)) != 0
+                PVCond2 <- length(which(estItemFit$df.PV_Q1 == 0)) > 0
+                PVCond3 <- sum(estItemFit$p.PV_Q1 < 0.025) != 0
+              } else {
+                PVCond1 <- FALSE
+                PVCond2 <- FALSE
+                PVCond3 <- FALSE
+              }
+
+
+              if ("df.S_X2" %in% colnames(estItemFit)){
+                S_X2Cond1 <- sum(is.na(estItemFit$df.S_X2)) != 0
+                S_X2Cond2 <- length(which(estItemFit$df.S_X2 == 0)) > 0
+                S_X2Cond3 <- sum(estItemFit$p.S_X2 < 0.025) != 0
+              } else {
+                S_X2Cond1 <- FALSE
+                S_X2Cond2 <- FALSE
+                S_X2Cond3 <- FALSE
+              }
+
+              # plagging bad item
+              if(ZhCond){
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]))
+              } else if (PVCond1){
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$df.PV_Q1))]))
+              } else if (PVCond2){
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.PV_Q1 == 0)]))
+              } else if (PVCond3){
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.PV_Q1 == min(estItemFit$p.PV_Q1, na.rm = T))]))
+              } else if (S_X2Cond1){
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$df.S_X2))]))
+              } else if (S_X2Cond2){
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.S_X2 == 0)]))
+              } else if (S_X2Cond3){
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.S_X2 == min(estItemFit$p.S_X2, na.rm = T))]))
+              } else {
+                STOP <- TRUE
+              }
 
                 # adjust model if supplied model is confirmatory model
                 if (!is.null(model) && (!is.numeric(model) | !is.integer(model)) && "Zh" %in% colnames(estItemFit)) {

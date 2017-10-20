@@ -573,16 +573,16 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
               # checkup conditions
               if ("Zh" %in% colnames(estItemFit)){
-                ZhCond <- sum(estItemFit$Zh < -1.96) != 0
+                ZhCond <- sum(estItemFit$Zh < -1.96, na.rm = T) != 0
               } else {
                 ZhCond <- FALSE
               }
 
               if ("df.PV_Q1" %in% colnames(estItemFit)){
-                PVCond1 <- sum(is.na(estItemFit$df.PV_Q1)) != 0
+                PVCond1 <- sum(is.na(estItemFit$df.PV_Q1), na.rm = T) != 0
                 PVCond2 <- length(which(estItemFit$df.PV_Q1 == 0)) > 0
-                PVCond3 <- sum(estItemFit$p.PV_Q1 < 0.005) != 0 # https://osf.io/preprints/psyarxiv/mky9j/
-                if(sum(estItemFit$p.PV_Q1 < 0.005) == length(estItemFit$p.PV_Q1)){ # turn off when all p-values are p<.005; that may wrong
+                PVCond3 <- sum(estItemFit$p.PV_Q1 < 0.005, na.rm = T) != 0 # https://osf.io/preprints/psyarxiv/mky9j/
+                if(sum(estItemFit$p.PV_Q1 < 0.005, na.rm = T) == length(estItemFit$p.PV_Q1)){ # turn off when all p-values are p<.005; that may wrong
                   PVCond3 <- FALSE
                 }
               } else {
@@ -593,10 +593,10 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
 
               if ("df.S_X2" %in% colnames(estItemFit)){
-                S_X2Cond1 <- sum(is.na(estItemFit$df.S_X2)) != 0
+                S_X2Cond1 <- sum(is.na(estItemFit$df.S_X2), na.rm = T) != 0
                 S_X2Cond2 <- length(which(estItemFit$df.S_X2 == 0)) > 0
-                S_X2Cond3 <- sum(estItemFit$p.S_X2 < 0.005) != 0 # https://osf.io/preprints/psyarxiv/mky9j/
-                if(sum(estItemFit$p.S_X2 < 0.005) == length(estItemFit$p.S_X2)){ # turn off when all p-values are p<.005; that may wrong
+                S_X2Cond3 <- sum(estItemFit$p.S_X2 < 0.005, na.rm = T) != 0 # https://osf.io/preprints/psyarxiv/mky9j/
+                if(sum(estItemFit$p.S_X2 < 0.005, na.rm = T) == length(estItemFit$p.S_X2)){ # turn off when all p-values are p<.005; that may wrong
                   S_X2Cond3 <- FALSE
                 }
               } else {
@@ -620,6 +620,8 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.S_X2 == 0)]))
               } else if (S_X2Cond3){
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.S_X2 == min(estItemFit$p.S_X2, na.rm = T))]))
+              } else if (length(estItemFit$item) <= 3) {
+                STOP <- TRUE
               } else {
                 STOP <- TRUE
               }

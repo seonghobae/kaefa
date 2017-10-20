@@ -582,6 +582,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 PVCond1 <- sum(is.na(estItemFit$df.PV_Q1)) != 0
                 PVCond2 <- length(which(estItemFit$df.PV_Q1 == 0)) > 0
                 PVCond3 <- sum(estItemFit$p.PV_Q1 < 0.005) != 0 # https://osf.io/preprints/psyarxiv/mky9j/
+                if(sum(estItemFit$p.PV_Q1 < 0.005) == length(estItemFit$p.PV_Q1)){
+                  PVCond3 <- FALSE
+                }
               } else {
                 PVCond1 <- FALSE
                 PVCond2 <- FALSE
@@ -593,6 +596,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 S_X2Cond1 <- sum(is.na(estItemFit$df.S_X2)) != 0
                 S_X2Cond2 <- length(which(estItemFit$df.S_X2 == 0)) > 0
                 S_X2Cond3 <- sum(estItemFit$p.S_X2 < 0.005) != 0 # https://osf.io/preprints/psyarxiv/mky9j/
+                if(sum(estItemFit$p.S_X2 < 0.005) == length(estItemFit$p.S_X2)){
+                  S_X2Cond3 <- FALSE
+                }
               } else {
                 S_X2Cond1 <- FALSE
                 S_X2Cond2 <- FALSE

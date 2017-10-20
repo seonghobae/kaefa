@@ -582,7 +582,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 PVCond1 <- sum(is.na(estItemFit$df.PV_Q1)) != 0
                 PVCond2 <- length(which(estItemFit$df.PV_Q1 == 0)) > 0
                 PVCond3 <- sum(estItemFit$p.PV_Q1 < 0.005) != 0 # https://osf.io/preprints/psyarxiv/mky9j/
-                if(sum(estItemFit$p.PV_Q1 < 0.005) == length(estItemFit$p.PV_Q1)){
+                if(sum(estItemFit$p.PV_Q1 < 0.005) == length(estItemFit$p.PV_Q1)){ # turn off when all p-values are p<.005; that may wrong
                   PVCond3 <- FALSE
                 }
               } else {
@@ -596,7 +596,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 S_X2Cond1 <- sum(is.na(estItemFit$df.S_X2)) != 0
                 S_X2Cond2 <- length(which(estItemFit$df.S_X2 == 0)) > 0
                 S_X2Cond3 <- sum(estItemFit$p.S_X2 < 0.005) != 0 # https://osf.io/preprints/psyarxiv/mky9j/
-                if(sum(estItemFit$p.S_X2 < 0.005) == length(estItemFit$p.S_X2)){
+                if(sum(estItemFit$p.S_X2 < 0.005) == length(estItemFit$p.S_X2)){ # turn off when all p-values are p<.005; that may wrong
                   S_X2Cond3 <- FALSE
                 }
               } else {

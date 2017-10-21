@@ -613,13 +613,13 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
               } else if (PVCond2){
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.PV_Q1 == 0)]))
               } else if (PVCond3){
-                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.PV_Q1 == min(estItemFit$p.PV_Q1, na.rm = T))]))
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$PV_Q1/estItemFit$df.PV_Q1 == max(estItemFit$PV_Q1/estItemFit$df.PV_Q1, na.rm = T))]))
               } else if (S_X2Cond1){
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$df.S_X2))]))
               } else if (S_X2Cond2){
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.S_X2 == 0)]))
               } else if (S_X2Cond3){
-                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$p.S_X2 == min(estItemFit$p.S_X2, na.rm = T))]))
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 == max(estItemFit$S_X2/estItemFit$p.S_X2, na.rm = T))]))
               } else if (length(estItemFit$item) <= 3) {
                 STOP <- TRUE
               } else {

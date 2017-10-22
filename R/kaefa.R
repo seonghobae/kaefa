@@ -598,7 +598,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
               if ("df.S_X2" %in% colnames(estItemFit)){
                 if(sum(is.na(estItemFit$df.S_X2), na.rm = T) == length(estItemFit$df.S_X2)){
-                  PVCond1 <- FALSE
+                  S_X2Cond1 <- FALSE
                 } else {
                   S_X2Cond1 <- sum(is.na(estItemFit$df.S_X2), na.rm = T) != 0
                 }

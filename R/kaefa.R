@@ -581,6 +581,8 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
               if ("df.PV_Q1" %in% colnames(estItemFit)){
                 if(sum(is.na(estItemFit$df.PV_Q1), na.rm = T) == length(estItemFit$df.PV_Q1)){
                   PVCond1 <- FALSE
+                  PVCond2 <- FALSE
+                  PVCond3 <- FALSE
                 } else {
                   PVCond1 <- sum(is.na(estItemFit$df.PV_Q1), na.rm = T) != 0
                 }
@@ -599,6 +601,8 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
               if ("df.S_X2" %in% colnames(estItemFit)){
                 if(sum(is.na(estItemFit$df.S_X2), na.rm = T) == length(estItemFit$df.S_X2)){
                   S_X2Cond1 <- FALSE
+                  S_X2Cond2 <- FALSE
+                  S_X2Cond3 <- FALSE
                 } else {
                   S_X2Cond1 <- sum(is.na(estItemFit$df.S_X2), na.rm = T) != 0
                 }

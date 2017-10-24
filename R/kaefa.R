@@ -529,8 +529,8 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             }
 
             # select model
-            if(length(which(modModelFit == min(modModelFit, na.rm = T))[1]) > 0){
-              estModel <- estModel[[which(modModelFit == min(modModelFit, na.rm = T))[1]]]
+            if(length(which(modModelFit == min(modModelFit[is.finite(modModelFit)], na.rm = T))[1]) > 0){
+              estModel <- estModel[[which(modModelFit == min(modModelFit[is.finite(modModelFit)], na.rm = T))[1]]]
             } else {
               message('Can not find any optimal model')
               STOP <- T

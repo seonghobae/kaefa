@@ -634,6 +634,23 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 == max(estItemFit$S_X2/estItemFit$p.S_X2, na.rm = T))]))
               } else if (length(estItemFit$item) <= 3) {
                 STOP <- TRUE
+              } else if (estModel@Model$model == 1) {
+                is.between <- function(x, a, b) {
+                  (x - a)  *  (b - x) > 0
+                }
+                modCI <- mirt::PLCI.mirt(estModel)
+                includeZero <- vector()
+                diffValues <- vector()
+                for(i in 1:length(grep('^a',modCI$parnam))){
+                  includeZero[i] <- is.between(0, modCI[grep('^a',modCI$parnam),]$lower_2.5[i], modCI[grep('^a',modCI$parnam),]$upper_97.5[i])
+                  diffValues[i] <- diff(c(modCI[grep('^a',modCI$parnam),]$lower_2.5[i], modCI[grep('^a',modCI$parnam),]$upper_97.5[i]))
+                }
+
+                if(sum(includeZero) == 0){
+                  STOP <- TRUE
+                } else {
+                  badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues) == diffValues)[1]]))
+                }
               } else {
                 STOP <- TRUE
               }

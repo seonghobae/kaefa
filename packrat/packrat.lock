@@ -3,27 +3,15 @@ PackratVersion: 0.4.8.38
 RVersion: 3.4.1
 Repos: CRAN=https://cran.ism.ac.jp/
 
-Package: BH
+Package: CompQuadForm
 Source: CRAN
-Version: 1.65.0-1
-Hash: 95f62be4d6916aae14a310a8b56a6475
-
-Package: CDM
-Source: CRAN
-Version: 5.8-9
-Hash: ea52a7d8252542a21d29a51303d84ea3
-Requires: Rcpp, RcppArmadillo, mvtnorm, polycor, sfsmisc
+Version: 1.4.3
+Hash: 69c5dbdbd7378bb87cef9de70bbef04f
 
 Package: GPArotation
 Source: CRAN
 Version: 2014.11-1
 Hash: 4821625833bcab5af24257ead9119e01
-
-Package: Matrix
-Source: CRAN
-Version: 1.2-11
-Hash: 3a02b9fca85b799a55f553a4ba4b003c
-Requires: lattice
 
 Package: NCmisc
 Source: CRAN
@@ -43,25 +31,9 @@ Hash: b9d8d89ff10ca2d8bfdaccdf83045ba1
 
 Package: RcppArmadillo
 Source: CRAN
-Version: 0.7.960.1.2
-Hash: f30c3d312ac1b1d26f960d5fd08c1baa
+Version: 0.8.100.1.0
+Hash: 154fdab793405ee4be3242e923e324c1
 Requires: Rcpp
-
-Package: Rmpi
-Source: CRAN
-Version: 0.6-6
-Hash: eef087ec5eeaaa7ce1a2a5c528ac7404
-
-Package: TAM
-Source: CRAN
-Version: 2.6-2
-Hash: 574644006270dad095ba0a0544ae2198
-Requires: CDM, Rcpp, RcppArmadillo, coda, mvtnorm, sfsmisc
-
-Package: assertthat
-Source: CRAN
-Version: 0.2.0
-Hash: e8805df54c65ac96d50235c44a82615c
 
 Package: backports
 Source: CRAN
@@ -78,32 +50,11 @@ Source: CRAN
 Version: 1.0-6
 Hash: 67d0775189fd0041d95abca618c5c07e
 
-Package: brew
-Source: CRAN
-Version: 1.0-6
-Hash: 931f9972deae0f205e1c78a51f33149b
-
 Package: caTools
 Source: CRAN
 Version: 1.17.1
 Hash: 97cb6f6293cd18d17df77a6383cc6763
 Requires: bitops
-
-Package: coda
-Source: CRAN
-Version: 0.19-1
-Hash: e5aff7792ef292cd4306e58e25e403fe
-Requires: lattice
-
-Package: codetools
-Source: CRAN
-Version: 0.2-15
-Hash: a4268e48f71dc70ac2203aced7cdd8ea
-
-Package: commonmark
-Source: CRAN
-Version: 1.4
-Hash: 91d7807331a4a37ef8376fb073960ee4
 
 Package: covr
 Source: CRAN
@@ -118,14 +69,8 @@ Hash: ff2840dd9b0d563fc80377a5a45510cd
 
 Package: curl
 Source: CRAN
-Version: 2.8.1
-Hash: 5a3f385f21add1e944b93b3cd9ce8b48
-
-Package: desc
-Source: CRAN
-Version: 1.1.1
-Hash: 2f99e95211c4ba6efcf5538d096587fc
-Requires: R6, assertthat, crayon, rprojroot
+Version: 3.0
+Hash: fb0029f1c84bf9b510c4f55cda7103f1
 
 Package: devtools
 Source: CRAN
@@ -145,21 +90,15 @@ Version: 0.10.1
 Hash: 54d95f4ec6d0300100413ed0127d89ae
 Requires: stringr
 
-Package: foreign
-Source: CRAN
-Version: 0.8-69
-Hash: 6cb09ceba757189aff90eb9bb72c8983
-
-Package: formatR
-Source: CRAN
-Version: 1.5
-Hash: 258cf79a8dbeedf1c981cdb53837d2af
-
 Package: future
-Source: CRAN
-Version: 1.6.1
-Hash: 81c47d9aa17b39d8f5dea6071a593da9
+Source: github
+Version: 1.6.2-9000
+Hash: 2455eac0162c3b5c4684c4a9de00d0e1
 Requires: digest, globals, listenv
+GithubRepo: future
+GithubUsername: HenrikBengtsson
+GithubRef: develop
+GithubSha1: edc04d1f0c381f2911097b3c458f5cbd32cee160
 
 Package: git2r
 Source: CRAN
@@ -167,10 +106,13 @@ Version: 0.19.0
 Hash: f4f7966fc357f60dc62dbffcea917eef
 
 Package: globals
-Source: CRAN
-Version: 0.10.2
-Hash: 3c7d46d0cae68e8c935a06c7df4f7146
-Requires: codetools
+Source: github
+Version: 0.10.3-9000
+Hash: 4c95bb268a33f2234409625d6ed9bbaa
+GithubRepo: globals
+GithubUsername: HenrikBengtsson
+GithubRef: develop
+GithubSha1: ebcfda74cb92743e82f373aa3d347bd46c847f03
 
 Package: highr
 Source: CRAN
@@ -200,22 +142,11 @@ Version: 1.17
 Hash: f6b2bf543ee3e25f5b92bb46f9958c5f
 Requires: digest, evaluate, highr, markdown, stringr, yaml
 
-Package: lattice
-Source: CRAN
-Version: 0.20-35
-Hash: 26b9d7f0d0cb4e1d1bbb97f867c82d89
-
 Package: lavaan
 Source: CRAN
 Version: 0.5-23.1097
 Hash: 3acbd8e4f2b2ff32317763019c0f3c9f
 Requires: mnormt, numDeriv, pbivnorm, quadprog
-
-Package: lavaan.survey
-Source: CRAN
-Version: 1.1.3.1
-Hash: 8d2f91d1003bf16cbd6eeb041628037b
-Requires: lavaan, survey
 
 Package: lazyeval
 Source: CRAN
@@ -244,12 +175,6 @@ Version: 1.1.0
 Hash: 410fcd334bc626db100237cc1370f2e9
 Requires: digest
 
-Package: mgcv
-Source: CRAN
-Version: 1.8-22
-Hash: ce8966e5576ec881696013bc4acc7d97
-Requires: Matrix, nlme
-
 Package: mime
 Source: CRAN
 Version: 0.5
@@ -257,14 +182,13 @@ Hash: 463550cf44fb6f0a2359368f42eebe62
 
 Package: mirt
 Source: github
-Version: 1.25.3
-Hash: 49ba5b1bf2a13d6045d433ddd25a424f
-Requires: GPArotation, Rcpp, RcppArmadillo, lattice, mgcv, numDeriv,
-    sfsmisc
+Version: 1.25.6
+Hash: 7c1bf7affc2246d99480e940328f69aa
+Requires: GPArotation, Rcpp, RcppArmadillo
 GithubRepo: mirt
 GithubUsername: philchalmers
 GithubRef: master
-GithubSha1: 5d6314c6ff884f1f557b8015cd9885e085ec433c
+GithubSha1: d434d6a7cb1f66aec9fdc002c30f853290d8516b
 
 Package: mnormt
 Source: CRAN
@@ -276,11 +200,15 @@ Source: CRAN
 Version: 1.0-6
 Hash: 1f55cdac387721d4eda1126ac9aba73b
 
-Package: nlme
-Source: CRAN
-Version: 3.1-131
-Hash: 7f5580f9c481d6921298f224c391b308
-Requires: lattice
+Package: nonnest2
+Source: github
+Version: 0.5
+Hash: d04db1c115ca1c76b5c912ee294add60
+Requires: CompQuadForm, lavaan, mvtnorm, sandwich
+GithubRepo: nonnest2
+GithubUsername: qpsy
+GithubRef: master
+GithubSha1: ddb4d04df8d8eca246ef42607911f6e790c787cb
 
 Package: numDeriv
 Source: CRAN
@@ -312,12 +240,6 @@ Version: 1.8.4
 Hash: 9598fbff0cce13bee89ae3a50230d93f
 Requires: Rcpp
 
-Package: polycor
-Source: CRAN
-Version: 0.7-9
-Hash: 2510f040851857643c9a21abf2a30512
-Requires: Matrix, mvtnorm
-
 Package: praise
 Source: CRAN
 Version: 1.0.0
@@ -332,7 +254,7 @@ Package: psych
 Source: CRAN
 Version: 1.7.8
 Hash: a9e7713423365e42e06413285a89e610
-Requires: foreign, lattice, mnormt, nlme
+Requires: mnormt
 
 Package: quadprog
 Source: CRAN
@@ -352,13 +274,6 @@ Hash: 40f4034a7b8e28edc2b384bdb0c4d537
 Requires: base64enc, caTools, evaluate, htmltools, jsonlite, knitr,
     rprojroot, stringr, yaml
 
-Package: roxygen2
-Source: CRAN
-Version: 6.0.1
-Hash: 2e062ab5f013e29ea37c1702b3fd226e
-Requires: R6, Rcpp, brew, commonmark, desc, digest, stringi, stringr,
-    xml2
-
 Package: rprojroot
 Source: CRAN
 Version: 1.2
@@ -370,27 +285,16 @@ Source: CRAN
 Version: 0.7
 Hash: e2ebaff8160aff3e6b32e6e78a693c2d
 
-Package: rzmq
+Package: sandwich
 Source: CRAN
-Version: 0.9.3
-Hash: b608dc3abfeaf5a62a448d39fc5e16a2
+Version: 2.4-0
+Hash: 754ae8e02f70c5561f75f7a95ea452cc
+Requires: zoo
 
 Package: sfsmisc
 Source: CRAN
 Version: 1.1-1
 Hash: 00af82c1c08f9a5fb278ca3469b6eaf4
-
-Package: sirt
-Source: CRAN
-Version: 2.2-14
-Hash: ea54613e00cdeceb7378c55a886cc29c
-Requires: CDM, Rcpp, RcppArmadillo, TAM, coda, lavaan, lavaan.survey,
-    mirt, mvtnorm, sfsmisc, survey
-
-Package: snow
-Source: CRAN
-Version: 0.4-2
-Hash: bf705214a3d32b037dd24940931c289e
 
 Package: stringi
 Source: CRAN
@@ -402,12 +306,6 @@ Source: CRAN
 Version: 1.2.0
 Hash: 25a86d7f410513ebb7c0bc6a5e16bdc3
 Requires: magrittr, stringi
-
-Package: survey
-Source: CRAN
-Version: 3.32-1
-Hash: e0d6920f9e5b04015ca679f6621e6416
-Requires: Matrix, lattice
 
 Package: testthat
 Source: CRAN
@@ -425,13 +323,12 @@ Source: CRAN
 Version: 2.0.0
 Hash: cc7e555b8e249aa5cf391592fcae71a2
 
-Package: xml2
-Source: CRAN
-Version: 1.1.1
-Hash: bb72c0247ccf079bec2c838e54df64da
-Requires: BH, Rcpp
-
 Package: yaml
 Source: CRAN
 Version: 2.1.14
 Hash: c81230c3a7d9ba20607ad6b4331173d1
+
+Package: zoo
+Source: CRAN
+Version: 1.8-0
+Hash: df9711767f56f086e8a8d1f0fb926ff6

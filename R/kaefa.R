@@ -634,7 +634,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 == max(estItemFit$S_X2/estItemFit$p.S_X2, na.rm = T))]))
               } else if (length(estItemFit$item) <= 3) {
                 STOP <- TRUE
-              } else if (estModel@Model$model == 1) {
+              } else if (!estModel@Options$exploratory) {
                 is.between <- function(x, a, b) {
                   (x - a)  *  (b - x) > 0
                 }

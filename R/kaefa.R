@@ -619,19 +619,19 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
               # plagging bad item
               if(ZhCond){
-                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]))
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh[is.finite(estItemFit$Zh)], na.rm = T))]))
               } else if (PVCond1){
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$df.PV_Q1))]))
               } else if (PVCond2){
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.PV_Q1 == 0)]))
               } else if (PVCond3){
-                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$PV_Q1/estItemFit$df.PV_Q1 == max(estItemFit$PV_Q1/estItemFit$df.PV_Q1, na.rm = T))]))
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$PV_Q1/estItemFit$df.PV_Q1 == max(estItemFit$PV_Q1[is.finite(estItemFit$PV_Q1)]/estItemFit$df.PV_Q1[is.finite(estItemFit$df.PV_Q1)], na.rm = T))]))
               } else if (S_X2Cond1){
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$df.S_X2))]))
               } else if (S_X2Cond2){
                 badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.S_X2 == 0)]))
               } else if (S_X2Cond3){
-                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 == max(estItemFit$S_X2/estItemFit$p.S_X2, na.rm = T))]))
+                badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 == max(estItemFit$S_X2[is.finite(estItemFit$S_X2)]/estItemFit$p.S_X2[is.finite(estItemFit$p.S_X2)], na.rm = T))]))
               } else if (length(estItemFit$item) <= 3) {
                 STOP <- TRUE
               } else if (!estModel@Options$exploratory) {
@@ -649,7 +649,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 if(sum(includeZero) == 0){
                   STOP <- TRUE
                 } else {
-                  badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues) == diffValues)[1]]))
+                  badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)]) == diffValues)[1]]))
                 }
               } else {
                 STOP <- TRUE
@@ -664,7 +664,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
                           # convert elements # FIXME
                           model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":",
-                            model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh, na.rm = T))]]  ## FIXME
+                            model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh[is.finite(estItemFit$Zh)], na.rm = T))]]  ## FIXME
 
                           for (k in length(model[[i]]$x[j, 2])) {
                             if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 2][k])) {

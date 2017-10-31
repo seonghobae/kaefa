@@ -649,7 +649,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 if(sum(includeZero) == 0){
                   STOP <- TRUE
                 } else {
-                  badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)]) == diffValues)[1]]))
+                  badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)], na.rm = T) == diffValues)[1]]))
                 }
               } else {
                 STOP <- TRUE

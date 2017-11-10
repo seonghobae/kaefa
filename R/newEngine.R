@@ -178,7 +178,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
                         } else {
                           if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                            tryCatch(fitMLIRT(accelerate = accelerate, data = data, model = model, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
+                            tryCatch(fitMLIRT(accelerate = accelerate, data = data, model = i, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
                                               SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = k_fixed, random = eval(parse(text = k))), error=function(e){})
                           } else {
                             # Skipping at Conditional (multilevel/mixed-effect) Model, see https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
@@ -215,6 +215,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     }  # EOF of for loop
 
     exploratoryModels <- unlist(as.list(exploratoryModels))
+    # exploratoryModels # for debug random effect model
 
     # improper solution filter
     finalEstModels <- list()

@@ -193,7 +193,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
 
             # LCA
-            if (class(model) == "numeric" && tryLCA) {
+            if (class(i) == "numeric" && tryLCA) {
               message('Latent Class Model calibration')
                 modDiscrete %<-% {
                   modDiscreteTemp <- listenv::listenv()

@@ -638,19 +638,27 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 is.between <- function(x, a, b) {
                   (x - a)  *  (b - x) > 0
                 }
-                modCI <- mirt::PLCI.mirt(estModel)
-                includeZero <- vector()
-                diffValues <- vector()
-                for(i in 1:length(grep('^a',modCI$parnam))){
-                  includeZero[i] <- is.between(0, modCI[grep('^a',modCI$parnam),]$lower_2.5[i], modCI[grep('^a',modCI$parnam),]$upper_97.5[i])
-                  diffValues[i] <- diff(c(modCI[grep('^a',modCI$parnam),]$lower_2.5[i], modCI[grep('^a',modCI$parnam),]$upper_97.5[i]))
+                try(invisible(suppressWarnings(suppressMessages(mirt::mirtCluster(parallel::detectCores(logical = F))))), silent = T)
+                try(modCI <- mirt::PLCI.mirt(estModel), silent = T)
+                try(invisible(suppressMessages(suppressMessages(mirt::mirtCluster(remove = T)))), silent = T)
+                if(exists('modCI')) {
+                  includeZero <- vector()
+                  diffValues <- vector()
+                  for(i in 1:length(grep('^a',modCI$parnam))){
+                    includeZero[i] <- is.between(0, modCI[grep('^a',modCI$parnam),]$lower_2.5[i], modCI[grep('^a',modCI$parnam),]$upper_97.5[i])
+                    diffValues[i] <- diff(c(modCI[grep('^a',modCI$parnam),]$lower_2.5[i], modCI[grep('^a',modCI$parnam),]$upper_97.5[i]))
+                  }
+
+                  if(sum(includeZero) == 0){
+                    STOP <- TRUE
+                  } else {
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)], na.rm = T) == diffValues)[1]]))
+                  }
+                  try(rm(modCI))
+                } else {
+                  STOP <- TRUE
                 }
 
-                if(sum(includeZero) == 0){
-                  STOP <- TRUE
-                } else {
-                  badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)], na.rm = T) == diffValues)[1]]))
-                }
               } else {
                 STOP <- TRUE
               }

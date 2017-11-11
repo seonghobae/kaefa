@@ -186,8 +186,8 @@ fitMLIRT <- function(data = data, model = 1, itemtype = NULL,
 
     options(future.globals.maxSize = 500 * 1024^3)
 
-    modMLIRT_itemLevel <- listenv::listenv()
-    modMLIRT_latentLevel <- listenv::listenv()
+    modMLIRT_itemLevel <- listenv::listenv() # phantom
+    modMLIRT_latentLevel <- listenv::listenv() # phantom ( do not use as.list() in here )
 
     modMLIRT_itemLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model, accelerate = accelerate,
                                                      itemtype = itemtype, SE = T,
@@ -205,29 +205,21 @@ fitMLIRT <- function(data = data, model = 1, itemtype = NULL,
                                        error=function(e){})
 
     # evaluate model
-    if (exists("modMLIRT_itemLevel")) {
-      modMLIRT_itemLevel <- unlist(as.list(modMLIRT_itemLevel))[[1]]
-        if (class(modMLIRT_itemLevel) == "MixedClass") {
-            if (!modMLIRT_itemLevel@OptimInfo$secondordertest) {
-                rm(modMLIRT_itemLevel)
-            }
-        } else {
-            rm(modMLIRT_itemLevel)
-        }
-
+    if (class(modMLIRT_itemLevel) == "MixedClass") {
+      if (!modMLIRT_itemLevel@OptimInfo$secondordertest) {
+        rm(modMLIRT_itemLevel)
+      }
+    } else {
+      rm(modMLIRT_itemLevel)
     }
 
 
-    if (exists("modMLIRT_latentLevel")) {
-      modMLIRT_latentLevel <- unlist(as.list(modMLIRT_latentLevel))[[1]]
-        if (class(modMLIRT_latentLevel) == "MixedClass") {
-            if (!modMLIRT_latentLevel@OptimInfo$secondordertest) {
-                rm(modMLIRT_latentLevel)
-            }
-        } else {
-            rm(modMLIRT_latentLevel)
-        }
-
+    if (class(modMLIRT_latentLevel) == "MixedClass") {
+      if (!modMLIRT_latentLevel@OptimInfo$secondordertest) {
+        rm(modMLIRT_latentLevel)
+      }
+    } else {
+      rm(modMLIRT_latentLevel)
     }
 
     # decision

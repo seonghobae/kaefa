@@ -218,31 +218,31 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     }  # EOF of for loop
 
     exploratoryModels <- unlist(as.list(exploratoryModels))
-    exploratoryModels # for debug random effect model
+    # exploratoryModels # for debug random effect model
 
     # # improper solution filter
-    # finalEstModels <- list()
-    # noNullEstModels <- list()
-    #
-    # if (NROW(exploratoryModels) != 0) {
-    #     for (i in 1:NROW(exploratoryModels)) {
-    #         if (!is.null(exploratoryModels[[i]]) | length(exploratoryModels[[i]]) != 0) {
-    #             noNullEstModels[[NROW(noNullEstModels) + 1]] <- exploratoryModels[[i]]
-    #         }
-    #     }
-    #
-    #     if (NROW(noNullEstModels) != 0) {
-    #         for (i in 1:NROW(noNullEstModels)) {
-    #             if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
-    #               if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
-    #                 finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
-    #               }
-    #
-    #             }
-    #         }
-    #     }
-    #
-    # }
+    finalEstModels <- list()
+    noNullEstModels <- list()
 
-    # return(finalEstModels)
+    if (NROW(exploratoryModels) != 0) {
+        for (i in 1:NROW(exploratoryModels)) {
+            if (!is.null(exploratoryModels[[i]]) | length(exploratoryModels[[i]]) != 0) {
+                noNullEstModels[[NROW(noNullEstModels) + 1]] <- exploratoryModels[[i]]
+            }
+        }
+
+        if (NROW(noNullEstModels) != 0) {
+            for (i in 1:NROW(noNullEstModels)) {
+                if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
+                  if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
+                    finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
+                  }
+
+                }
+            }
+        }
+
+    }
+
+    return(finalEstModels)
 }

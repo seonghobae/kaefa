@@ -8,7 +8,8 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
   BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0,
   ~-1), random = list(~1 | items), key = NULL, accelerate = "squarem",
   symmetric = F, resampling = T, samples = 5000, printDebugMsg = F,
-  fitEMatUIRT = F, ranefautocomb = T, tryLCA = T)
+  fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
+  forcingMixedModelOnly = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -46,6 +47,8 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
 \item{ranefautocomb}{Do you want to find global-optimal random effect combination? default is TRUE}
 
 \item{tryLCA}{Do you want to try calibrate LCA model if avaliable? default is TRUE}
+
+\item{forcingMixedModelOnly}{Do you want to focing the Mixed model calibration? default is FALSE}
 }
 \value{
 possible optimal combinations of models in list

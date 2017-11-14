@@ -12,7 +12,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   saveModelHistory = T, filename = "aefa.RDS", printItemFit = T,
   rotate = "bifactorQ", resampling = T, samples = 5000,
   printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F,
-  fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = T)
+  fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = T,
+  forcingQMC = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -72,6 +73,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{PV_Q1}{Do you want to get PV_Q1 (Chalmers & Ng, 2017) if can get it? default is TRUE.}
 
 \item{tryLCA}{Do you want to try calibrate LCA model if avaliable? default is TRUE}
+
+\item{forcingQMC}{Do you want to forcing the use QMC estimation instead MHRM? default is FALSE}
 }
 \value{
 automated exploratory factor analytic models

@@ -27,7 +27,8 @@
 #' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
 #' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
 #' @param tryLCA Do you want to try calibrate LCA model if avaliable? default is TRUE
-#' @param forcingMixedModelOnly Do you want to focing the Mixed model calibration? default is FALSE
+#' @param forcingMixedModelOnly Do you want to forcing the Mixed model calibration? default is FALSE
+#' @param forcingQMC Do you want to forcing the use QMC estimation instead MHRM? default is FALSE
 #'
 #' @return possible optimal combinations of models in list
 #' @export
@@ -38,7 +39,7 @@
 #'
 #' }
 engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1|items), key = NULL, accelerate = "squarem",
-    symmetric = F, resampling = T, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T, forcingMixedModelOnly = F) {
+    symmetric = F, resampling = T, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T, forcingMixedModelOnly = F, forcingQMC = F) {
 
     # data management: resampling
     if (resampling && nrow(data) > samples) {
@@ -154,7 +155,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 message('mirt::mirt calibration (normal MIRT)\n')
                 modUnConditional[[j]] %<-% {
                   if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                    tryCatch(mirt::mirt(data = data, model = i, method = "MHRM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,
+                    if(forcingQMC){
+                      estMethod <- 'QMCEM'
+                    } else {
+                      estMethod <- 'MHRM'
+                    }
+                    tryCatch(mirt::mirt(data = data, model = i, method = estMethod, itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,
                                         technical = list(NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error=function(e){})
                   } else {
                     tryCatch(mirt::mirt(data = data, model = i, method = "EM", itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars, key = key, calcNull = T,

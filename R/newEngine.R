@@ -29,6 +29,7 @@
 #' @param tryLCA Do you want to try calibrate LCA model if avaliable? default is TRUE
 #' @param forcingMixedModelOnly Do you want to forcing the Mixed model calibration? default is FALSE
 #' @param forcingQMC Do you want to forcing the use QMC estimation instead MHRM? default is FALSE
+#' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
 #'
 #' @return possible optimal combinations of models in list
 #' @export
@@ -39,7 +40,7 @@
 #'
 #' }
 engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1|items), key = NULL, accelerate = "squarem",
-    symmetric = F, resampling = T, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T, forcingMixedModelOnly = F, forcingQMC = F) {
+    symmetric = F, resampling = T, samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T, forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F) {
 
     # data management: resampling
     if (resampling && nrow(data) > samples) {
@@ -150,7 +151,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             for (j in estItemtype) {
               # itemtype j for model i
 
-              message('calibrating ', j)
+              message('\ncalibrating ', j)
               if(!forcingMixedModelOnly){
                 message('mirt::mirt calibration (normal MIRT)\n')
                 modUnConditional[[j]] %<-% {
@@ -168,36 +169,37 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   }
                 }
               }
-                message('\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n')
                 modConditional[[j]] %<-% {
                   # if (!is.null(covdata)) {} # try to calibrate mixed-effect even covdata is null anyway -- 2017. 11. 10
+                  if(!turnOffMixedEst){
+                    message('\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n')
+                    modConditionalTemp <- listenv::listenv()
+                    for (k in randomEffectCandidates) {
+                      # and
+                      for(k_fixed in fixed){
+                        modConditionalTemp[[paste(paste0(as.character(k_fixed), collapse = ''), k, collapse = ' ')]] %<-% {
+                          if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM") %in% j) > 0) {
+                            tryCatch(fitMLIRT(accelerate = accelerate, data = mirt::key2binary(data, key), model = i, itemtype = if (j == "4PLNRM")
+                              "4PL" else if (j == "3PLNRM")
+                                "3PL" else if (j == "3PLuNRM")
+                                  "3PLu" else if (j == "2PLNRM")
+                                    "2PL" else j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = k_fixed,
+                              random = eval(parse(text = k))), error=function(e){})
 
-                  modConditionalTemp <- listenv::listenv()
-                  for (k in randomEffectCandidates) {
-                    # and
-                    for(k_fixed in fixed){
-                      modConditionalTemp[[paste(paste0(as.character(k_fixed), collapse = ''), k, collapse = ' ')]] %<-% {
-                        if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM") %in% j) > 0) {
-                          tryCatch(fitMLIRT(accelerate = accelerate, data = mirt::key2binary(data, key), model = i, itemtype = if (j == "4PLNRM")
-                            "4PL" else if (j == "3PLNRM")
-                              "3PL" else if (j == "3PLuNRM")
-                                "3PLu" else if (j == "2PLNRM")
-                                  "2PL" else j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = k_fixed,
-                            random = eval(parse(text = k))), error=function(e){})
-
-                        } else {
-                          if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
-                            tryCatch(fitMLIRT(accelerate = accelerate, data = data, model = i, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
-                                              SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = k_fixed, random = eval(parse(text = k))), error=function(e){})
                           } else {
-                            # Skipping at Conditional (multilevel/mixed-effect) Model, see https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
+                            if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
+                              tryCatch(fitMLIRT(accelerate = accelerate, data = data, model = i, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
+                                                SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = k_fixed, random = eval(parse(text = k))), error=function(e){})
+                            } else {
+                              # Skipping at Conditional (multilevel/mixed-effect) Model, see https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
+                            }
                           }
                         }
                       }
                     }
+                    unlist(as.list(modConditionalTemp)) # unlist k
+                    # modConditionalTemp
                   }
-                  unlist(as.list(modConditionalTemp)) # unlist k
-                  # modConditionalTemp
                 }
             }
 

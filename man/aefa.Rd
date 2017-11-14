@@ -13,7 +13,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
   rotate = "bifactorQ", resampling = T, samples = 5000,
   printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F,
   fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = T,
-  forcingQMC = F)
+  forcingQMC = F, turnOffMixedEst = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -75,6 +75,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{tryLCA}{Do you want to try calibrate LCA model if avaliable? default is TRUE}
 
 \item{forcingQMC}{Do you want to forcing the use QMC estimation instead MHRM? default is FALSE}
+
+\item{turnOffMixedEst}{Do you want to turn off mixed effect (multilevel) estimation? default is FALSE}
 }
 \value{
 automated exploratory factor analytic models

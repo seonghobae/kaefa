@@ -392,6 +392,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param PV_Q1 Do you want to get PV_Q1 (Chalmers & Ng, 2017) if can get it? default is TRUE.
 #' @param tryLCA Do you want to try calibrate LCA model if avaliable? default is TRUE
 #' @param forcingQMC Do you want to forcing the use QMC estimation instead MHRM? default is FALSE
+#' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
 #'
 #' @return automated exploratory factor analytic models
 #' @export
@@ -403,7 +404,8 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' }
 aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data) < 10) ncol(data) else 10, RemoteClusters = NULL, sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
     BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1|items), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
-    printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F) {
+    printItemFit = T, rotate = "bifactorQ", resampling = T, samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T,
+    PV_Q1 = T, tryLCA = T, forcingQMC = F, turnOffMixedEst = F) {
     # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) { getOption('aefaConn',
     # aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg)) }
 
@@ -452,7 +454,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             # general condition
             estModel <- tryCatch(engineAEFA(data = data.frame(data[, !colnames(data) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
                                        SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric, resampling = resampling,
-                                       samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA, forcingQMC = forcingQMC), error=function(e){})
+                                       samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst), error=function(e){})
             if(exists('estModel')){
               modelDONE <- TRUE
             }
@@ -474,7 +476,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   # if list contains dataframe, try to estimate them anyway; even this behaviour seems weird
                   estModel[[NROW(estModel) + 1]] <- tryCatch(engineAEFA(data = data.frame(data[[i]][, !colnames(data[[i]]) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars,
                     NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, random = random, key = key, accelerate = accelerate, symmetric = symmetric,
-                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA, forcingQMC = forcingQMC), error=function(e){})
+                    resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst), error=function(e){})
                   if (!dfFound) {
                     # set dfFound flag
                     dfFound <- T

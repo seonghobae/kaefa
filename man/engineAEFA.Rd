@@ -9,7 +9,7 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
   ~-1), random = list(~1 | items), key = NULL, accelerate = "squarem",
   symmetric = F, resampling = T, samples = 5000, printDebugMsg = F,
   fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
-  forcingMixedModelOnly = F, forcingQMC = F)
+  forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -51,6 +51,8 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
 \item{forcingMixedModelOnly}{Do you want to forcing the Mixed model calibration? default is FALSE}
 
 \item{forcingQMC}{Do you want to forcing the use QMC estimation instead MHRM? default is FALSE}
+
+\item{turnOffMixedEst}{Do you want to turn off mixed effect (multilevel) estimation? default is FALSE}
 }
 \value{
 possible optimal combinations of models in list

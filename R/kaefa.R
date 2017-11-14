@@ -259,7 +259,9 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
     # if (is.null(getOption('aefaConn'))) { getOption('aefaConn', aefaInit(RemoteClusters = RemoteClusters, debug = F)) }
 
     options(future.globals.maxSize = 500 * 1024^3)
-
+    if(class(mirtModel) == 'aefa'){
+      mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
+    }
 
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {
@@ -749,5 +751,12 @@ aefaResults <- function(mirtModel, rotate = 'bifactorQ'){
     }
   }
 
+  resultM2 <- tryCatch(mirt::M2(mirtModel, QMC = T), error=function(e){})
+  if(exists('resultM2') && !is.null(resultM2)){
+    resultM2
+    message('\n')
+  }
+
   mirt::summary(mirtModel, rotate = rotate)
+
 }

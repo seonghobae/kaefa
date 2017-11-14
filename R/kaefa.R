@@ -273,8 +273,13 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in% colnames(mirtModel@Data$data))]
         modMLM$est <- F
 
-        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-                                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T)
+        if('grsm' %in% mirtModel@Model$itemtype){
+          mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                                  itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T, technical = list(internal_constraints = FALSE))
+        } else {
+          mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                                  itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T)
+        }
     }
 
     if (attr(class(mirtModel), "package") == "mirt") {
@@ -695,8 +700,54 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
 
     if (saveModelHistory) {
+      class(modelHistory) <- 'aefa'
         return(modelHistory)
     } else {
         return(estModel)
     }
+}
+
+#' summarise AEFA results
+#'
+#' @param mirtModel estimated aefa model
+#' @param rotate rotation method
+#'
+#' @return summary of aefa results
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
+#' aefaResults(testMod1)
+#' }
+aefaResults <- function(mirtModel, rotate = 'bifactorQ'){
+
+  if(class(mirtModel) == 'aefa'){
+    mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
+  }
+
+  # convert mixedclass to singleclass temporary
+  if (class(mirtModel)[1] == "MixedClass") {
+    mirt::summary(mirtModel)
+    message('\n')
+    modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                         SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
+    modMLM_original <- mirt::mod2values(mirtModel)
+    if (sum(modMLM_original$name == "(Intercept)") != 0) {
+      modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)", ]
+
+    }
+    modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in% colnames(mirtModel@Data$data))]
+    modMLM$est <- F
+
+    if('grsm' %in% mirtModel@Model$itemtype){
+      mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                              itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T, technical = list(internal_constraints = FALSE))
+    } else {
+      mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                              itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T)
+    }
+  }
+
+  mirt::summary(mirtModel, rotate = rotate)
 }

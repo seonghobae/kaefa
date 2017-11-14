@@ -2,6 +2,7 @@
 
 export(aefa)
 export(aefaInit)
+export(aefaResults)
 export(engineAEFA)
 export(evaluateItemFit)
 export(fitMLIRT)

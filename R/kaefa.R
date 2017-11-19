@@ -140,7 +140,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     if (!is.null(RemoteClusters)) {
         tryCatch(future::plan(list(future::tweak(future::cluster,
                                                  workers = assignClusterNodes(RemoteClusters)),
-                                   future::tweak(future::multiprocess, workers = function() { max(1, round(0.7 * availableCores())) })), gc = T), error=function(e){})
+                                   future::tweak(future::multiprocess, workers = function() { max(1, round(0.7 * future::availableCores())) })), gc = T), error=function(e){})
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas|microsoft", extSoftVersion()["BLAS"])) > 0) {
             options(aefaConn = future::plan(future::multiprocess,

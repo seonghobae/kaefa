@@ -98,7 +98,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   }
                 } else {
                   # dich UIRT
-                  estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch", "spline")
+                  estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch", "spline", "monopoly")
                 }
             } else {
                 # MIRT

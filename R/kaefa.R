@@ -662,6 +662,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                     STOP <- TRUE
                   } else {
                     badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)], na.rm = T) == diffValues)[1]]))
+                    if(length(badItemNames) == 0){
+                      STOP <- TRUE
+                    }
                   }
                   try(rm(modCI))
                 } else {

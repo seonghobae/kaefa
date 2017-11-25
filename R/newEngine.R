@@ -155,7 +155,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
               if(!forcingMixedModelOnly){
                 message('mirt::mirt calibration (normal MIRT)\n')
                 modUnConditional[[j]] %<-% {
-                  if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
+                  if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in% j) == 0) {
                     if(forcingQMC){
                       estMethod <- 'QMCEM'
                     } else {
@@ -187,7 +187,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                               random = eval(parse(text = k))), error=function(e){})
 
                           } else {
-                            if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm") %in% j) == 0) {
+                            if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in% j) == 0) {
                               tryCatch(fitMLIRT(accelerate = accelerate, data = data, model = i, itemtype = j, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, BURNIN = BURNIN,
                                                 SEMCYCLES = SEMCYCLES, symmetric = symmetric, covdata = covdata, fixed = k_fixed, random = eval(parse(text = k))), error=function(e){})
                             } else {

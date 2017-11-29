@@ -91,10 +91,10 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   # poly UIRT
                   if (!is.null(key)) {
                     # with key
-                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm", 'monopoly')
+                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm", 'monopoly', 'ggum')
                   } else {
                     # without key
-                    estItemtype <- c("nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm", 'monopoly')
+                    estItemtype <- c("nominal", "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm", 'monopoly', 'ggum')
                   }
                 } else {
                   # dich UIRT
@@ -106,10 +106,10 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   # poly MIRT
                   if (!is.null(key)) {
                     # poly MIRT with key
-                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "graded", "grsm")
+                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "graded", "grsm", 'ggum')
                   } else {
                     # poly MIRT without key
-                    estItemtype <- c("nominal", "gpcm", "graded", "grsm")
+                    estItemtype <- c("nominal", "gpcm", "graded", "grsm", 'ggum')
                   }
                 } else {
                   # dich MIRT
@@ -123,10 +123,10 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 # poly CFA
                 if (!is.null(key)) {
                   # with key
-                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "graded", "Rasch")
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal", "gpcm", "graded", "Rasch", 'ggum')
                 } else {
                   # without key
-                  estItemtype <- c("nominal", "gpcm", "graded", "Rasch")
+                  estItemtype <- c("nominal", "gpcm", "graded", "Rasch", 'ggum')
                 }
             } else {
                 # dich

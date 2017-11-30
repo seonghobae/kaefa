@@ -553,7 +553,15 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             }
 
             if (class(estModel) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
-                # evaluate model save model
+
+              if(class(estModel) %in% "MixedClass"){
+                if(is.numeric(estModel@Model$model)){
+                  if(estModel@Model$model > 1 && !estModel@Options$exploratory){
+                    estModel@Options$exploratory <- TRUE
+                  }
+                }
+              }
+                # save model history of DIC evaluated model
                 if (saveModelHistory) {
                   modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
                   tryCatch(saveRDS(modelHistory, filename), error=function(e){})

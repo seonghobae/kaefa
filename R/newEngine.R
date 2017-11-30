@@ -243,6 +243,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             for (i in 1:NROW(noNullEstModels)) {
                 if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
                   if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
+                    if(is.numeric(noNullEstModels[[i]]@Model$model) && class(noNullEstModels[[i]]) == 'MixedClass'){
+                      if(noNullEstModels[[i]]@Model$model > 1){
+                        noNullEstModels[[i]]@Options$exploratory <- TRUE
+                      }
+                    }
                     finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
                   }
 

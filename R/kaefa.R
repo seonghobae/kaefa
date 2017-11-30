@@ -451,7 +451,6 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
     while (!STOP) {
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
-
           if(exists('estModel')){
             tryCatch(rm(estModel), error=function(e){})
           }
@@ -498,43 +497,40 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
         }
 
         # save model history (raw model, before model selection)
-        if (saveModelHistory)
-            modelHistoryCount <- modelHistoryCount + 1
         if (exists("estModel")) {
-            if (saveModelHistory && saveRawEstModels) {
+            if (!is.null(estModel) && saveModelHistory && saveRawEstModels) {
+                modelHistoryCount <- modelHistoryCount + 1
                 modelHistory$rawEstModels[[modelHistoryCount]] <- estModel
                 tryCatch(saveRDS(modelHistory, filename), error=function(e){})
             }
         }
 
-
-
-
         if (exists("estModel")) {
-            # check ncol(estModel@Data$data) > 3 Model Selection: if estModel is not NULL, run this procedure
+          if(!is.null(estModel)){
+            # check ncol(estModel@Data$data) > 3 / Model Selection: if estModel is not NULL, run this procedure
 
             # model fit evaluation
             modModelFit <- vector()
             for (i in 1:NROW(estModel)) {
-                if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(estModel[[i]])) > 0) {
-                  if (estModel[[i]]@OptimInfo$secondordertest) {
-                    if (toupper(modelSelectionCriteria) %in% c("DIC")) {
-                      modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$DIC
-                    } else if (toupper(modelSelectionCriteria) %in% c("AIC")) {
-                      modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AIC
-                    } else if (toupper(modelSelectionCriteria) %in% c("AICC", "CAIC")) {
-                      modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AICc
-                    } else if (toupper(modelSelectionCriteria) %in% c("BIC")) {
-                      modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$BIC
-                    } else if (toupper(modelSelectionCriteria) %in% c("SABIC")) {
-                      modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$SABIC
-                    } else {
-                      stop("please specify model fit type correctly: DIC (default), AIC, BIC, AICc (aka cAIC), saBIC")
-                    }
+              if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(estModel[[i]])) > 0) {
+                if (estModel[[i]]@OptimInfo$secondordertest) {
+                  if (toupper(modelSelectionCriteria) %in% c("DIC")) {
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$DIC
+                  } else if (toupper(modelSelectionCriteria) %in% c("AIC")) {
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AIC
+                  } else if (toupper(modelSelectionCriteria) %in% c("AICC", "CAIC")) {
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AICc
+                  } else if (toupper(modelSelectionCriteria) %in% c("BIC")) {
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$BIC
+                  } else if (toupper(modelSelectionCriteria) %in% c("SABIC")) {
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$SABIC
                   } else {
-                    modModelFit[[length(modModelFit) + 1]] <- NA  # prevent unexpected event
+                    stop("please specify model fit type correctly: DIC (default), AIC, BIC, AICc (aka cAIC), saBIC")
                   }
+                } else {
+                  modModelFit[[length(modModelFit) + 1]] <- NA  # prevent unexpected event
                 }
+              }
             }
 
             # select model
@@ -552,9 +548,9 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 
 
             if (exists("modelFound")) {
-                data <- estModel@Data$data
+              data <- estModel@Data$data
             } else if (exists("dfFound")) {
-                data <- estModel@Data$data
+              data <- estModel@Data$data
             }
 
             if (class(estModel) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
@@ -566,11 +562,11 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   }
                 }
               }
-                # save model history of DIC evaluated model
-                if (saveModelHistory) {
-                  modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
-                  tryCatch(saveRDS(modelHistory, filename), error=function(e){})
-                }
+              # save model history of DIC evaluated model
+              if (saveModelHistory) {
+                modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
+                tryCatch(saveRDS(modelHistory, filename), error=function(e){})
+              }
 
               if(exists('estItemFit')){
                 tryCatch(rm(estItemFit), error=function(e){})
@@ -583,15 +579,15 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                   fitDONE <- TRUE
                 }
               }
-                if (printItemFit) {
-                  tryCatch(print(estItemFit), error=function(e){})
-                }
+              if (printItemFit) {
+                tryCatch(print(estItemFit), error=function(e){})
+              }
 
-                # save model
-                if (saveModelHistory) {
-                  modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit
-                  tryCatch(saveRDS(modelHistory, filename), error=function(e){})
-                }
+              # save model
+              if (saveModelHistory) {
+                modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit
+                tryCatch(saveRDS(modelHistory, filename), error=function(e){})
+              }
 
               # checkup conditions
               if ("Zh" %in% colnames(estItemFit)){
@@ -688,39 +684,38 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
                 STOP <- TRUE
               }
 
-                # adjust model if supplied model is confirmatory model
-                if (!is.null(model) && (!is.numeric(model) | !is.integer(model)) && "Zh" %in% colnames(estItemFit)) {
-                  for (i in 1:NROW(model)) {
-                    if (class(model[[i]]) == "mirt.model") {
-                      for (j in 1:nrow(model[[i]])) {
-                        if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
+              # adjust model if supplied model is confirmatory model
+              if (!is.null(model) && (!is.numeric(model) | !is.integer(model)) && "Zh" %in% colnames(estItemFit)) {
+                for (i in 1:NROW(model)) {
+                  if (class(model[[i]]) == "mirt.model") {
+                    for (j in 1:nrow(model[[i]])) {
+                      if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
 
-                          # convert elements # FIXME
-                          model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":",
-                            model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh[is.finite(estItemFit$Zh)], na.rm = T))]]  ## FIXME
+                        # convert elements # FIXME
+                        model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", gsub("-", ":",
+                                                                                                                                                             model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == min(estItemFit$Zh[is.finite(estItemFit$Zh)], na.rm = T))]]  ## FIXME
 
-                          for (k in length(model[[i]]$x[j, 2])) {
-                            if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 2][k])) {
-                              model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[, !colnames(data) %in%
-                                badItemNames]))[model[[i]]$x[j, 2][k]])
-                            }
+                        for (k in length(model[[i]]$x[j, 2])) {
+                          if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 2][k])) {
+                            model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, !colnames(data) %in% badItemNames])) == colnames(data.frame(data[, !colnames(data) %in%
+                                                                                                                                                         badItemNames]))[model[[i]]$x[j, 2][k]])
                           }
-
-                          # FIXME
-                          model[[i]]$x[j, 2] <- paste(as.character(model[[i]]$x[j, 2]), collapse = ", ", sep = "")
-
                         }
+
+                        # FIXME
+                        model[[i]]$x[j, 2] <- paste(as.character(model[[i]]$x[j, 2]), collapse = ", ", sep = "")
+
                       }
                     }
                   }
                 }
+              }
 
             }
 
             # if (ncol(estModel@Data$data) > 3) {} else { message('model is not fit well') STOP <- T # set flag of 'stop while loop' }
 
-
-
+          }
         } else {
             stop("estimations were failed. please retry with check your data or models")
         }
@@ -739,6 +734,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 #'
 #' @param mirtModel estimated aefa model
 #' @param rotate rotation method
+#' @param suppress cutoff of rotated coefs. Generally .30 is appropriate but .10 will be good.
 #'
 #' @return summary of aefa results
 #' @export
@@ -748,7 +744,7 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #' aefaResults(testMod1)
 #' }
-aefaResults <- function(mirtModel, rotate = 'bifactorQ'){
+aefaResults <- function(mirtModel, rotate = 'bifactorQ', suppress = 0){
 
   if(class(mirtModel) == 'aefa'){
     mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
@@ -788,6 +784,6 @@ aefaResults <- function(mirtModel, rotate = 'bifactorQ'){
     message('\n')
   }
 
-  mirt::summary(mirtModel, rotate = rotate)
+  mirt::summary(mirtModel, rotate = rotate, suppress = suppress, maxit = 1e+5)
 
 }

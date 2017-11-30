@@ -284,6 +284,11 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
                                   itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T)
         }
+        if(is.numeric(mirtModel@Model$model)){
+          if(mirtModel@Model$model > 1){
+            mirtModel@Options$exploratory <- TRUE
+          }
+        }
     }
 
     if (attr(class(mirtModel), "package") == "mirt") {
@@ -769,6 +774,11 @@ aefaResults <- function(mirtModel, rotate = 'bifactorQ'){
     } else {
       mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
                               itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", SE = F, calcNull = T)
+    }
+    if(is.numeric(mirtModel@Model$model)){
+      if(mirtModel@Model$model > 1){
+        mirtModel@Options$exploratory <- TRUE
+      }
     }
   }
 

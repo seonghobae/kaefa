@@ -496,10 +496,16 @@ aefa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol
             data <- estModel@Data$data
         }
 
+      # if estModel is not NULL, count modelHistoryCount plus one
+      if(exists("estModel")){
+        if(!is.null(estModel)){
+          modelHistoryCount <- modelHistoryCount + 1
+        }
+      }
+
         # save model history (raw model, before model selection)
         if (exists("estModel")) {
             if (!is.null(estModel) && saveModelHistory && saveRawEstModels) {
-                modelHistoryCount <- modelHistoryCount + 1
                 modelHistory$rawEstModels[[modelHistoryCount]] <- estModel
                 tryCatch(saveRDS(modelHistory, filename), error=function(e){})
             }

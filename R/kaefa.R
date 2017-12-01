@@ -418,6 +418,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in% class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) { getOption('aefaConn',
     # aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg)) }
 
+    TimeStart <- Sys.time()
+
     options(future.globals.maxSize = 500 * 1024^3)
 
     # prepare for bad item detection
@@ -730,8 +732,13 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     }  # the end of while loop
 
 
+    TimeEnd <- Sys.time()
+    TimeTotal <- TimeEnd - TimeStart
+
+
     if (saveModelHistory) {
       class(modelHistory) <- 'aefa'
+      modelHistory$TimeTotal <- TimeTotal
         return(modelHistory)
     } else {
         return(estModel)

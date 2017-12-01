@@ -2,6 +2,7 @@
 % Please edit documentation in R/kaefa.R
 \name{aefa}
 \alias{aefa}
+\alias{efa}
 \title{doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment}
 \usage{
 aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)

@@ -503,9 +503,6 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
       # if estModel is not NULL, count modelHistoryCount plus one
       if(exists("estModel")){
         if(!is.null(estModel)){
-          if(!exists('modelHistoryCount')){
-            modelHistoryCount <- 0 # patch for pre-calibrated (may not need this but to prevent weird situation)
-          }
           modelHistoryCount <- modelHistoryCount + 1
         }
       }
@@ -524,19 +521,19 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
             # model fit evaluation
             modModelFit <- vector()
-            for (i in estModel) {
-              if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(i)) > 0) {
-                if (i@OptimInfo$secondordertest) {
+            for (i in 1:NROW(estModel)) {
+              if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(estModel[[i]])) > 0) {
+                if (estModel[[i]]@OptimInfo$secondordertest) {
                   if (toupper(modelSelectionCriteria) %in% c("DIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- i@Fit$DIC
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$DIC
                   } else if (toupper(modelSelectionCriteria) %in% c("AIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- i@Fit$AIC
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AIC
                   } else if (toupper(modelSelectionCriteria) %in% c("AICC", "CAIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- i@Fit$AICc
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AICc
                   } else if (toupper(modelSelectionCriteria) %in% c("BIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- i@Fit$BIC
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$BIC
                   } else if (toupper(modelSelectionCriteria) %in% c("SABIC")) {
-                    modModelFit[[length(modModelFit) + 1]] <- i@Fit$SABIC
+                    modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$SABIC
                   } else {
                     stop("please specify model fit type correctly: DIC (default), AIC, BIC, AICc (aka cAIC), saBIC")
                   }

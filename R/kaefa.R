@@ -588,7 +588,9 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                 tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg, sshKeyPath = sshKeyPath))
                 estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters, rotate = rotate, PV_Q1 = PV_Q1), error=function(e){})
                 if(exists('estItemFit')){
-                  fitDONE <- TRUE
+                  if(!is.null(estItemFit)){
+                    fitDONE <- TRUE
+                  }
                 }
               }
               if (printItemFit) {

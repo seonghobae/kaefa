@@ -592,8 +592,10 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     if((!is.null(estItemFit[[NROW(estItemFit)]]))){
                       fitDONE <- TRUE
                     }
-                  } else (!is.null(estItemFit)){
-                    fitDONE <- TRUE
+                  } else {
+                    if(!is.null(estItemFit)){
+                      fitDONE <- TRUE
+                    }
                   }
                 }
               }

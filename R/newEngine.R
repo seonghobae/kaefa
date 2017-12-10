@@ -204,7 +204,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
 
             # LCA
-            if (is.numeric(i) && tryLCA && !forcingMixedModelOnly) {
+            if (is.numeric(i) && tryLCA) {
               message('Latent Class Model calibration')
                 modDiscrete %<-% {
                   modDiscreteTemp <- listenv::listenv()

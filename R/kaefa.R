@@ -680,7 +680,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         if ("Zh" %in% colnames(estItemFitRotationSearch[[countZh_iter]])) {
                           if (sum(is.finite((estItemFitRotationSearch[[countZh_iter]]$Zh))) ==
                             length(estItemFitRotationSearch[[countZh_iter]]$Zh)) {
-                            countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh)-abs(qnorm(fitIndicesCutOff))/sqrt(nrow(data)) <
+                            countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh)+abs(qnorm(.025))/sqrt(nrow(data)) <
                               qnorm(fitIndicesCutOff))
                           } else {
                             countZh[countZh_iter] <- NA
@@ -757,7 +757,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
                   # checkup conditions
                   if ("Zh" %in% colnames(estItemFit)) {
-                    ZhCond <- sum(estItemFit$Zh-abs(qnorm(fitIndicesCutOff))/sqrt(nrow(data)) < qnorm(fitIndicesCutOff), na.rm = T) !=
+                    ZhCond <- sum(estItemFit$Zh+abs(qnorm(.025))/sqrt(nrow(data)) < qnorm(fitIndicesCutOff), na.rm = T) !=
                       0  # p < .005
                   } else {
                     ZhCond <- FALSE

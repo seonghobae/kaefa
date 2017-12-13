@@ -158,7 +158,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     # setting up cluster
     if (!is.null(RemoteClusters)) {
         try(future::plan(list(future::tweak("future::cluster", workers = assignClusterNodes(RemoteClusters)),
-            "future::multiprocess"), gc = T))
+            "future::multiprocess", "future::multiprocess"), gc = T))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas|microsoft", extSoftVersion()["BLAS"])) > 0) {
             options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors),
@@ -680,7 +680,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         if ("Zh" %in% colnames(estItemFitRotationSearch[[countZh_iter]])) {
                           if (sum(is.finite((estItemFitRotationSearch[[countZh_iter]]$Zh))) ==
                             length(estItemFitRotationSearch[[countZh_iter]]$Zh)) {
-                            countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh) <
+                            countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh)-abs(qnorm(fitIndicesCutOff))/sqrt(nrow(data)) <
                               qnorm(fitIndicesCutOff))
                           } else {
                             countZh[countZh_iter] <- NA
@@ -757,7 +757,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
                   # checkup conditions
                   if ("Zh" %in% colnames(estItemFit)) {
-                    ZhCond <- sum(estItemFit$Zh < qnorm(fitIndicesCutOff), na.rm = T) !=
+                    ZhCond <- sum(estItemFit$Zh-abs(qnorm(fitIndicesCutOff))/sqrt(nrow(data)) < qnorm(fitIndicesCutOff), na.rm = T) !=
                       0  # p < .005
                   } else {
                     ZhCond <- FALSE

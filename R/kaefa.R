@@ -21,8 +21,8 @@
 #'}
 aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     options(future.debug = debug)
-    
-    assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 30, 
+
+    assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 30,
         requiredMinimumClusters = round(NROW(serverList)/3), sshKeyPath = NULL) {
         STOP <- F
         while (!STOP) {
@@ -31,15 +31,15 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
             for (i in serverList) {
                 if (i == "localhost") {
                   # localhost side
-                  statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $8}' &&", 
-                    "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"), 
+                  statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $8}' &&",
+                    "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
                     intern = TRUE), error = function(e) {
                   })  # CentOS
-                  if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average", 
+                  if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average",
                     statusList[[i]][1])) > 0) {
                     Sys.sleep(30)
-                    statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $11}' &&", 
-                      "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"), 
+                    statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $11}' &&",
+                      "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
                       intern = TRUE), error = function(e) {
                     })  # Ubuntu
                   }
@@ -47,57 +47,57 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                   # SSH side if key is provided
                   if (!is.null(sshKeyPath)) {
                     for (jj in 1:length(serverList)) {
-                      if (names(serverList)[[jj]] %in% names(serverList) && (length(grep(c("pem"), 
-                        sshKeyPath[[jj]])) > 0 | length(grep(c("key"), sshKeyPath[[jj]])) > 
+                      if (names(serverList)[[jj]] %in% names(serverList) && (length(grep(c("pem"),
+                        sshKeyPath[[jj]])) > 0 | length(grep(c("key"), sshKeyPath[[jj]])) >
                         0)) {
-                        statusList[[i]] <- tryCatch(system(paste("ssh", i, "-i", 
-                          sshKeyPath[[jj]], "uptime | awk '{print $8}' &&", "ssh", 
-                          i, "-i", jj, "cat /proc/cpuinfo | grep processor | wc -l &&", 
-                          "ssh", i, "-i", jj, "free | grep Mem | awk '{print $4/$2 * 100}'"), 
+                        statusList[[i]] <- tryCatch(system(paste("ssh", i, "-i",
+                          sshKeyPath[[jj]], "uptime | awk '{print $8}' &&", "ssh",
+                          i, "-i", jj, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                          "ssh", i, "-i", jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                           intern = TRUE), error = function(e) {
                         })  # CentOS
-                        if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average", 
+                        if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average",
                           statusList[[i]][1])) > 0) {
                           Sys.sleep(30)
-                          
-                          statusList[[i]] <- tryCatch(system(paste("ssh", i, "-i", 
-                            sshKeyPath[[jj]], "uptime | awk '{print $11}' &&", "ssh", 
-                            i, "-i", jj, "cat /proc/cpuinfo | grep processor | wc -l &&", 
-                            "ssh", i, "-i", jj, "free | grep Mem | awk '{print $4/$2 * 100}'"), 
+
+                          statusList[[i]] <- tryCatch(system(paste("ssh", i, "-i",
+                            sshKeyPath[[jj]], "uptime | awk '{print $11}' &&", "ssh",
+                            i, "-i", jj, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                            "ssh", i, "-i", jj, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                             intern = TRUE), error = function(e) {
                           })  # Ubuntu
                         }
-                        
+
                       } else {
-                        statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $8}' &&", 
-                          "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", 
-                          "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"), 
+                        statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $8}' &&",
+                          "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                          "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                           intern = TRUE), error = function(e) {
                         })  # CentOS
-                        if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average", 
+                        if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average",
                           statusList[[i]][1])) > 0) {
                           Sys.sleep(30)
-                          
-                          statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&", 
-                            "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", 
-                            "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"), 
+
+                          statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&",
+                            "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                            "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                             intern = TRUE), error = function(e) {
                           })  # Ubuntu
                         }
                       }
                     }
                   } else {
-                    statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $8}' &&", 
-                      "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", 
-                      "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"), intern = TRUE), 
+                    statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $8}' &&",
+                      "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                      "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"), intern = TRUE),
                       error = function(e) {
                       })  # CentOS
-                    if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average", 
+                    if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average",
                       statusList[[i]][1])) > 0) {
                       Sys.sleep(30)
-                      statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&", 
-                        "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&", 
-                        "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"), 
+                      statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&",
+                        "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
+                        "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
                         intern = TRUE), error = function(e) {
                       })  # Ubuntu
                     }
@@ -105,16 +105,16 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 }
                 # evaluation
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])
-                decisionList[[i]] <- tryCatch(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) * 
-                  100 < loadPercentage && statusList[[i]][3] > freeRamPercentage, 
+                decisionList[[i]] <- tryCatch(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) *
+                  100 < loadPercentage && statusList[[i]][3] > freeRamPercentage,
                   error = function(e) {
                   })
             }
             availableCluster <- names(decisionList)[which(unlist(decisionList))]
-            
+
             if (requiredMinimumClusters > length(availableCluster)) {
                 # print(statusList)
-                
+
                 message("All clusters are busy now. Wait for 60 seconds.")
                 Sys.sleep(60)
             } else {
@@ -123,8 +123,8 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                   nCores <- nCores + as.numeric(statusList[[jj]][2])
                 }
                 # print(statusList)
-                
-                message("get ", nCores, " threads successfully from ", length(availableCluster), 
+
+                message("get ", nCores, " threads successfully from ", length(availableCluster),
                   " clusters")
                 STOP <- T
             }
@@ -154,19 +154,19 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     } else if (suppressWarnings(NCmisc::top()$CPU$idle) < 10) {
         parallelProcessors <- 2
     }
-    
+
     # setting up cluster
     if (!is.null(RemoteClusters)) {
-        try(future::plan(list(future::tweak("future::cluster", workers = assignClusterNodes(RemoteClusters)), 
+        try(future::plan(list(future::tweak("future::cluster", workers = assignClusterNodes(RemoteClusters)),
             "future::multiprocess"), gc = T))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas|microsoft", extSoftVersion()["BLAS"])) > 0) {
-            options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors), 
+            options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors),
                 gc = T)
         } else if (length(future::availableWorkers()) == 1) {
             options(aefaConn = future::plan(future::sequential), gc = T)
         } else {
-            options(aefaConn = (tryCatch(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)), 
+            options(aefaConn = (tryCatch(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)),
                 future::multiprocess(workers = parallelProcessors)), gc = T), error = function(e) {
             })))
         }
@@ -197,26 +197,26 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
 #' testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
 #'
 #'}
-fitMLIRT <- function(data = data, model = 1, itemtype = NULL, accelerate = "squarem", 
-    GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, symmetric = F, 
+fitMLIRT <- function(data = data, model = 1, itemtype = NULL, accelerate = "squarem",
+    GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, symmetric = F,
     covdata = NULL, fixed = ~1, random = NULL) {
-    
+
     options(future.globals.maxSize = 500 * 1024^3)
-    
+
     modMLIRT_itemLevel <- listenv::listenv()  # phantom
     modMLIRT_latentLevel <- listenv::listenv()  # phantom ( do not use as.list() in here )
-    
-    modMLIRT_itemLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model, 
-        accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, 
-        covdata = covdata, fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, 
+
+    modMLIRT_itemLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model,
+        accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars,
+        covdata = covdata, fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES,
             BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error = function(e) {
     })
-    modMLIRT_latentLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model, 
-        accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars, 
-        covdata = covdata, lr.fixed = fixed, lr.random = random, calcNull = T, technical = list(NCYCLES = NCYCLES, 
+    modMLIRT_latentLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model,
+        accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars,
+        covdata = covdata, lr.fixed = fixed, lr.random = random, calcNull = T, technical = list(NCYCLES = NCYCLES,
             BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error = function(e) {
     })
-    
+
     # evaluate model
     if (class(modMLIRT_itemLevel) == "MixedClass") {
         if (!modMLIRT_itemLevel@OptimInfo$secondordertest) {
@@ -225,8 +225,8 @@ fitMLIRT <- function(data = data, model = 1, itemtype = NULL, accelerate = "squa
     } else {
         rm(modMLIRT_itemLevel)
     }
-    
-    
+
+
     if (class(modMLIRT_latentLevel) == "MixedClass") {
         if (!modMLIRT_latentLevel@OptimInfo$secondordertest) {
             rm(modMLIRT_latentLevel)
@@ -234,7 +234,7 @@ fitMLIRT <- function(data = data, model = 1, itemtype = NULL, accelerate = "squa
     } else {
         rm(modMLIRT_latentLevel)
     }
-    
+
     # decision
     if (exists("modMLIRT_itemLevel") && exists("modMLIRT_latentLevel")) {
         if (modMLIRT_itemLevel@Fit$DIC < modMLIRT_latentLevel@Fit$DIC) {
@@ -249,7 +249,7 @@ fitMLIRT <- function(data = data, model = 1, itemtype = NULL, accelerate = "squa
     } else {
         # stop('no solution')
     }
-    
+
 }
 
 
@@ -269,37 +269,37 @@ fitMLIRT <- function(data = data, model = 1, itemtype = NULL, accelerate = "squa
 #' testModel1 <- engineAEFA(mirt::Science)
 #' testItemFit1 <- evaluateItemFit(testModel1)
 #' }
-evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactorQ", 
+evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactorQ",
     PV_Q1 = T, S_X2 = T) {
     # if (is.null(getOption('aefaConn'))) { getOption('aefaConn',
     # aefaInit(RemoteClusters = RemoteClusters, debug = F)) }
-    
+
     options(future.globals.maxSize = 500 * 1024^3)
     if (class(mirtModel) == "aefa") {
         mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
     }
-    
+
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {
-        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, 
+        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
             SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
         modMLM_original <- mirt::mod2values(mirtModel)
         if (sum(modMLM_original$name == "(Intercept)") != 0) {
-            modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)", 
+            modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",
                 ]
-            
+
         }
-        modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in% 
+        modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in%
             colnames(mirtModel@Data$data))]
         modMLM$est <- F
-        
+
         if ("grsm" %in% mirtModel@Model$itemtype) {
-            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, 
-                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", 
+            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
                 SE = F, calcNull = T, technical = list(internal_constraints = FALSE))
         } else {
-            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, 
-                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", 
+            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
                 SE = F, calcNull = T)
         }
         if (is.numeric(mirtModel@Model$model)) {
@@ -308,76 +308,76 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
             }
         }
     }
-    
+
     if (attr(class(mirtModel), "package") == "mirt") {
         # item fit evaluation
         modFit_Zh <- listenv()
         modFit_SX2 <- listenv()
-        modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate, 
-            fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 
-                0) 
+        modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+            fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                0)
                 100 else 0), error = function(e) {
         }))
-        
-        modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate, 
-            fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) > 
-                0) 
+
+        modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+            fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                0)
                 100 else 0), error = function(e) {
         }))
-        
+
         if (mirtModel@Model$nfact == 1 && PV_Q1) {
             modFit_PVQ1 <- listenv()
-            modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate, 
+            modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                 fit_stats = "PV_Q1", QMC = T, method = "MAP"), error = function(e) {
             }))
-            
+
         }
-        
-        if (sum(mirtModel@Model$itemtype %in% "Rasch") > 0 && mirtModel@Model$nfact == 
+
+        if (sum(mirtModel@Model$itemtype %in% "Rasch") > 0 && mirtModel@Model$nfact ==
             1) {
             modFit_infit <- listenv()
-            modFit_infit %<-% tryCatch(mirt::itemfit(mirtModel, rotate = rotate, 
-                fit_stats = "infit", QMC = T, method = "WLE", impute = if (sum(is.na(mirtModel@Data$data)) > 
-                  0) 
+            modFit_infit %<-% tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                fit_stats = "infit", QMC = T, method = "WLE", impute = if (sum(is.na(mirtModel@Data$data)) >
+                  0)
                   100 else 0), error = function(e) {
             })
         }
-        
+
         # check item fit indices are exists
-        
+
         if (exists("modFit_Zh")) {
             if (!class(modFit_Zh)[1] == "mirt_df") {
                 rm(modFit_Zh)
             }
         }
-        
+
         if (exists("modFit_SX2")) {
             if (!class(modFit_SX2)[1] == "mirt_df") {
                 rm(modFit_SX2)
             }
         }
-        
+
         if (exists("modFit_PVQ1")) {
             if (!class(modFit_PVQ1)[1] == "mirt_df") {
                 rm(modFit_PVQ1)
             }
         }
-        
+
         if (exists("modFit_infit")) {
             if (!class(modFit_infit)[1] == "mirt_df") {
                 rm(modFit_infit)
             }
         }
-        
-        itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"), 
+
+        itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"),
             exists("modFit_SX2"), exists("modFit_PVQ1"), exists("modFit_infit"))]
-        
+
         fitList <- list()
         for (i in 1:length(itemFitList)) {
             fitList[[i]] <- (eval(parse(text = itemFitList[i])))
         }
         return(suppressMessages(plyr::join_all(fitList)))
-        
+
     } else {
         message("That's seems not MIRT model, so that trying to estimate new model with default settings")
         estModel <- engineAEFA(data = mirtModel)
@@ -434,43 +434,43 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #'
 #' }
-aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (is.data.frame(data)) if (ncol(data) < 
-    10) ncol(data) else 10 else if (class(data) %in% c("SingleGroupClass", "MixedClass", 
-    "DiscreteClass")) ncol(data@Data$data) else if (class(data) %in% "aefa") ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data) else stop("Please provide data correctly."), 
-    RemoteClusters = NULL, sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000, 
-    BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 | 
-        items), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T, 
-    filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ", "bifactorT", 
-        "geominQ", "geominT", "bentlerQ", "bentlerT", "oblimin", "oblimax", "simplimax", 
-        "cfQ", "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax", 
-        "Varimax", "mccammon", "infomaxQ", "infomaxT"), resampling = T, samples = 5000, 
-    printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F, 
-    ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F, turnOffMixedEst = F, 
+aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (is.data.frame(data)) if (ncol(data) <
+    10) ncol(data) else 10 else if (class(data) %in% c("SingleGroupClass", "MixedClass",
+    "DiscreteClass")) ncol(data@Data$data) else if (class(data) %in% "aefa") ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data) else stop("Please provide data correctly."),
+    RemoteClusters = NULL, sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
+    BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
+        items), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
+    filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ", "bifactorT",
+        "geominQ", "geominT", "bentlerQ", "bentlerT", "oblimin", "oblimax", "simplimax",
+        "cfQ", "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax",
+        "Varimax", "mccammon", "infomaxQ", "infomaxT"), resampling = T, samples = 5000,
+    printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
+    ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F, turnOffMixedEst = F,
     fitIndicesCutOff = 0.005) {
     # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in%
     # class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) {
     # getOption('aefaConn', aefaInit(RemoteClusters = RemoteClusters, debug =
     # printDebugMsg)) }
-    
+
     TimeStart <- Sys.time()
-    
+
     options(future.globals.maxSize = 500 * 1024^3)
-    
+
     # prepare for bad item detection
     badItemNames <- vector()  # make new null vector
-    
+
     # prepare for save model history
     modelHistoryCount <- 0
     if (saveModelHistory) {
         if (saveRawEstModels) {
-            modelHistory <- list(rawEstModels = list(), estModelTrials = list(), 
+            modelHistory <- list(rawEstModels = list(), estModelTrials = list(),
                 itemFitTrials = list(), rotationTrials = list())
         } else {
-            modelHistory <- list(estModelTrials = list(), itemFitTrials = list(), 
+            modelHistory <- list(estModelTrials = list(), itemFitTrials = list(),
                 rotationTrials = list())
         }
     }
-    
+
     calibModel <- as.list(minExtraction:maxExtraction)
     if (!is.null(model)) {
         # user specified EFA or CFA
@@ -483,12 +483,12 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
             }
         }
     }
-    
+
     model <- calibModel
-    
+
     # prepare for do aefa work
     STOP <- F
-    
+
     while (!STOP) {
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
@@ -498,30 +498,30 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
             }
             modelDONE <- FALSE
             while (!modelDONE) {
-                tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg, 
+                tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg,
                   sshKeyPath = sshKeyPath), error = function(e) {
                 })
                 # general condition
-                estModel <- tryCatch(engineAEFA(data = data.frame(data[, !colnames(data) %in% 
-                  badItemNames]), model = model, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES, 
-                  BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed, 
-                  random = random, key = key, accelerate = accelerate, symmetric = symmetric, 
-                  resampling = resampling, samples = samples, printDebugMsg = printDebugMsg, 
-                  fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA, 
+                estModel <- tryCatch(engineAEFA(data = data.frame(data[, !colnames(data) %in%
+                  badItemNames]), model = model, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES,
+                  BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, fixed = fixed,
+                  random = random, key = key, accelerate = accelerate, symmetric = symmetric,
+                  resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
+                  fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA,
                   forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst), error = function(e) {
                 })
                 if (exists("estModel")) {
                   modelDONE <- TRUE
                 }
             }
-            
+
         } else if (is.list(data) && !is.data.frame(data)) {
             # Some weird condition: user specified pre-calibrated model or list of data.frame
             # in data
-            
+
             estModel <- list()
             for (i in 1:NROW(data)) {
-                if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% 
+                if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in%
                   class(data[[i]])) != 0) {
                   # then first, searching pre-calibrated model in data argument
                   estModel[[NROW(estModel) + 1]] <- data[[i]]
@@ -532,13 +532,13 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                 } else if (is.data.frame(data[[i]]) | is.matrix(data[[i]])) {
                   # if list contains dataframe, try to estimate them anyway; even this behaviour
                   # seems weird
-                  estModel[[NROW(estModel) + 1]] <- tryCatch(engineAEFA(data = data.frame(data[[i]][, 
-                    !colnames(data[[i]]) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars, 
-                    NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata, 
-                    fixed = fixed, random = random, key = key, accelerate = accelerate, 
-                    symmetric = symmetric, resampling = resampling, samples = samples, 
-                    printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, 
-                    tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst), 
+                  estModel[[NROW(estModel) + 1]] <- tryCatch(engineAEFA(data = data.frame(data[[i]][,
+                    !colnames(data[[i]]) %in% badItemNames]), model = model, GenRandomPars = GenRandomPars,
+                    NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata,
+                    fixed = fixed, random = random, key = key, accelerate = accelerate,
+                    symmetric = symmetric, resampling = resampling, samples = samples,
+                    printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
+                    tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst),
                     error = function(e) {
                     })
                   if (!dfFound) {
@@ -548,20 +548,20 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                 }
             }
             estModel <- unlist(estModel)  # tidy up
-        } else if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(data)) != 
+        } else if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(data)) !=
             0) {
             # if data is pre-calibrated mirt model, simply switch them
             estModel <- data
             data <- estModel@Data$data
         }
-        
+
         # if estModel is not NULL, count modelHistoryCount plus one
         if (exists("estModel")) {
             if (!is.null(estModel)) {
                 modelHistoryCount <- modelHistoryCount + 1
             }
         }
-        
+
         # save model history (raw model, before model selection)
         if (exists("estModel")) {
             if (!is.null(estModel) && saveModelHistory && saveRawEstModels) {
@@ -570,17 +570,17 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                 })
             }
         }
-        
+
         if (exists("estModel")) {
             if (!is.null(estModel)) {
                 # check ncol(estModel@Data$data) > 3 / Model Selection: if estModel is not NULL,
                 # run this procedure
-                
+
                 if (class(estModel) == "list") {
                   # model fit evaluation
                   modModelFit <- vector()
                   for (i in 1:NROW(estModel)) {
-                    if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% 
+                    if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in%
                       class(estModel[[i]])) > 0) {
                       if (estModel[[i]]@OptimInfo$secondordertest) {
                         if (toupper(modelSelectionCriteria) %in% c("DIC")) {
@@ -601,12 +601,12 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                       }
                     }
                   }
-                  
+
                   # select model
                   if (exists("modModelFit")) {
-                    if (length(which(modModelFit == min(modModelFit[is.finite(modModelFit)], 
+                    if (length(which(modModelFit == min(modModelFit[is.finite(modModelFit)],
                       na.rm = T))[1]) > 0) {
-                      estModel <- estModel[[which(modModelFit == min(modModelFit[is.finite(modModelFit)], 
+                      estModel <- estModel[[which(modModelFit == min(modModelFit[is.finite(modModelFit)],
                         na.rm = T))[1]]]
                     } else {
                       message("Can not find any optimal model")
@@ -617,16 +617,16 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     STOP <- T
                   }
                 }
-                
-                
+
+
                 if (exists("modelFound")) {
                   data <- estModel@Data$data
                 } else if (exists("dfFound")) {
                   data <- estModel@Data$data
                 }
-                
+
                 if (class(estModel) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
-                  
+
                   if (class(estModel) %in% "MixedClass") {
                     if (is.numeric(estModel@Model$model)) {
                       if (estModel@Model$model > 1 && !estModel@Options$exploratory) {
@@ -640,7 +640,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     tryCatch(saveRDS(modelHistory, filename), error = function(e) {
                     })
                   }
-                  
+
                   if (exists("estItemFit")) {
                     tryCatch(rm(estItemFit), error = function(e) {
                     })
@@ -648,21 +648,21 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   fitDONE <- FALSE
                   while (!fitDONE) {
                     # reconnect
-                    tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg, 
+                    tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg,
                       sshKeyPath = sshKeyPath), error = function(e) {
                     })
-                    
+
                     # rotation search
-                    if (estModel@Model$model > 1 && estModel@Model$itemtype[1] != 
+                    if (estModel@Model$model > 1 && estModel@Model$itemtype[1] !=
                       "lca") {
                       searchDone <- FALSE
-                      
+
                       # step 1: calculate Zh
                       while (!searchDone) {
                         estItemFitRotationSearch <- listenv::listenv()
                         for (rotateTrial in rotate) {
-                          estItemFitRotationSearch[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel, 
-                            RemoteClusters = RemoteClusters, rotate = rotateTrial), 
+                          estItemFitRotationSearch[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
+                            RemoteClusters = RemoteClusters, rotate = rotateTrial),
                             error = function(e) {
                             })
                         }
@@ -671,16 +671,16 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                           searchDone <- TRUE
                         }
                       }
-                      
+
                       print(estItemFitRotationSearch)
-                      
+
                       # step 2: count Zh < cutoff
                       countZh <- vector()
                       for (countZh_iter in 1:NROW(estItemFitRotationSearch)) {
                         if ("Zh" %in% colnames(estItemFitRotationSearch[[countZh_iter]])) {
-                          if (sum(is.finite((estItemFitRotationSearch[[countZh_iter]]$Zh))) == 
+                          if (sum(is.finite((estItemFitRotationSearch[[countZh_iter]]$Zh))) ==
                             length(estItemFitRotationSearch[[countZh_iter]]$Zh)) {
-                            countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh) < 
+                            countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh) <
                               qnorm(fitIndicesCutOff))
                           } else {
                             countZh[countZh_iter] <- NA
@@ -689,43 +689,53 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                           countZh[countZh_iter] <- NA
                         }
                       }
-                      
-                      # step 3: decision
+
+                      # step 3: decision; countZh is placeholder of is.na(Zh)
                       rotateCandidates <- rotate[which(countZh == min(countZh, na.rm = T))]
+
+                      # check best candidates rotations
                       if (length(rotateCandidates) > 1) {
                         Zh_min <- vector()
-                        for (rotateCandidates_iter in which(countZh == min(countZh, 
-                          na.rm = T))) {
-                          Zh_min[rotateCandidates_iter] <- min(estItemFitRotationSearch[[rotateCandidates_iter]]$Zh, 
-                            na.rm = T)
+                        for (rotateCandidates_iter in 1:NROW(estItemFitRotationSearch)) {
+                          if(!is.na(rotateCandidates_iter)){
+                            Zh_min[rotateCandidates_iter] <- min(estItemFitRotationSearch[[rotateCandidates_iter]]$Zh,
+                                                                 na.rm = T) # get a min Zh value per rotation methods
+                          } else {
+                            Zh_min[rotateCandidates_iter] <- NA
+                          }
                         }
-                        
-                        rotateCandidates <- rotateCandidates[which(max(Zh_min, na.rm = T) == 
-                          Zh_min)]
+                        rotateCandidates <- rotate[which(min(abs(Zh_min), na.rm = T) ==
+                          Zh_min)] # decision again
                       }
+
+                      # if decide again, but candidates are over one kind
                       if (length(rotateCandidates) > 1) {
                         Zh_SDs <- vector()
-                        for (rotateCandidates_iter in which(countZh == min(countZh))) {
-                          Zh_SDs[rotateCandidates_iter] <- sd(estItemFitRotationSearch[[rotateCandidates_iter]]$Zh, 
-                            na.rm = T)
+                        for (rotateCandidates_iter in 1:NROW(estItemFitRotationSearch)) {
+                          if(!is.na(rotateCandidates_iter)){
+                            Zh_SDs[rotateCandidates_iter] <- sd(estItemFitRotationSearch[[rotateCandidates_iter]]$Zh,
+                                                                 na.rm = T) # get a min Zh value per rotation methods
+                          } else {
+                            Zh_SDs[rotateCandidates_iter] <- NA
+                          }
                         }
-                        rotateCandidates <- rotateCandidates[which(min(Zh_SDs, na.rm = T) == 
-                          Zh_SDs)]
+                        rotateCandidates <- rotate[which(sd(abs(Zh_SDs), na.rm = T) ==
+                                                           Zh_SDs)] # decision again
                       }
-                      
+
                       # estimate item fit measures
-                      estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters, 
+                      estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters,
                         rotate = rotateCandidates[1], PV_Q1 = PV_Q1), error = function(e) {
                       })
-                      
+
                     } else {
                       # estimate item fit measures
                       rotateCandidates <- rotate[1]
-                      estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters, 
+                      estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters,
                         rotate = rotate[1], PV_Q1 = PV_Q1), error = function(e) {
                       })
                     }
-                    
+
                     if (exists("estItemFit")) {
                       if (length(estItemFit) != 0) {
                         fitDONE <- TRUE
@@ -736,7 +746,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     tryCatch(print(estItemFit), error = function(e) {
                     })
                   }
-                  
+
                   # save model
                   if (saveModelHistory) {
                     modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit
@@ -744,15 +754,15 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     tryCatch(saveRDS(modelHistory, filename), error = function(e) {
                     })
                   }
-                  
+
                   # checkup conditions
                   if ("Zh" %in% colnames(estItemFit)) {
-                    ZhCond <- sum(estItemFit$Zh < qnorm(fitIndicesCutOff), na.rm = T) != 
+                    ZhCond <- sum(estItemFit$Zh < qnorm(fitIndicesCutOff), na.rm = T) !=
                       0  # p < .005
                   } else {
                     ZhCond <- FALSE
                   }
-                  
+
                   if ("df.PV_Q1" %in% colnames(estItemFit)) {
                     if (sum(is.na(estItemFit$df.PV_Q1), na.rm = T) == length(estItemFit$df.PV_Q1)) {
                       PVCond1 <- FALSE
@@ -761,9 +771,9 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     } else {
                       PVCond1 <- sum(is.na(estItemFit$df.PV_Q1), na.rm = T) != 0
                       PVCond2 <- length(which(estItemFit$df.PV_Q1 == 0)) > 0
-                      PVCond3 <- sum(estItemFit$p.PV_Q1 < fitIndicesCutOff, na.rm = T) != 
+                      PVCond3 <- sum(estItemFit$p.PV_Q1 < fitIndicesCutOff, na.rm = T) !=
                         0  # https://osf.io/preprints/psyarxiv/mky9j/
-                      if (sum(estItemFit$p.PV_Q1 < fitIndicesCutOff, na.rm = T) == 
+                      if (sum(estItemFit$p.PV_Q1 < fitIndicesCutOff, na.rm = T) ==
                         length(estItemFit$p.PV_Q1)) {
                         # turn off when all p-values are p<.005; that may wrong
                         PVCond3 <- FALSE
@@ -774,8 +784,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     PVCond2 <- FALSE
                     PVCond3 <- FALSE
                   }
-                  
-                  
+
+
                   if ("df.S_X2" %in% colnames(estItemFit)) {
                     if (sum(is.na(estItemFit$df.S_X2), na.rm = T) == length(estItemFit$df.S_X2)) {
                       S_X2Cond1 <- FALSE
@@ -784,9 +794,9 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     } else {
                       S_X2Cond1 <- sum(is.na(estItemFit$df.S_X2), na.rm = T) != 0
                       S_X2Cond2 <- length(which(estItemFit$df.S_X2 == 0)) > 0
-                      S_X2Cond3 <- sum(estItemFit$p.S_X2 < fitIndicesCutOff, na.rm = T) != 
+                      S_X2Cond3 <- sum(estItemFit$p.S_X2 < fitIndicesCutOff, na.rm = T) !=
                         0  # https://osf.io/preprints/psyarxiv/mky9j/
-                      if (sum(estItemFit$p.S_X2 < fitIndicesCutOff, na.rm = T) == 
+                      if (sum(estItemFit$p.S_X2 < fitIndicesCutOff, na.rm = T) ==
                         length(estItemFit$p.S_X2)) {
                         # turn off when all p-values are p<.005; that may wrong
                         S_X2Cond3 <- FALSE
@@ -797,28 +807,28 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     S_X2Cond2 <- FALSE
                     S_X2Cond3 <- FALSE
                   }
-                  
+
                   # plagging bad item
                   if (ZhCond) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh == 
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh ==
                       min(estItemFit$Zh[is.finite(estItemFit$Zh)], na.rm = T))]))
                   } else if (PVCond1) {
                     badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$df.PV_Q1))]))
                   } else if (PVCond2) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.PV_Q1 == 
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.PV_Q1 ==
                       0)]))
                   } else if (PVCond3) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$PV_Q1/estItemFit$df.PV_Q1 == 
-                      max(estItemFit$PV_Q1[is.finite(estItemFit$PV_Q1)]/estItemFit$df.PV_Q1[is.finite(estItemFit$df.PV_Q1)], 
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$PV_Q1/estItemFit$df.PV_Q1 ==
+                      max(estItemFit$PV_Q1[is.finite(estItemFit$PV_Q1)]/estItemFit$df.PV_Q1[is.finite(estItemFit$df.PV_Q1)],
                         na.rm = T))]))
                   } else if (S_X2Cond1) {
                     badItemNames <- c(badItemNames, as.character(estItemFit$item[which(is.na(estItemFit$df.S_X2))]))
                   } else if (S_X2Cond2) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.S_X2 == 
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$df.S_X2 ==
                       0)]))
                   } else if (S_X2Cond3) {
-                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 == 
-                      max(estItemFit$S_X2[is.finite(estItemFit$S_X2)]/estItemFit$p.S_X2[is.finite(estItemFit$p.S_X2)], 
+                    badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 ==
+                      max(estItemFit$S_X2[is.finite(estItemFit$S_X2)]/estItemFit$p.S_X2[is.finite(estItemFit$p.S_X2)],
                         na.rm = T))]))
                   } else if (length(estItemFit$item) <= 3) {
                     STOP <- TRUE
@@ -826,25 +836,25 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     is.between <- function(x, a, b) {
                       (x - a) * (b - x) > 0
                     }
-                    try(invisible(suppressWarnings(suppressMessages(mirt::mirtCluster(parallel::detectCores(logical = F))))), 
+                    try(invisible(suppressWarnings(suppressMessages(mirt::mirtCluster(parallel::detectCores(logical = F))))),
                       silent = T)
                     try(modCI <- mirt::PLCI.mirt(estModel), silent = T)
-                    try(invisible(suppressMessages(suppressMessages(mirt::mirtCluster(remove = T)))), 
+                    try(invisible(suppressMessages(suppressMessages(mirt::mirtCluster(remove = T)))),
                       silent = T)
                     if (exists("modCI")) {
                       includeZero <- vector()
                       diffValues <- vector()
                       for (i in 1:length(grep("^a", modCI$parnam))) {
-                        includeZero[i] <- is.between(0, modCI[grep("^a", modCI$parnam), 
+                        includeZero[i] <- is.between(0, modCI[grep("^a", modCI$parnam),
                           ]$lower_2.5[i], modCI[grep("^a", modCI$parnam), ]$upper_97.5[i])
-                        diffValues[i] <- diff(c(modCI[grep("^a", modCI$parnam), ]$lower_2.5[i], 
+                        diffValues[i] <- diff(c(modCI[grep("^a", modCI$parnam), ]$lower_2.5[i],
                           modCI[grep("^a", modCI$parnam), ]$upper_97.5[i]))
                       }
-                      
+
                       if (sum(includeZero) == 0) {
                         STOP <- TRUE
                       } else {
-                        badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)], 
+                        badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)],
                           na.rm = T) == diffValues)[1]]))
                         if (length(badItemNames) == 0) {
                           STOP <- TRUE
@@ -854,61 +864,61 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     } else {
                       STOP <- TRUE
                     }
-                    
+
                   } else {
                     STOP <- TRUE
                   }
-                  
+
                   # adjust model if supplied model is confirmatory model
-                  if (!is.null(model) && (!is.numeric(model) | !is.integer(model)) && 
+                  if (!is.null(model) && (!is.numeric(model) | !is.integer(model)) &&
                     "Zh" %in% colnames(estItemFit)) {
                     for (i in 1:NROW(model)) {
                       if (class(model[[i]]) == "mirt.model") {
                         for (j in 1:nrow(model[[i]])) {
                           if (!model[[i]]$x[j, 1] %in% c("COV", "MEAN", "FREE", "NEXPLORE")) {
-                            
+
                             # convert elements # FIXME
-                            model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(", 
-                              gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(", 
-                              gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh == 
+                            model[[i]]$x[j, 2] <- eval(parse(text = paste0("c(",
+                              gsub("-", ":", model[[i]]$x[j, 2]), ")")))[!eval(parse(text = paste0("c(",
+                              gsub("-", ":", model[[i]]$x[j, 2]), ")"))) %in% estItemFit$item[which(estItemFit$Zh ==
                               min(estItemFit$Zh[is.finite(estItemFit$Zh)], na.rm = T))]]  ## FIXME
-                            
+
                             for (k in length(model[[i]]$x[j, 2])) {
-                              if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j, 
+                              if (is.numeric(model[[i]]$x[j, 2][k]) | is.integer(model[[i]]$x[j,
                                 2][k])) {
-                                model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[, 
-                                  !colnames(data) %in% badItemNames])) == colnames(data.frame(data[, 
-                                  !colnames(data) %in% badItemNames]))[model[[i]]$x[j, 
+                                model[[i]]$x[j, 2][k] <- which(colnames(data.frame(data[,
+                                  !colnames(data) %in% badItemNames])) == colnames(data.frame(data[,
+                                  !colnames(data) %in% badItemNames]))[model[[i]]$x[j,
                                   2][k]])
                               }
                             }
-                            
+
                             # FIXME
-                            model[[i]]$x[j, 2] <- paste(as.character(model[[i]]$x[j, 
+                            model[[i]]$x[j, 2] <- paste(as.character(model[[i]]$x[j,
                               2]), collapse = ", ", sep = "")
-                            
+
                           }
                         }
                       }
                     }
                   }
-                  
+
                 }
-                
+
                 # if (ncol(estModel@Data$data) > 3) {} else { message('model is not fit well')
                 # STOP <- T # set flag of 'stop while loop' }
-                
+
             }
         } else {
             stop("estimations were failed. please retry with check your data or models")
         }
     }  # the end of while loop
-    
-    
+
+
     TimeEnd <- Sys.time()
     TimeTotal <- TimeEnd - TimeStart
-    
-    
+
+
     if (saveModelHistory) {
         class(modelHistory) <- "aefa"
         modelHistory$TimeTotal <- TimeTotal
@@ -933,37 +943,37 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 #' aefaResults(testMod1)
 #' }
 aefaResults <- function(mirtModel, rotate = "bifactorQ", suppress = 0) {
-    
+
     if (class(mirtModel) == "aefa") {
-        message(paste0("aefa results: aefa has ", NROW(mirtModel$estModelTrials), 
+        message(paste0("aefa results: aefa has ", NROW(mirtModel$estModelTrials),
             " automated internal validation trials."))
         mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
     }
-    
+
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {
         message("\n")
         mirt::summary(mirtModel)
         message("\n")
-        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, 
+        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
             SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
         modMLM_original <- mirt::mod2values(mirtModel)
         if (sum(modMLM_original$name == "(Intercept)") != 0) {
-            modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)", 
+            modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",
                 ]
-            
+
         }
-        modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in% 
+        modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in%
             colnames(mirtModel@Data$data))]
         modMLM$est <- F
-        
+
         if ("grsm" %in% mirtModel@Model$itemtype) {
-            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, 
-                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", 
+            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
                 SE = F, calcNull = T, technical = list(internal_constraints = FALSE))
         } else {
-            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model, 
-                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM", 
+            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
                 SE = F, calcNull = T)
         }
         if (is.numeric(mirtModel@Model$model)) {
@@ -972,7 +982,7 @@ aefaResults <- function(mirtModel, rotate = "bifactorQ", suppress = 0) {
             }
         }
     }
-    
+
     resultM2 <- tryCatch(mirt::M2(mirtModel, QMC = T), error = function(e) {
     })
     if (exists("resultM2") && !is.null(resultM2)) {
@@ -980,8 +990,8 @@ aefaResults <- function(mirtModel, rotate = "bifactorQ", suppress = 0) {
         print(resultM2)
         message("\n")
     }
-    
+
     message(paste0("factor loadings: ", mirtModel@Model$itemtype[1]))
     mirt::summary(mirtModel, rotate = rotate, suppress = suppress, maxit = 1e+05)
-    
+
 }

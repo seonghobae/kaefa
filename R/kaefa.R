@@ -328,7 +328,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if (mirtModel@Model$nfact == 1 && PV_Q1) {
             modFit_PVQ1 <- listenv()
             modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                fit_stats = "PV_Q1", QMC = T, method = "MAP"), error = function(e) {
+                fit_stats = "PV_Q1*", QMC = T, method = "MAP"), error = function(e) {
             }))
 
         }
@@ -681,7 +681,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                           if (sum(is.finite((estItemFitRotationSearch[[countZh_iter]]$Zh))) ==
                             length(estItemFitRotationSearch[[countZh_iter]]$Zh)) {
                             countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh)+abs(qnorm(.025))/sqrt(nrow(data)) <
-                              qnorm(fitIndicesCutOff))
+                              qnorm(fitIndicesCutOff/2))
                           } else {
                             countZh[countZh_iter] <- NA
                           }
@@ -757,7 +757,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
                   # checkup conditions
                   if ("Zh" %in% colnames(estItemFit)) {
-                    ZhCond <- sum(estItemFit$Zh+abs(qnorm(.025))/sqrt(nrow(data)) < qnorm(fitIndicesCutOff), na.rm = T) !=
+                    ZhCond <- sum(estItemFit$Zh+abs(qnorm(.025))/sqrt(nrow(data)) < qnorm(fitIndicesCutOff/2), na.rm = T) !=
                       0  # p < .005
                   } else {
                     ZhCond <- FALSE
@@ -771,10 +771,10 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     } else {
                       PVCond1 <- sum(is.na(estItemFit$df.PV_Q1), na.rm = T) != 0
                       PVCond2 <- length(which(estItemFit$df.PV_Q1 == 0)) > 0
-                      PVCond3 <- sum(estItemFit$p.PV_Q1 < fitIndicesCutOff, na.rm = T) !=
+                      PVCond3 <- sum(estItemFit$p.PV_Q1_star < fitIndicesCutOff, na.rm = T) !=
                         0  # https://osf.io/preprints/psyarxiv/mky9j/
-                      if (sum(estItemFit$p.PV_Q1 < fitIndicesCutOff, na.rm = T) ==
-                        length(estItemFit$p.PV_Q1)) {
+                      if (sum(estItemFit$p.PV_Q1_star < fitIndicesCutOff, na.rm = T) ==
+                        length(estItemFit$p.PV_Q1_star)) {
                         # turn off when all p-values are p<.005; that may wrong
                         PVCond3 <- FALSE
                       }

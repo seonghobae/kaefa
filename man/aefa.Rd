@@ -5,16 +5,23 @@
 \alias{efa}
 \title{doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment}
 \usage{
-aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
-  < 10) ncol(data) else 10, RemoteClusters = NULL, sshKeyPath = NULL,
-  GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000,
-  covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 | items),
-  key = NULL, accelerate = "squarem", symmetric = F,
-  saveModelHistory = T, filename = "aefa.RDS", printItemFit = T,
-  rotate = "bifactorQ", resampling = T, samples = 5000,
+aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
+  (is.data.frame(data)) if (ncol(data) < 10) ncol(data) else 10 else if
+  (class(data) \%in\% c("SingleGroupClass", "MixedClass", "DiscreteClass"))
+  ncol(data@Data$data) else if (class(data) \%in\% "aefa")
+  ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data) else
+  stop("Please provide data correctly."), RemoteClusters = NULL,
+  sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500,
+  SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1),
+  random = list(~1 | items), key = NULL, accelerate = "squarem",
+  symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
+  printItemFit = T, rotate = c("bifactorQ", "bifactorT", "geominQ",
+  "geominT", "bentlerQ", "bentlerT", "oblimin", "oblimax", "simplimax", "cfQ",
+  "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax", "Varimax",
+  "mccammon", "infomaxQ", "infomaxT"), resampling = T, samples = 5000,
   printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F,
   fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = T,
-  forcingQMC = F, turnOffMixedEst = F)
+  forcingQMC = F, turnOffMixedEst = F, fitIndicesCutOff = 0.005)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -59,7 +66,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 
 \item{resampling}{Do you want to do resampling with replace? default is TRUE and activate nrow is over samples argument.}
 
-\item{samples}{specify the number samples with resampling. default is 5000.}
+\item{samples}{Specify the number samples with resampling. default is 5000.}
 
 \item{printDebugMsg}{Do you want to see the debugging messeages? default is FALSE}
 
@@ -78,6 +85,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if (ncol(data)
 \item{forcingQMC}{Do you want to forcing the use QMC estimation instead MHRM? default is FALSE}
 
 \item{turnOffMixedEst}{Do you want to turn off mixed effect (multilevel) estimation? default is FALSE}
+
+\item{fitIndicesCutOff}{Specify item assessment cutoff. default is p < .005}
 }
 \value{
 automated exploratory factor analytic models

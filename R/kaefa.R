@@ -6,6 +6,7 @@
 #'
 #' @import NCmisc
 #' @import future
+#' @import progress
 #' @param RemoteClusters insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.
 #' @param debug run with debug mode. default is FALSE
 #' @param sshKeyPath provide the SSH key path, NA is the placeholder.
@@ -24,11 +25,17 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
 
     assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 30,
         requiredMinimumClusters = round(NROW(serverList)/3), sshKeyPath = NULL) {
+
+      pb <- progress::progress_bar$new(
+        format = " initialising [:bar] :percent eta: :eta",
+        total = length(serverList), clear = F, width= 60)
+
         STOP <- F
         while (!STOP) {
             statusList <- list()
             decisionList <- list()
             for (i in serverList) {
+              pb$tick()
                 if (i == "localhost") {
                   # localhost side
                   statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $8}' &&",
@@ -37,7 +44,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                   })  # CentOS
                   if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average",
                     statusList[[i]][1])) > 0) {
-                    Sys.sleep(30)
+                    Sys.sleep(10)
                     statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $11}' &&",
                       "cat /proc/cpuinfo | grep processor | wc -l &&", "free | grep Mem | awk '{print $4/$2 * 100}'"),
                       intern = TRUE), error = function(e) {
@@ -58,7 +65,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                         })  # CentOS
                         if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average",
                           statusList[[i]][1])) > 0) {
-                          Sys.sleep(30)
+                          Sys.sleep(10)
 
                           statusList[[i]] <- tryCatch(system(paste("ssh", i, "-i",
                             sshKeyPath[[jj]], "uptime | awk '{print $11}' &&", "ssh",
@@ -76,7 +83,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                         })  # CentOS
                         if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average",
                           statusList[[i]][1])) > 0) {
-                          Sys.sleep(30)
+                          Sys.sleep(10)
 
                           statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&",
                             "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
@@ -94,7 +101,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                       })  # CentOS
                     if (length(grep("load", statusList[[i]][1])) > 0 | length(grep("average",
                       statusList[[i]][1])) > 0) {
-                      Sys.sleep(30)
+                      Sys.sleep(5)
                       statusList[[i]] <- tryCatch(system(paste("ssh", i, "uptime | awk '{print $11}' &&",
                         "ssh", i, "cat /proc/cpuinfo | grep processor | wc -l &&",
                         "ssh", i, "free | grep Mem | awk '{print $4/$2 * 100}'"),
@@ -122,14 +129,26 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 for (jj in which(unlist(decisionList))) {
                   nCores <- nCores + as.numeric(statusList[[jj]][2])
                 }
-                # print(statusList)
+                decisionTable <- (cbind.data.frame(statusList, stringsAsFactors =F)[which(unlist(decisionList))])
+                print(decisionTable)
 
-                message("get ", nCores, " threads successfully from ", length(availableCluster),
+                servNames <- as.character(colnames(decisionTable))
+                servThreads <- as.numeric((decisionTable[2,]))
+
+                connList <- vector()
+
+                for(i in 1:length(servNames)){
+                  connList <- c(connList, rep(servNames[i], max(c(1,round((servThreads[i]*.7*.5))))))
+                }
+                connList <- as.character(connList)
+
+                message("get ", connList, ' / ', nCores, " threads successfully from ", length(availableCluster),
                   " clusters")
                 STOP <- T
             }
         }
-        unique(names(statusList)[which(unlist(decisionList))])
+        connList <- connList[sample(x = 1:length(connList), size = length(connList))]
+        return(connList)
     }
     if (is.null(suppressWarnings(NCmisc::top()$CPU$idle))) {
         parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/2)
@@ -157,8 +176,9 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
 
     # setting up cluster
     if (!is.null(RemoteClusters)) {
-        try(future::plan(list(future::tweak("future::cluster", workers = assignClusterNodes(RemoteClusters)),
-            "future::multiprocess", "future::multiprocess"), gc = T))
+        try(future::plan(list(future::tweak("future::cluster", workers = assignClusterNodes(RemoteClusters))
+                              # ,"future::multiprocess", "future::multiprocess")
+                         ), gc = T))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas|microsoft", extSoftVersion()["BLAS"])) > 0) {
             options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors),
@@ -172,86 +192,6 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
         }
     }
 }
-
-
-#' fit appropriate multilevel item response model automatically with \code{mirt::mixedmirt}
-#'
-#' @param data insert \code{data.frame} object.
-#' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.
-#' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
-#' @param NCYCLES N Cycles of Robbin Monroe stage (stage 3). Default is 4000.
-#' @param BURNIN N Cycles of Metro-hastings burnin stage (stage 1). Default is 1500.
-#' @param SEMCYCLES N Cycles of Metro-hastings burnin stage (stage 2). Default is 1000.
-#' @param covdata insert covariate data frame where use to fixed and random effect term. if not inserted, ignoring fixed and random effect estimation.
-#' @param fixed a right sided R formula for specifying the fixed effect (aka 'explanatory') predictors from covdata and itemdesign.
-#' @param random a right sided formula or list of formulas containing crossed random effects of the form \code{v1 + ... v_n | G}, where \code{G} is the grouping variable and \code{v_n} are random numeric predictors within each group. G may contain interaction terms, such as group:items to include cross or person-level interactions effects.
-#' @param accelerate a character vector indicating the type of acceleration to use. Default is  'squarem' for the SQUAREM procedure (specifically, the gSqS3 approach)
-#' @param symmetric force S-EM/Oakes information matrix to be symmetric? Default is FALSE to detect solutions that have not reached the ML estimate.
-#' @param itemtype set the calibration item type
-#'
-#' @return appropriate \code{mirt::mixedeffect} models in list vector
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' testModel1 <- fitMLIRT(mirt::Science, covdata = mirt::Science, random = list())
-#'
-#'}
-fitMLIRT <- function(data = data, model = 1, itemtype = NULL, accelerate = "squarem",
-    GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000, symmetric = F,
-    covdata = NULL, fixed = ~1, random = NULL) {
-
-    options(future.globals.maxSize = 500 * 1024^3)
-
-    modMLIRT_itemLevel <- listenv::listenv()  # phantom
-    modMLIRT_latentLevel <- listenv::listenv()  # phantom ( do not use as.list() in here )
-
-    modMLIRT_itemLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model,
-        accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars,
-        covdata = covdata, fixed = fixed, random = random, calcNull = T, technical = list(NCYCLES = NCYCLES,
-            BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error = function(e) {
-    })
-    modMLIRT_latentLevel %<-% tryCatch(mirt::mixedmirt(data = data, model = model,
-        accelerate = accelerate, itemtype = itemtype, SE = T, GenRandomPars = GenRandomPars,
-        covdata = covdata, lr.fixed = fixed, lr.random = random, calcNull = T, technical = list(NCYCLES = NCYCLES,
-            BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)), error = function(e) {
-    })
-
-    # evaluate model
-    if (class(modMLIRT_itemLevel) == "MixedClass") {
-        if (!modMLIRT_itemLevel@OptimInfo$secondordertest) {
-            rm(modMLIRT_itemLevel)
-        }
-    } else {
-        rm(modMLIRT_itemLevel)
-    }
-
-
-    if (class(modMLIRT_latentLevel) == "MixedClass") {
-        if (!modMLIRT_latentLevel@OptimInfo$secondordertest) {
-            rm(modMLIRT_latentLevel)
-        }
-    } else {
-        rm(modMLIRT_latentLevel)
-    }
-
-    # decision
-    if (exists("modMLIRT_itemLevel") && exists("modMLIRT_latentLevel")) {
-        if (modMLIRT_itemLevel@Fit$DIC < modMLIRT_latentLevel@Fit$DIC) {
-            return(modMLIRT_itemLevel)
-        } else {
-            return(modMLIRT_latentLevel)
-        }
-    } else if (exists("modMLIRT_itemLevel") && !exists("modMLIRT_latentLevel")) {
-        return(modMLIRT_itemLevel)
-    } else if (!exists("modMLIRT_itemLevel") && exists("modMLIRT_latentLevel")) {
-        return(modMLIRT_latentLevel)
-    } else {
-        # stop('no solution')
-    }
-
-}
-
 
 #' assessment of fit indices of the calibrated model
 #'
@@ -376,7 +316,10 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         for (i in 1:length(itemFitList)) {
             fitList[[i]] <- (eval(parse(text = itemFitList[i])))
         }
-        return(suppressMessages(plyr::join_all(fitList)))
+        itemfitList <- invisible(suppressWarnings(suppressMessages(plyr::join_all(fitList))))
+
+        itemfitList <- itemfitList[ncol(mirtModel@Data$data),]
+        return(itemfitList)
 
     } else {
         message("That's seems not MIRT model, so that trying to estimate new model with default settings")

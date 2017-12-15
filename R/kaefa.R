@@ -142,7 +142,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 }
                 connList <- as.character(connList)
 
-                message("get ", connList, ' / ', nCores, " threads successfully from ", length(availableCluster),
+                message("get ", length(connList), ' / ', nCores, " threads successfully from ", length(availableCluster),
                   " clusters")
                 STOP <- T
             }

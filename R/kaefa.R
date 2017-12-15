@@ -318,7 +318,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         }
         itemfitList <- invisible(suppressWarnings(suppressMessages(plyr::join_all(fitList))))
 
-        itemfitList <- itemfitList[ncol(mirtModel@Data$data),]
+        itemfitList <- itemfitList[1:ncol(mirtModel@Data$data),]
         return(itemfitList)
 
     } else {

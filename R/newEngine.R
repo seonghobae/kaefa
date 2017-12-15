@@ -86,6 +86,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     # start engine
 
     exploratoryModels <- listenv::listenv()
+
+    modConditional1 <- listenv::listenv()
+    modConditional2 <- listenv::listenv()
+    modUnConditional <- listenv::listenv()
+    modDiscrete <- listenv::listenv()
+
     for (i in model) {
         # exploratory i th model
 
@@ -156,10 +162,6 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
         }
 
-      modConditional <- listenv::listenv()
-      modUnConditional <- listenv::listenv()
-      modDiscrete <- listenv::listenv()
-
       for (j in estItemtype) {
         # itemtype j for model i
 
@@ -196,10 +198,9 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         # FIXME: CONSIDER TO REMOVE THIS: TO SPEED UP; ESTIMATE RANDOM EFFECTS DIRECTLY
         # if (!is.null(covdata)) {} # try to calibrate mixed-effect even covdata is null
         # anyway -- 2017. 11. 10
-        if (!turnOffMixedEst) {
+        if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
+                                    j) == 0) {
           message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
-          modConditional1 <- listenv::listenv()
-          modConditional2 <- listenv::listenv()
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
@@ -224,59 +225,47 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                  })
 
                                       } else {
-                                        if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
-                                                j) == 0) {
-                                          tryCatch(mirt::mixedmirt(data = data, model = i,
-                                                                   accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
-                                                                   covdata = covdata, fixed = k_fixed, random = eval(parse(text = k)),
-                                                                   calcNull = T, technical = list(NCYCLES = NCYCLES,
-                                                                                                  BURNIN = BURNIN,
-                                                                                                  SEMCYCLES = SEMCYCLES,
-                                                                                                  symmetric = symmetric)), error = function(e) {
-                                                            })
-                                        } else {
-                                          # Skipping at Conditional (multilevel/mixed-effect) Model, see
-                                          # https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
-                                        }
-                                      }
-                                    }
-              modConditional2[[paste(paste0(as.character(i), collapse = ""),
-                                    j, paste0(as.character(k_fixed), collapse = ""),
-                                    k, collapse = " ")]] %<-% {
-                                      if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu",
-                                                                 "2PLNRM") %in% j) > 0) {
-                                        tryCatch(mirt::mixedmirt(data = mirt::key2binary(data,
-                                                                                         key), model = i,
-                                                                 accelerate = accelerate, itemtype = if (j == "4PLNRM")
-                                                                   "4PL" else if (j == "3PLNRM")
-                                                                     "3PL" else if (j == "3PLuNRM")
-                                                                       "3PLu" else if (j == "2PLNRM")
-                                                                         "2PL" else j, SE = T, GenRandomPars = GenRandomPars,
-                                                                 covdata = covdata, lr.fixed = k_fixed, lr.random = eval(parse(text = k)),
+                                        tryCatch(mirt::mixedmirt(data = data, model = i,
+                                                                 accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
+                                                                 covdata = covdata, fixed = k_fixed, random = eval(parse(text = k)),
                                                                  calcNull = T, technical = list(NCYCLES = NCYCLES,
                                                                                                 BURNIN = BURNIN,
                                                                                                 SEMCYCLES = SEMCYCLES,
-                                                                                                symmetric = symmetric)),
-                                                 error = function(e) {
-                                                 })
-
-                                      } else {
-                                        if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
-                                                j) == 0) {
-                                          tryCatch(mirt::mixedmirt(data = data, model = i,
-                                                                   accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
-                                                                   covdata = covdata, lr.fixed = k_fixed, lr.random = eval(parse(text = k)),
-                                                                   calcNull = T, technical = list(NCYCLES = NCYCLES,
-                                                                                                  BURNIN = BURNIN,
-                                                                                                  SEMCYCLES = SEMCYCLES,
-                                                                                                  symmetric = symmetric)), error = function(e) {
-                                                                                                  })
-                                        } else {
-                                          # Skipping at Conditional (multilevel/mixed-effect) Model, see
-                                          # https://github.com/philchalmers/mirt/issues/122#issuecomment-329969581
-                                        }
+                                                                                                symmetric = symmetric)), error = function(e) {
+                                                                                                })
                                       }
                                     }
+              modConditional2[[paste(paste0(as.character(i), collapse = ""),
+                                     j, paste0(as.character(k_fixed), collapse = ""),
+                                     k, collapse = " ")]] %<-% {
+                                       if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu",
+                                                                  "2PLNRM") %in% j) > 0) {
+                                         tryCatch(mirt::mixedmirt(data = mirt::key2binary(data,
+                                                                                          key), model = i,
+                                                                  accelerate = accelerate, itemtype = if (j == "4PLNRM")
+                                                                    "4PL" else if (j == "3PLNRM")
+                                                                      "3PL" else if (j == "3PLuNRM")
+                                                                        "3PLu" else if (j == "2PLNRM")
+                                                                          "2PL" else j, SE = T, GenRandomPars = GenRandomPars,
+                                                                  covdata = covdata, lr.fixed = k_fixed, lr.random = eval(parse(text = k)),
+                                                                  calcNull = T, technical = list(NCYCLES = NCYCLES,
+                                                                                                 BURNIN = BURNIN,
+                                                                                                 SEMCYCLES = SEMCYCLES,
+                                                                                                 symmetric = symmetric)),
+                                                  error = function(e) {
+                                                  })
+
+                                       } else {
+                                         tryCatch(mirt::mixedmirt(data = data, model = i,
+                                                                  accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
+                                                                  covdata = covdata, lr.fixed = k_fixed, lr.random = eval(parse(text = k)),
+                                                                  calcNull = T, technical = list(NCYCLES = NCYCLES,
+                                                                                                 BURNIN = BURNIN,
+                                                                                                 SEMCYCLES = SEMCYCLES,
+                                                                                                 symmetric = symmetric)), error = function(e) {
+                                                                                                 })
+                                       }
+                                     }
             }
           }
         }
@@ -285,31 +274,27 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
       # LCA
       if (is.numeric(i) && tryLCA) {
         message("Latent Class Model calibration")
-        modDiscrete %<-% {
-          modDiscreteTemp <- listenv::listenv()
-          for (m in c("sandwich", "Oakes")) {
-            for (n in c(T, F)) {
-              for (k_fixed in fixed) {
-                modDiscreteTemp[[NROW(as.list(modDiscreteTemp)) + 1]] %<-%
-                  tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
-                                       accelerate = accelerate, GenRandomPars = GenRandomPars,
-                                       empiricalhist = n, technical = list(NCYCLES = NCYCLES,
-                                                                           BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                       covdata = covdata, formula = if (k_fixed == ~1)
-                                         NULL else k_fixed), error = function(e) {
-                                         })
-              }
+
+        for (m in c("sandwich", "Oakes")) {
+          for (n in c(T, F)) {
+            for (k_fixed in fixed) {
+              modDiscrete[[paste(paste0(as.character(i), collapse = ""),
+                                     m, paste0(as.character(n), collapse = ""),
+                                     as.character(k), collapse = " ")]] %<-%
+                tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
+                                     accelerate = accelerate, GenRandomPars = GenRandomPars,
+                                     empiricalhist = n, technical = list(NCYCLES = NCYCLES,
+                                                                         BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
+                                     covdata = covdata, formula = if (k_fixed == ~1)
+                                       NULL else k_fixed), error = function(e) {
+                                       })
             }
           }
-          # unlist(as.list(modDiscreteTemp))
         }
       }
-
-
     }  # EOF of for loop
 
-    exploratoryModels <- unlist(list(unlist(as.list(modConditional1)), unlist(as.list(modConditional2)), unlist(as.list(modUnConditional)),
-                                     unlist(as.list(modDiscrete))))
+    exploratoryModels <- unlist(list(as.list(modUnConditional), as.list(modConditional1), as.list(modConditional2), as.list(modDiscrete)))
     # exploratoryModels # for debug random effect model
 
     # # improper solution filter
@@ -341,8 +326,6 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 }
             }
         }
-
     }
-
     return(finalEstModels)
 }

@@ -138,7 +138,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 connList <- vector()
 
                 for(i in 1:length(servNames)){
-                  connList <- c(connList, rep(servNames[i], max(c(1,round((servThreads[i]*.7*.5))))))
+                  connList <- c(connList, rep(servNames[i], max(c(1,round((servThreads[i]*.25))))))
                 }
                 connList <- as.character(connList)
 

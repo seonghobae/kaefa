@@ -624,11 +624,15 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                       # step 2: count Zh < cutoff
                       countZh <- vector()
                       for (countZh_iter in 1:NROW(estItemFitRotationSearch)) {
-                        if ("Zh" %in% colnames(estItemFitRotationSearch[[countZh_iter]])) {
-                          if (sum(is.finite((estItemFitRotationSearch[[countZh_iter]]$Zh))) ==
-                            length(estItemFitRotationSearch[[countZh_iter]]$Zh)) {
-                            countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh)+abs(qnorm(.025))/sqrt(nrow(data)) <
-                              qnorm(fitIndicesCutOff/2))
+                        if(!is.null(estItemFitRotationSearch[[countZh_iter]])){
+                          if ("Zh" %in% colnames(estItemFitRotationSearch[[countZh_iter]])) {
+                            if (sum(is.finite((estItemFitRotationSearch[[countZh_iter]]$Zh))) ==
+                                length(estItemFitRotationSearch[[countZh_iter]]$Zh)) {
+                              countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh)+abs(qnorm(.025))/sqrt(nrow(data)) <
+                                                             qnorm(fitIndicesCutOff/2))
+                            } else {
+                              countZh[countZh_iter] <- NA
+                            }
                           } else {
                             countZh[countZh_iter] <- NA
                           }

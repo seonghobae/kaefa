@@ -642,7 +642,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                       }
 
                       # step 3: decision; countZh is placeholder of is.na(Zh)
-                      rotateCandidates <- rotate[which(countZh == min(countZh, na.rm = T))]
+                      rotateCandidates <- names(estItemFitRotationSearch)[which(countZh == min(countZh, na.rm = T))]
 
                       # check best candidates rotations
                       if (length(rotateCandidates) > 1) {
@@ -655,7 +655,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                             Zh_min[rotateCandidates_iter] <- NA
                           }
                         }
-                        rotateCandidates <- rotate[which(min(abs(Zh_min), na.rm = T) ==
+                        rotateCandidates <- names(estItemFitRotationSearch)[which(min(abs(Zh_min), na.rm = T) ==
                           Zh_min)] # decision again
                       }
 
@@ -670,7 +670,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                             Zh_SDs[rotateCandidates_iter] <- NA
                           }
                         }
-                        rotateCandidates <- rotate[which(sd(abs(Zh_SDs), na.rm = T) ==
+                        rotateCandidates <- names(estItemFitRotationSearch)[which(sd(abs(Zh_SDs), na.rm = T) ==
                                                            Zh_SDs)] # decision again
                       }
 

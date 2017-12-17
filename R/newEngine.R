@@ -95,8 +95,15 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     for (i in model) {
         # exploratory i th model
 
+      if(is.numeric(i)){
+        if(i > ncol(data)){
+          break()
+        }
+      }
+
         # config
         if (is.numeric(i)) {
+
             if (i == 1) {
                 # UIRT
                 if (max(nK[is.finite(nK)], na.rm = T) > 2) {

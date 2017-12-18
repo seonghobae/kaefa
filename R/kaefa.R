@@ -180,7 +180,8 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
 
     # setting up cluster
     if (!is.null(RemoteClusters)) {
-        try(future::plan(list(future::tweak("future::cluster", workers = assignClusterNodes(RemoteClusters))
+        try(future::plan(list(future::tweak("future::cluster",
+                                            workers = assignClusterNodes(RemoteClusters)),
                               "future::multiprocess"#, "future::multiprocess")
                          ), gc = T))
     } else if (NROW(future::plan("list")) == 1) {

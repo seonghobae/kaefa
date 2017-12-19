@@ -17,11 +17,11 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
   printItemFit = T, rotate = c("bifactorQ", "bifactorT", "geominQ",
   "geominT", "bentlerQ", "bentlerT", "oblimin", "oblimax", "simplimax", "cfQ",
-  "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax", "Varimax",
-  "mccammon", "infomaxQ", "infomaxT"), resampling = T, samples = 5000,
-  printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F,
-  fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = T,
-  forcingQMC = F, turnOffMixedEst = F, fitIndicesCutOff = 0.005)
+  "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax"),
+  resampling = T, samples = 5000, printDebugMsg = F,
+  modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
+  ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F,
+  turnOffMixedEst = F, fitIndicesCutOff = 0.005)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}

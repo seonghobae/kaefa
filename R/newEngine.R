@@ -277,7 +277,6 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 estItemtype <- estItemtype[-grep("rsm", estItemtype)]
             }
         }
-
       # LCA
       if (is.numeric(i) && tryLCA) {
         # message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))

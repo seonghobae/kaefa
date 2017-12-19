@@ -309,7 +309,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           }
           # pb$tick(1e7)
         } else {
-          pb$tick()
+          pb$tick(itemtype = j, method = 'EMEIRT', fixed = '', random = '')
         }
       }
 

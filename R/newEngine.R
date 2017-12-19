@@ -177,7 +177,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
       }
 
       pb <- progress::progress_bar$new(
-        format = " :spin estimating :itemtype models using :method [:bar] elapsed: :elapsed (:eta remained) :fixed :random",
+        format = " :spin estimating :itemtype models using :method [:bar] :percent elapsed: :elapsed (:eta remained) :fixed :random",
         total = ticktockClock, clear = F, width= 160)
 
       message('\ncalibrating model ', ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))

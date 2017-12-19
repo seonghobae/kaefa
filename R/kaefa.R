@@ -120,9 +120,8 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
             availableCluster <- names(decisionList)[which(unlist(decisionList))]
 
             if (requiredMinimumClusters > length(availableCluster)) {
-                # print(statusList)
 
-                message("All clusters are busy now. Wait for 60 seconds.")
+                message("All clusters are busy now. Wait for 60 seconds for stabilise.")
                 Sys.sleep(60)
             } else {
                 nCores <- 0
@@ -140,7 +139,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 for(i in 1:length(servNames)){
                   maxP <- round((servThreads[i]*.7*.5))
                   if(maxP > 4){
-                    maxP <- 4
+                    maxP <- maxP*.7 # add attunation factor for a high-performance computing machine
                   }
                   connList <- c(connList, rep(servNames[i], max(c(1,maxP))))
                 }

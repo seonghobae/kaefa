@@ -649,8 +649,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         Zh_min <- vector()
                         for (rotateCandidates_iter in 1:NROW(estItemFitRotationSearch)) {
                           if(!is.na(estItemFitRotationSearch[[rotateCandidates_iter]]) |
-                              !is.null(estItemFitRotationSearch[[rotateCandidates_iter]]) |
-                              !is.nan(estItemFitRotationSearch[[rotateCandidates_iter]])){
+                              !is.null(estItemFitRotationSearch[[rotateCandidates_iter]])){
                             Zh_min[rotateCandidates_iter] <- min(estItemFitRotationSearch[[rotateCandidates_iter]]$Zh,
                                                                  na.rm = T) # get a min Zh value per rotation methods
                           } else {

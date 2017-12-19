@@ -210,8 +210,8 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                     j) == 0) {
           message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
           pb <- progress::progress_bar$new(
-            format = " estimating [:bar] :elapsed",
-            total = 1e7, clear = F, width= 60)
+            format = " estimating [:bar] :elapsed / eta: :eta",
+            total = ((NROW(randomEffectCandidates) + NROW(fixed))*2), clear = F, width= 60)
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {

@@ -170,6 +170,16 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
         }
 
+      if(is.numeric(i) && tryLCA){
+        ticktockClock <- (NROW(estItemtype) * ((NROW(randomEffectCandidates) + NROW(fixed))*2)) + (2*2*NROW(fixed))
+      } else {
+        ticktockClock <- (NROW(estItemtype) * ((NROW(randomEffectCandidates) + NROW(fixed))*2))
+      }
+
+      pb <- progress::progress_bar$new(
+        format = " :spin estimating :itemtype models [:bar] elapsed: :elapsed / eta: :eta :fixed :random",
+        total = ticktockClock, clear = F, width= 120)
+
       # LCA
       if (is.numeric(i) && tryLCA) {
         message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
@@ -177,6 +187,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         for (m in c("sandwich", "Oakes")) { # SE
           for (n in c(T, F)) { # Symetric
             for (k_fixed in fixed) { # fixed effect
+              pb$tick(tokens = list(itemtype = "LCA", fixed = as.character(k_fixed), random = ' '))
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
                                  m, paste0(as.character(n), collapse = ""),
                                  as.character(k), collapse = " ")]] %<-%
@@ -191,14 +202,14 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           }
         }
       }
-
       for (j in estItemtype) {
         # itemtype j for model i
 
-        message("\ncalibrating ", j, ' model ', ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
+        # message("\ncalibrating ", j, ' model ', ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
         if (!forcingMixedModelOnly) {
 
-          message("mirt::mirt calibration (normal MIRT)\n")
+          # message("mirt::mirt calibration (normal MIRT)\n")
+          pb$tick(tokens = list(itemtype = j, fixed = ' ', random = ' '))
           modUnConditional[[paste(paste0(as.character(i), collapse = ""),
                                   j, collapse = " ")]] %<-% {
 
@@ -230,14 +241,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         # anyway -- 2017. 11. 10
         if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
                                     j) == 0) {
-          message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
-          pb <- progress::progress_bar$new(
-            format = " estimating [:bar] :elapsed / eta: :eta",
-            total = ((NROW(randomEffectCandidates) + NROW(fixed))*2), clear = F, width= 60)
+          # message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
+
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              pb$tick()
+              pb$tick(tokens = list(itemtype = j, fixed = paste0(as.character(k_fixed), collapse = ""), random = paste0(as.character(k), collapse = "")))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {
@@ -269,7 +278,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                                                 })
                                       }
                                     }
-              pb$tick()
+              pb$tick(tokens = list(itemtype = j, fixed = paste0(as.character(k_fixed), collapse = ""), random = paste0(as.character(k), collapse = "")))
               modConditional2[[paste(paste0(as.character(i), collapse = ""),
                                      j, paste0(as.character(k_fixed), collapse = ""),
                                      k, collapse = " ")]] %<-% {

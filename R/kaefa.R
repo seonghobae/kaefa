@@ -139,7 +139,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 for(i in 1:length(servNames)){
                   maxP <- round((servThreads[i]*.7*.5))
                   if(maxP > 4){
-                    maxP <- maxP*.7 # add attunation factor for a high-performance computing machine
+                    maxP <- round(maxP*.7) # add attunation factor for a high-performance computing machine
                   }
                   connList <- c(connList, rep(servNames[i], max(c(1,maxP))))
                 }

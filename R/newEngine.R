@@ -278,14 +278,6 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
         }
 
-      if(is.numeric(i) && tryLCA){
-        ticktockClock <- (NROW(estItemtype) * ((NROW(randomEffectCandidates) + NROW(fixed))*2)) + (2*2*NROW(fixed))
-      } else {
-        ticktockClock <- (NROW(estItemtype) * ((NROW(randomEffectCandidates) + NROW(fixed))*2))
-      }
-
-
-      message('\ncalibrating model ', ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
       # LCA
       if (is.numeric(i) && tryLCA) {
         # message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
@@ -324,7 +316,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
               estMethod <- "EM"
             }
           }
-          pb$tick(tokens = list(itemtype = j, fixed = ' ', random = ' ', method = estMethod))
+          pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = ' ', random = ' ', method = estMethod))
           modUnConditional[[paste(paste0(as.character(i), collapse = ""),
                                   j, collapse = " ")]] %<-% {
 

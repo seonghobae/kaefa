@@ -281,7 +281,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                      }
             }
           }
-          pb$tick(1e7)
+          # pb$tick(1e7)
         }
       }
 

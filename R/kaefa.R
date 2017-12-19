@@ -184,9 +184,9 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                          ), gc = T))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas|microsoft", extSoftVersion()["BLAS"])) > 0) {
-            options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors),
+            options(aefaConn = future::plan("future::multiprocess", workers = parallelProcessors),
                 gc = T)
-        } else if (length(future::availableWorkers()) == 1) {
+        } else if (parallel::detectCores(logical = F) == 1) {
             options(aefaConn = future::plan(future::sequential), gc = T)
         } else {
             options(aefaConn = (tryCatch(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)),

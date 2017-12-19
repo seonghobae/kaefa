@@ -172,11 +172,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
       # LCA
       if (is.numeric(i) && tryLCA) {
-        message("Latent Class Model calibration")
+        message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
 
-        for (m in c("sandwich", "Oakes")) {
-          for (n in c(T, F)) {
-            for (k_fixed in fixed) {
+        for (m in c("sandwich", "Oakes")) { # SE
+          for (n in c(T, F)) { # Symetric
+            for (k_fixed in fixed) { # fixed effect
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
                                  m, paste0(as.character(n), collapse = ""),
                                  as.character(k), collapse = " ")]] %<-%

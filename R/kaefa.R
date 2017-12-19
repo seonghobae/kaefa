@@ -267,11 +267,14 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
                 100 else 0), error = function(e) {
         }))
 
-        modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-            fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
-                0)
-                100 else 0), error = function(e) {
-        }))
+        if(S_X2){
+          modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                                                                  fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                                                                                                                            0)
+                                                                    100 else 0), error = function(e) {
+                                                                    }))
+        }
+
 
         if (mirtModel@Model$nfact == 1 && PV_Q1) {
             modFit_PVQ1 <- listenv()
@@ -612,7 +615,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         estItemFitRotationSearch <- listenv::listenv()
                         for (rotateTrial in rotate) {
                           estItemFitRotationSearch[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
-                            RemoteClusters = RemoteClusters, rotate = rotateTrial),
+                            RemoteClusters = RemoteClusters, rotate = rotateTrial, PV_Q1 = F, S_X2 = F),
                             error = function(e) {
                             })
                         }

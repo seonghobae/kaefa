@@ -8,6 +8,7 @@
 #' @import psych
 #' @import plyr
 #' @import parallel
+#' @import progress
 #' @param data insert \code{data.frame} object.
 #' @param model specify the mirt model if want to calibrate. accepting \code{mirt::mirt.model} object.
 #' @param GenRandomPars Try to generate Random Parameters? Default is TRUE
@@ -208,9 +209,13 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
                                     j) == 0) {
           message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
+          pb <- progress::progress_bar$new(
+            format = " estimating [:bar] :elapsed",
+            total = 1e7, clear = F, width= 60)
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
+              pb$tick()
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {
@@ -242,6 +247,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                                                 })
                                       }
                                     }
+              pb$tick()
               modConditional2[[paste(paste0(as.character(i), collapse = ""),
                                      j, paste0(as.character(k_fixed), collapse = ""),
                                      k, collapse = " ")]] %<-% {
@@ -275,6 +281,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                      }
             }
           }
+          pb$tick(1e7)
         }
       }
 

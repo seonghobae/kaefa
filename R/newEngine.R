@@ -177,20 +177,20 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
       }
 
       pb <- progress::progress_bar$new(
-        format = " :spin estimating :itemtype models [:bar] elapsed: :elapsed / eta: :eta :fixed :random",
-        total = ticktockClock, clear = F, width= 120)
+        format = " :spin estimating :itemtype models using :method [:bar] elapsed: :elapsed (:eta remained) :fixed :random",
+        total = ticktockClock, clear = F, width= 160)
 
+      message('\ncalibrating model ', ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
       # LCA
       if (is.numeric(i) && tryLCA) {
-        message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
+        # message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
 
         for (m in c("sandwich", "Oakes")) { # SE
-          for (n in c(T, F)) { # Symetric
+          for (n in c(T, F)) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
-              pb$tick(tokens = list(itemtype = "LCA", fixed = as.character(k_fixed), random = ' '))
+              pb$tick(tokens = list(itemtype = "LCA", fixed = paste('/ fixed: ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM')))
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
-                                 m, paste0(as.character(n), collapse = ""),
-                                 as.character(k), collapse = " ")]] %<-%
+                                 as.character(k_fixed), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
                 tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
                                      accelerate = accelerate, GenRandomPars = GenRandomPars,
                                      empiricalhist = n, technical = list(NCYCLES = NCYCLES,
@@ -205,21 +205,21 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
       for (j in estItemtype) {
         # itemtype j for model i
 
-        # message("\ncalibrating ", j, ' model ', ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
         if (!forcingMixedModelOnly) {
 
           # message("mirt::mirt calibration (normal MIRT)\n")
-          pb$tick(tokens = list(itemtype = j, fixed = ' ', random = ' '))
+
+          if (forcingQMC) {
+            estMethod <- "QMCEM"
+          } else {
+            estMethod <- "MHRM"
+          }
+          pb$tick(tokens = list(itemtype = j, fixed = ' ', random = ' ', method = estMethod))
           modUnConditional[[paste(paste0(as.character(i), collapse = ""),
                                   j, collapse = " ")]] %<-% {
 
             if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
                     j) == 0) {
-              if (forcingQMC) {
-                estMethod <- "QMCEM"
-              } else {
-                estMethod <- "MHRM"
-              }
               tryCatch(mirt::mirt(data = data, model = i, method = estMethod,
                                   itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
                                   key = key, calcNull = T, technical = list(NCYCLES = NCYCLES,
@@ -246,7 +246,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              pb$tick(tokens = list(itemtype = j, fixed = paste0(as.character(k_fixed), collapse = ""), random = paste0(as.character(k), collapse = "")))
+              pb$tick(tokens = list(itemtype = j, fixed = paste('/ fixed: ', paste(as.character(k_fixed), collapse = "")), random = paste('/ random: ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {
@@ -278,7 +278,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                                                 })
                                       }
                                     }
-              pb$tick(tokens = list(itemtype = j, fixed = paste0(as.character(k_fixed), collapse = ""), random = paste0(as.character(k), collapse = "")))
+              pb$tick(tokens = list(itemtype = j, fixed = paste('/ lr.fixed: ', paste(as.character(k_fixed), collapse = "")), random = paste('/ lr.random: ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
               modConditional2[[paste(paste0(as.character(i), collapse = ""),
                                      j, paste0(as.character(k_fixed), collapse = ""),
                                      k, collapse = " ")]] %<-% {

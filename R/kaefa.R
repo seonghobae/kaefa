@@ -24,11 +24,11 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     options(future.debug = debug)
 
     assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 30,
-        requiredMinimumClusters = round(NROW(serverList)/3), sshKeyPath = NULL) {
+        requiredMinimumClusters = min(c(2, round(NROW(serverList)/3))), sshKeyPath = NULL) {
 
       pb <- progress::progress_bar$new(
         format = " initialising [:bar] :percent eta: :eta",
-        total = length(serverList), clear = F, width= 60)
+        total = length(serverList), clear = T, width = 100)
 
         STOP <- F
         while (!STOP) {
@@ -120,9 +120,14 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
             availableCluster <- names(decisionList)[which(unlist(decisionList))]
 
             if (requiredMinimumClusters > length(availableCluster)) {
-
-                message("All clusters are busy now. Wait for 60 seconds for stabilise.")
-                Sys.sleep(60)
+              ## Elapsed time
+              pb <- progress_bar$new(
+                format = "  Wait for 100 seconds for connection stabilise [:bar] :percent in :elapsed",
+                total = 100, clear = T, width = 100)
+              for (i in 1:100) {
+                pb$tick()
+                Sys.sleep(1)
+              }
             } else {
                 nCores <- 0
                 for (jj in which(unlist(decisionList))) {

@@ -212,28 +212,23 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           if (forcingQMC) {
             estMethod <- "QMCEM"
           } else {
+            if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
+                    j) == 0) {
             estMethod <- "MHRM"
+            } else {
+              estMethod <- "EM"
+            }
           }
           pb$tick(tokens = list(itemtype = j, fixed = ' ', random = ' ', method = estMethod))
           modUnConditional[[paste(paste0(as.character(i), collapse = ""),
                                   j, collapse = " ")]] %<-% {
 
-            if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
-                    j) == 0) {
-              tryCatch(mirt::mirt(data = data, model = i, method = estMethod,
-                                  itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
-                                  key = key, calcNull = T, technical = list(NCYCLES = NCYCLES,
-                                                                            BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)),
-                       error = function(e) {
-                       })
-            } else {
-              tryCatch(mirt::mirt(data = data, model = i, method = "EM",
-                                  itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
-                                  key = key, calcNull = T, technical = list(NCYCLES = NCYCLES,
-                                                                            BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)),
-                       error = function(e) {
-                       })
-            }
+                                    tryCatch(mirt::mirt(data = data, model = i, method = estMethod,
+                                                        itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
+                                                        key = key, calcNull = T, technical = list(NCYCLES = NCYCLES,
+                                                                                                  BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)),
+                                             error = function(e) {
+                                             })
           }
         }
         # FIXME: CONSIDER TO REMOVE THIS: TO SPEED UP; ESTIMATE RANDOM EFFECTS DIRECTLY
@@ -313,6 +308,8 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
           }
           # pb$tick(1e7)
+        } else {
+          pb$tick()
         }
       }
 

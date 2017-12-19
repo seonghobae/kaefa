@@ -170,6 +170,28 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
         }
 
+      # LCA
+      if (is.numeric(i) && tryLCA) {
+        message("Latent Class Model calibration")
+
+        for (m in c("sandwich", "Oakes")) {
+          for (n in c(T, F)) {
+            for (k_fixed in fixed) {
+              modDiscrete[[paste(paste0(as.character(i), collapse = ""),
+                                 m, paste0(as.character(n), collapse = ""),
+                                 as.character(k), collapse = " ")]] %<-%
+                tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
+                                     accelerate = accelerate, GenRandomPars = GenRandomPars,
+                                     empiricalhist = n, technical = list(NCYCLES = NCYCLES,
+                                                                         BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
+                                     covdata = covdata, formula = if (k_fixed == ~1)
+                                       NULL else k_fixed), error = function(e) {
+                                       })
+            }
+          }
+        }
+      }
+
       for (j in estItemtype) {
         # itemtype j for model i
 
@@ -285,27 +307,6 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         }
       }
 
-      # LCA
-      if (is.numeric(i) && tryLCA) {
-        message("Latent Class Model calibration")
-
-        for (m in c("sandwich", "Oakes")) {
-          for (n in c(T, F)) {
-            for (k_fixed in fixed) {
-              modDiscrete[[paste(paste0(as.character(i), collapse = ""),
-                                     m, paste0(as.character(n), collapse = ""),
-                                     as.character(k), collapse = " ")]] %<-%
-                tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
-                                     accelerate = accelerate, GenRandomPars = GenRandomPars,
-                                     empiricalhist = n, technical = list(NCYCLES = NCYCLES,
-                                                                         BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                     covdata = covdata, formula = if (k_fixed == ~1)
-                                       NULL else k_fixed), error = function(e) {
-                                       })
-            }
-          }
-        }
-      }
     }  # EOF of for loop
 
     exploratoryModels <- unlist(list(as.list(modUnConditional), as.list(modConditional1), as.list(modConditional2), as.list(modDiscrete)))

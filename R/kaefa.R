@@ -24,11 +24,11 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     options(future.debug = debug)
 
     assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 30,
-        requiredMinimumClusters = round(NROW(serverList)/3), sshKeyPath = NULL) {
+        requiredMinimumClusters = min(c(2, round(NROW(serverList)/3))), sshKeyPath = NULL) {
 
       pb <- progress::progress_bar$new(
         format = " initialising [:bar] :percent eta: :eta",
-        total = length(serverList), clear = F, width= 60)
+        total = length(serverList), clear = T, width = 100)
 
         STOP <- F
         while (!STOP) {
@@ -120,10 +120,14 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
             availableCluster <- names(decisionList)[which(unlist(decisionList))]
 
             if (requiredMinimumClusters > length(availableCluster)) {
-                # print(statusList)
-
-                message("All clusters are busy now. Wait for 60 seconds.")
-                Sys.sleep(60)
+              ## Elapsed time
+              pb <- progress_bar$new(
+                format = "  Wait for 100 seconds for connection stabilise [:bar] :percent in :elapsed",
+                total = 100, clear = T, width = 100)
+              for (i in 1:100) {
+                pb$tick()
+                Sys.sleep(1)
+              }
             } else {
                 nCores <- 0
                 for (jj in which(unlist(decisionList))) {
@@ -140,7 +144,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 for(i in 1:length(servNames)){
                   maxP <- round((servThreads[i]*.7*.5))
                   if(maxP > 4){
-                    maxP <- 4
+                    maxP <- round(maxP*.7) # add attunation factor for a high-performance computing machine
                   }
                   connList <- c(connList, rep(servNames[i], max(c(1,maxP))))
                 }
@@ -185,9 +189,9 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                          ), gc = T))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas|microsoft", extSoftVersion()["BLAS"])) > 0) {
-            options(aefaConn = future::plan(future::multiprocess, workers = parallelProcessors),
+            options(aefaConn = future::plan("future::multiprocess", workers = parallelProcessors),
                 gc = T)
-        } else if (length(future::availableWorkers()) == 1) {
+        } else if (parallel::detectCores(logical = F) == 1) {
             options(aefaConn = future::plan(future::sequential), gc = T)
         } else {
             options(aefaConn = (tryCatch(future::plan(strategy = list(future::tweak(future::cluster(workers = parallelProcessors)),
@@ -263,11 +267,14 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
                 100 else 0), error = function(e) {
         }))
 
-        modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-            fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
-                0)
-                100 else 0), error = function(e) {
-        }))
+        if(S_X2){
+          modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                                                                  fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                                                                                                                            0)
+                                                                    100 else 0), error = function(e) {
+                                                                    }))
+        }
+
 
         if (mirtModel@Model$nfact == 1 && PV_Q1) {
             modFit_PVQ1 <- listenv()
@@ -389,8 +396,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
         items), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
     filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ", "bifactorT",
         "geominQ", "geominT", "bentlerQ", "bentlerT", "oblimin", "oblimax", "simplimax",
-        "cfQ", "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax",
-        "Varimax", "mccammon", "infomaxQ", "infomaxT"), resampling = T, samples = 5000,
+        "cfQ", "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F, turnOffMixedEst = F,
     fitIndicesCutOff = 0.005) {
@@ -609,7 +615,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         estItemFitRotationSearch <- listenv::listenv()
                         for (rotateTrial in rotate) {
                           estItemFitRotationSearch[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
-                            RemoteClusters = RemoteClusters, rotate = rotateTrial),
+                            RemoteClusters = RemoteClusters, rotate = rotateTrial, PV_Q1 = F, S_X2 = F),
                             error = function(e) {
                             })
                         }

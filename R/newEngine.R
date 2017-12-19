@@ -93,6 +93,114 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     modUnConditional <- listenv::listenv()
     modDiscrete <- listenv::listenv()
 
+    # get total ticktock
+    ticktockClock <- 0
+        for (i in model) {
+          if(is.numeric(i)){
+            if(i > ncol(data)){
+              break()
+            }
+          }
+          if (is.numeric(i)) {
+            if (i == 1) {
+              # UIRT
+              if (max(nK[is.finite(nK)], na.rm = T) > 2) {
+                # poly UIRT
+                if (!is.null(key)) {
+                  # with key
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                   "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm",
+                                   "monopoly")
+                } else {
+                  # without key
+                  estItemtype <- c("ggum", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
+                                   "grsmIRT", "Rasch", "rsm", "monopoly")
+                }
+              } else {
+                # dich UIRT
+                estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch",
+                                 "spline", "monopoly")
+              }
+            } else {
+              # MIRT
+              if (max(nK[is.finite(nK)], na.rm = T) > 2) {
+                # poly MIRT
+                if (!is.null(key)) {
+                  # poly MIRT with key
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                   "gpcm", "graded", "grsm")
+                } else {
+                  # poly MIRT without key
+                  estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
+                }
+              } else {
+                # dich MIRT
+                estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL")
+              }
+            }
+
+          } else if (class(i) == "mirt.model") {
+            # CFA
+            if (max(nK[is.finite(nK)], na.rm = T) > 2) {
+              # poly CFA
+              if (!is.null(key)) {
+                # with key
+                estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                 "gpcm", "graded", "Rasch")
+              } else {
+                # without key
+                estItemtype <- c("ggum", "nominal", "gpcm", "graded", "Rasch")
+              }
+            } else {
+              # dich
+              estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL", "PC3PL", "PC2PL",
+                               "Rasch")
+            }
+          } else {
+            stop("model is not correctly provided")
+          }
+
+
+          if (sum(max(nK[is.finite(nK)], na.rm = T) == nK) != length(nK[is.finite(nK)])) {
+            if (length(grep("rsm", estItemtype)) > 0) {
+              estItemtype <- estItemtype[-grep("rsm", estItemtype)]
+            }
+          }
+          # LCA
+          if (is.numeric(i) && tryLCA) {
+            for (m in c("sandwich", "Oakes")) { # SE
+              for (n in c(T, F)) { # empirical histogram
+                for (k_fixed in fixed) { # fixed effect
+                  ticktockClock <- ticktockClock + 1
+                }
+              }
+            }
+          }
+          for (j in estItemtype) {
+            if (!forcingMixedModelOnly) {
+              ticktockClock <- ticktockClock + 1
+            }
+            if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
+                                        j) == 0) {
+
+              for (k in randomEffectCandidates) {
+                # and
+                for (k_fixed in fixed) {
+                  ticktockClock <- ticktockClock + 1
+                  ticktockClock <- ticktockClock + 1
+                }
+              }
+              # pb$tick(1e7)
+            } else {
+              ticktockClock <- ticktockClock + 1
+            }
+          }
+        } # count ticktock
+    pb <- progress::progress_bar$new(
+      format = " :spin estimating :modeltype :itemtype models using :method [:bar] :percent elapsed: :elapsed (:eta remained) :fixed :random",
+      total = ticktockClock, clear = F, width= 160)
+
+    # LOOP starts here!
     for (i in model) {
         # exploratory i th model
 
@@ -170,16 +278,24 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
         }
 
+      if(is.numeric(i) && tryLCA){
+        ticktockClock <- (NROW(estItemtype) * ((NROW(randomEffectCandidates) + NROW(fixed))*2)) + (2*2*NROW(fixed))
+      } else {
+        ticktockClock <- (NROW(estItemtype) * ((NROW(randomEffectCandidates) + NROW(fixed))*2))
+      }
+
+
+      message('\ncalibrating model ', ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
       # LCA
       if (is.numeric(i) && tryLCA) {
-        message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
+        # message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
 
         for (m in c("sandwich", "Oakes")) { # SE
-          for (n in c(T, F)) { # Symetric
+          for (n in c(T, F)) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
+              pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed: ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM')))
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
-                                 m, paste0(as.character(n), collapse = ""),
-                                 as.character(k), collapse = " ")]] %<-%
+                                 as.character(k_fixed), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
                 tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
                                      accelerate = accelerate, GenRandomPars = GenRandomPars,
                                      empiricalhist = n, technical = list(NCYCLES = NCYCLES,
@@ -191,38 +307,33 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           }
         }
       }
-
       for (j in estItemtype) {
         # itemtype j for model i
 
-        message("\ncalibrating ", j, ' model ', ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
         if (!forcingMixedModelOnly) {
 
-          message("mirt::mirt calibration (normal MIRT)\n")
+          # message("mirt::mirt calibration (normal MIRT)\n")
+
+          if (forcingQMC) {
+            estMethod <- "QMCEM"
+          } else {
+            if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
+                    j) == 0) {
+            estMethod <- "MHRM"
+            } else {
+              estMethod <- "EM"
+            }
+          }
+          pb$tick(tokens = list(itemtype = j, fixed = ' ', random = ' ', method = estMethod))
           modUnConditional[[paste(paste0(as.character(i), collapse = ""),
                                   j, collapse = " ")]] %<-% {
 
-            if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
-                    j) == 0) {
-              if (forcingQMC) {
-                estMethod <- "QMCEM"
-              } else {
-                estMethod <- "MHRM"
-              }
-              tryCatch(mirt::mirt(data = data, model = i, method = estMethod,
-                                  itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
-                                  key = key, calcNull = T, technical = list(NCYCLES = NCYCLES,
-                                                                            BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)),
-                       error = function(e) {
-                       })
-            } else {
-              tryCatch(mirt::mirt(data = data, model = i, method = "EM",
-                                  itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
-                                  key = key, calcNull = T, technical = list(NCYCLES = NCYCLES,
-                                                                            BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)),
-                       error = function(e) {
-                       })
-            }
+                                    tryCatch(mirt::mirt(data = data, model = i, method = estMethod,
+                                                        itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
+                                                        key = key, calcNull = T, technical = list(NCYCLES = NCYCLES,
+                                                                                                  BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)),
+                                             error = function(e) {
+                                             })
           }
         }
         # FIXME: CONSIDER TO REMOVE THIS: TO SPEED UP; ESTIMATE RANDOM EFFECTS DIRECTLY
@@ -230,14 +341,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         # anyway -- 2017. 11. 10
         if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
                                     j) == 0) {
-          message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
-          pb <- progress::progress_bar$new(
-            format = " estimating [:bar] :elapsed / eta: :eta",
-            total = ((NROW(randomEffectCandidates) + NROW(fixed))*2), clear = F, width= 60)
+          # message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
+
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              pb$tick()
+              pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste('/ fixed: ', paste(as.character(k_fixed), collapse = "")), random = paste('/ random: ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {
@@ -269,7 +378,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                                                 })
                                       }
                                     }
-              pb$tick()
+              pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste('/ lr.fixed: ', paste(as.character(k_fixed), collapse = "")), random = paste('/ lr.random: ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
               modConditional2[[paste(paste0(as.character(i), collapse = ""),
                                      j, paste0(as.character(k_fixed), collapse = ""),
                                      k, collapse = " ")]] %<-% {
@@ -303,7 +412,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                      }
             }
           }
-          # pb$tick(1e7)
+        } else {
         }
       }
 

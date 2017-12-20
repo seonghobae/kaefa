@@ -337,11 +337,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           itemfitList <- itemfitList[1:ncol(mirtModel@Data$data),]
           return(itemfitList)
         } else {
-          return(suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                                                         fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
-                                                                                                                   0)
-                                                           100 else 0), error = function(e) {
-                                                           })))
+          return(mirt::itemfit(mirtModel, impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0))
         }
 
     } else {

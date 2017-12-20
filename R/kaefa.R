@@ -259,10 +259,9 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 
     if (attr(class(mirtModel), "package") == "mirt") {
         # item fit evaluation
-        modFit_Zh <- listenv()
-        modFit_SX2 <- listenv()
 
         if(sum('lca' %in% mirtModel@Model$itemtype) == 0){
+          modFit_Zh <- listenv()
           modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                                                                  fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                          0)
@@ -271,6 +270,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         }
 
         if(S_X2){
+          modFit_SX2 <- listenv()
           modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                                                                   fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                             0)
@@ -279,7 +279,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         }
 
 
-        if (mirtModel@Model$nfact == 1 && PV_Q1) {
+        if (mirtModel@Model$nfact == 1 && PV_Q1 && sum('lca' %in% mirtModel@Model$itemtype) != 0) {
             modFit_PVQ1 <- listenv()
             modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                 fit_stats = "PV_Q1*", QMC = T, method = "MAP"), error = function(e) {
@@ -326,14 +326,23 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         itemFitList <- c("modFit_Zh", "modFit_SX2", "modFit_PVQ1", "modFit_infit")[c(exists("modFit_Zh"),
             exists("modFit_SX2"), exists("modFit_PVQ1"), exists("modFit_infit"))]
 
-        fitList <- list()
-        for (i in 1:length(itemFitList)) {
-            fitList[[i]] <- (eval(parse(text = itemFitList[i])))
-        }
-        itemfitList <- invisible(suppressWarnings(suppressMessages(plyr::join_all(fitList))))
+        if(length(itemFitList) != 0){
 
-        itemfitList <- itemfitList[1:ncol(mirtModel@Data$data),]
-        return(itemfitList)
+          fitList <- list()
+          for (i in 1:length(itemFitList)) {
+            fitList[[i]] <- (eval(parse(text = itemFitList[i])))
+          }
+          itemfitList <- invisible(suppressWarnings(suppressMessages(plyr::join_all(fitList))))
+
+          itemfitList <- itemfitList[1:ncol(mirtModel@Data$data),]
+          return(itemfitList)
+        } else {
+          return(suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                                                         fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                                                                                                                   0)
+                                                           100 else 0), error = function(e) {
+                                                           })))
+        }
 
     } else {
         message("That's seems not MIRT model, so that trying to estimate new model with default settings")
@@ -609,8 +618,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     })
 
                     # rotation search
-                    if (estModel@Model$model > 1 && estModel@Model$itemtype[1] !=
-                      "lca") {
+                    if (estModel@Model$model > 1 && sum(estModel@Model$itemtype ==
+                      "lca") == 0) {
                       searchDone <- FALSE
 
                       # step 1: calculate Zh

@@ -261,11 +261,14 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         # item fit evaluation
         modFit_Zh <- listenv()
         modFit_SX2 <- listenv()
-        modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-            fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
-                0)
-                100 else 0), error = function(e) {
-        }))
+
+        if(sum('lca' %in% mirtModel@Model$itemtype) == 0){
+          modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
+                                                                 fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                                                                                                                         0)
+                                                                   100 else 0), error = function(e) {
+                                                                   }))
+        }
 
         if(S_X2){
           modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,

@@ -402,7 +402,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     RemoteClusters = NULL, sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
     BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
         items), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
-    filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ", "bifactorT",
+    filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ",
         "geominQ", "geominT", "bentlerQ", "bentlerT", "oblimin", "oblimax", "simplimax",
         "cfQ", "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
@@ -686,7 +686,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                           }
                         }
                         rotateCandidates <- names(estItemFitRotationSearch)[which(sd(abs(Zh_SDs), na.rm = T) ==
-                                                           Zh_SDs)] # decision again
+                                                           Zh_SDs)] # FIXME: decision again
                       }
 
                       # estimate item fit measures

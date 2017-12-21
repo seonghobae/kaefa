@@ -15,13 +15,13 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1),
   random = list(~1 | items), key = NULL, accelerate = "squarem",
   symmetric = F, saveModelHistory = T, filename = "aefa.RDS",
-  printItemFit = T, rotate = c("bifactorQ", "bifactorT", "geominQ",
-  "geominT", "bentlerQ", "bentlerT", "oblimin", "oblimax", "simplimax", "cfQ",
-  "cfT", "tandemII", "tandemI", "entropy", "quartimin", "quartimax"),
-  resampling = T, samples = 5000, printDebugMsg = F,
-  modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
-  ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F,
-  turnOffMixedEst = F, fitIndicesCutOff = 0.005)
+  printItemFit = T, rotate = c("bifactorQ", "geominQ", "geominT",
+  "bentlerQ", "bentlerT", "oblimin", "oblimax", "simplimax", "cfQ", "cfT",
+  "tandemII", "tandemI", "entropy", "quartimin", "quartimax"), resampling = T,
+  samples = 5000, printDebugMsg = F, modelSelectionCriteria = "DIC",
+  saveRawEstModels = F, fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T,
+  tryLCA = T, forcingQMC = F, turnOffMixedEst = F,
+  fitIndicesCutOff = 0.005)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}

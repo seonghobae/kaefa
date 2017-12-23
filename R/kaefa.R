@@ -620,85 +620,81 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
                       # step 1: calculate Zh
                       while (!searchDone) {
-                        estItemFitRotationSearch <- listenv::listenv()
+                        estItemFitRotationSearchTmp <- listenv::listenv()
                         for (rotateTrial in rotate) {
-                          estItemFitRotationSearch[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
+                          estItemFitRotationSearchTmp[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
                             RemoteClusters = RemoteClusters, rotate = rotateTrial, PV_Q1 = F, S_X2 = F),
                             error = function(e) {
                             })
                         }
-                        if (!is.null(as.list(estItemFitRotationSearch))) {
-                          estItemFitRotationSearch <- as.list(estItemFitRotationSearch)
+                        if (!is.null(as.list(estItemFitRotationSearchTmp))) {
+                          estItemFitRotationSearchTmp <- as.list(estItemFitRotationSearchTmp)
                           searchDone <- TRUE
                         }
                       }
+
+                      rotateCandidate1 <- names(estItemFitRotationSearchTmp)
+                      rotateCandidate2 <- vector()
+                      estItemFitRotationSearch <- list()
+                      for(i in 1:NROW(estItemFitRotationSearchTmp)){
+                        if(!is.null(estItemFitRotationSearchTmp[[i]])){
+                          rotateCandidate2[length(rotateCandidate2) + 1] <- rotateCandidate1[i]
+                          estItemFitRotationSearch[[NROW(estItemFitRotationSearch) + 1]] <- estItemFitRotationSearchTmp[[i]]
+                        }
+                      }
+
+                      names(estItemFitRotationSearch) <- rotateCandidate2
 
                       print(estItemFitRotationSearch)
 
                       # step 2: count Zh < cutoff
                       countZh <- vector()
-                      for (countZh_iter in 1:NROW(estItemFitRotationSearch)) {
-                        if(!is.null(estItemFitRotationSearch[[countZh_iter]])){
-                          if ("Zh" %in% colnames(estItemFitRotationSearch[[countZh_iter]])) {
-                            if (sum(is.finite((estItemFitRotationSearch[[countZh_iter]]$Zh))) ==
-                                length(estItemFitRotationSearch[[countZh_iter]]$Zh)) {
-                              countZh[countZh_iter] <- sum((estItemFitRotationSearch[[countZh_iter]]$Zh)+abs(qnorm(.025))/sqrt(nrow(data)) <
-                                                             qnorm(fitIndicesCutOff/2))
-                            } else {
-                              countZh[countZh_iter] <- NA
-                            }
-                          } else {
-                            countZh[countZh_iter] <- NA
-                          }
+
+                      for(countZh_iter in estItemFitRotationSearch){
+                        if(!is.null(countZh_iter)){
+                          countZh[length(countZh) + 1] <- sum((countZh_iter$Zh)+abs(qnorm(.025))/sqrt(nrow(data)) <
+                                                                qnorm(fitIndicesCutOff/2))
                         } else {
-                          countZh[countZh_iter] <- NA
+                          countZh[length(countZh) + 1] <- NA
                         }
                       }
 
                       # step 3: decision; countZh is placeholder of is.na(Zh)
-                      rotateCandidates <- names(estItemFitRotationSearch)[which(countZh == min(countZh, na.rm = T))]
+                      rotateCandidates <- names(estItemFitRotationSearch)[which(countZh[is.finite(countZh)] == min(countZh[is.finite(countZh)], na.rm = T))]
 
                       # check best candidates rotations
                       if (length(rotateCandidates) > 1) {
                         Zh_min <- vector()
-                        for (rotateCandidates_iter in 1:NROW(estItemFitRotationSearch)) {
-                          if(!is.na(estItemFitRotationSearch[[rotateCandidates_iter]]) |
-                              !is.null(estItemFitRotationSearch[[rotateCandidates_iter]])){
-                            Zh_min[rotateCandidates_iter] <- min(estItemFitRotationSearch[[rotateCandidates_iter]]$Zh,
-                                                                 na.rm = T) # get a min Zh value per rotation methods
-                          } else {
-                            Zh_min[rotateCandidates_iter] <- NA
-                          }
+                        estItemFitRotationSearchTmp <- list()
+                        rotateCandidate3 <- vector()
+                        for(i in which(names(estItemFitRotationSearch) %in% rotateCandidates)){
+                          rotateCandidate3[[length(rotateCandidate3) + 1]] <- names(estItemFitRotationSearch)[i]
+                          estItemFitRotationSearchTmp[[NROW(estItemFitRotationSearchTmp) + 1]] <- estItemFitRotationSearch[[i]]
                         }
-                        rotateCandidates <- names(estItemFitRotationSearch)[which(min(abs(Zh_min), na.rm = T) ==
-                          Zh_min)] # decision again
+                        names(estItemFitRotationSearchTmp) <- rotateCandidate3
+                        for(i in estItemFitRotationSearchTmp){
+                          Zh_min[length(Zh_min)+1] <- min(abs(i$Zh))
+                        }
+                        rotateCandidates <- rotateCandidate3[which(Zh_min == min(Zh_min[is.finite(Zh_min)], na.rm = T))]
                       }
 
-                      # if decide again, but candidates are over one kind
+                      # decision again if models aren't have any differences
                       if (length(rotateCandidates) > 1) {
-                        Zh_SDs <- vector()
-                        for (rotateCandidates_iter in 1:NROW(estItemFitRotationSearch)) {
-                          if(!is.na(rotateCandidates_iter)){
-                            Zh_SDs[rotateCandidates_iter] <- sd(estItemFitRotationSearch[[rotateCandidates_iter]]$Zh,
-                                                                 na.rm = T) # get a min Zh value per rotation methods
-                          } else {
-                            Zh_SDs[rotateCandidates_iter] <- NA
-                          }
-                        }
-                        rotateCandidates <- names(estItemFitRotationSearch)[which(sd(abs(Zh_SDs), na.rm = T) ==
-                                                           Zh_SDs)] # FIXME: decision again
+                        rotateCandidates <- rotateCandidates[1]
+                      } else if (length(rotateCandidates) == 0){
+                        rotateCandidates <- 'none'
                       }
 
                       # estimate item fit measures
                       estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters,
-                        rotate = rotateCandidates[1], PV_Q1 = PV_Q1), error = function(e) {
+                        rotate = rotateCandidates, PV_Q1 = PV_Q1), error = function(e) {
                       })
 
                     } else {
                       # estimate item fit measures
-                      rotateCandidates <- rotate[1]
+                      rotateCandidates <- 'none'
                       estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters,
-                        rotate = rotate[1], PV_Q1 = PV_Q1), error = function(e) {
+                        rotate = rotateCandidates, PV_Q1 = PV_Q1), error = function(e) {
                       })
                     }
 

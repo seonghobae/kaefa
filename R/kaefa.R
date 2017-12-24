@@ -893,8 +893,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 #' summarise AEFA results
 #'
 #' @param mirtModel estimated aefa model
-#' @param rotate rotation method
-#' @param suppress cutoff of rotated coefs. Generally .30 is appropriate but .10 will be good.
+#' @param rotate rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.
+#' @param suppress cutoff of rotated coefs. Generally .30 is appropriate but .10 will be good in practically
 #'
 #' @return summary of aefa results
 #' @export
@@ -904,12 +904,17 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #' aefaResults(testMod1)
 #' }
-aefaResults <- function(mirtModel, rotate = "bifactorQ", suppress = 0) {
+aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 
     if (class(mirtModel) == "aefa") {
         message(paste0("aefa results: aefa has ", NROW(mirtModel$estModelTrials),
             " automated internal validation trials."))
         mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
+        if(is.null(rotate)){
+          automatedRotation <- mirtModel$rotationTrials[[NROW(mirtModel$estModelTrials)]]
+        } else {
+          automatedRotation <- rotate
+        }
     }
 
     # convert mixedclass to singleclass temporary
@@ -932,11 +937,11 @@ aefaResults <- function(mirtModel, rotate = "bifactorQ", suppress = 0) {
         if ("grsm" %in% mirtModel@Model$itemtype) {
             mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
                 itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
-                SE = F, calcNull = T, technical = list(internal_constraints = FALSE))
+                SE = F, calcNull = F, technical = list(internal_constraints = FALSE))
         } else {
             mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
                 itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
-                SE = F, calcNull = T)
+                SE = F, calcNull = F)
         }
         if (is.numeric(mirtModel@Model$model)) {
             if (mirtModel@Model$model > 1) {
@@ -953,7 +958,21 @@ aefaResults <- function(mirtModel, rotate = "bifactorQ", suppress = 0) {
         message("\n")
     }
 
-    message(paste0("factor loadings: ", mirtModel@Model$itemtype[1]))
-    mirt::summary(mirtModel, rotate = rotate, suppress = suppress, maxit = 1e+05)
+    message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], 'model', ' and ', automatedRotation, ' rotation as optimal in probability perspectives.'))
+    if(automatedRotation %in% c('oblimin', 'quartimin', 'oblimax', 'simplimax', 'bentlerQ', 'geominQ', 'cfQ', 'infomaxQ', 'bifactorQ') & !is.null(rotate)){
+      message(paste0('The ', automatedRotation, 'rotation is oblique rotation method.'))
+      message('That might have correlational relationships between calibrated factors.')
+    }
+    if(automatedRotation %in% c('entropy', 'quartimax', 'varimax', 'bentlerT', 'tandemI', 'tandemII', 'geominT', 'cfT', 'infomaxT', 'mccammon', 'bifactorT')& !is.null(rotate)){
+      message(paste0('The ', automatedRotation, 'rotation is oblique rotation method.'))
+      message('That might not have correlational relationships between calibrated factors.')
+    }
+    if(automatedRotation %in% c('bifactorQ', 'bifactorT') & !is.null(rotate)){
+      message('Moreover, your model has general factor (as known as g-factor) at F1. Therefore, another factors might be subfactor or method factor.')
+    }
+    if(mirtModel@Model$itemtype %in% c('grsm', 'grsmIRT')){
+      message('Sadly, This is a bad news: Your items seems too hard to read or understand to response well, interpret carefully!')
+    }
+    mirt::summary(mirtModel, rotate = automatedRotation, suppress = suppress, maxit = 1e+05)
 
 }

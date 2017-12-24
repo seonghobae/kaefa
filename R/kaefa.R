@@ -973,7 +973,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
     if(automatedRotation %in% c('bifactorQ', 'bifactorT') & !is.null(rotate)){
       message('Moreover, your model has general factor (as known as g-factor) at F1. Therefore, another factors might be subfactor or method factor.')
     }
-    if(mirtModel@Model$itemtype %in% c('grsm', 'grsmIRT')){
+    if(mirtModel@Model$itemtype[1] %in% c('grsm', 'grsmIRT')){
       message('Sadly, This is a bad news: Your items seems too hard to read or understand to response well, interpret carefully!')
     }
     mirt::summary(mirtModel, rotate = automatedRotation, suppress = suppress, maxit = 1e+05)

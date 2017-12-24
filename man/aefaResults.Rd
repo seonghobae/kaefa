@@ -4,14 +4,14 @@
 \alias{aefaResults}
 \title{summarise AEFA results}
 \usage{
-aefaResults(mirtModel, rotate = "bifactorQ", suppress = 0)
+aefaResults(mirtModel, rotate = NULL, suppress = 0)
 }
 \arguments{
 \item{mirtModel}{estimated aefa model}
 
-\item{rotate}{rotation method}
+\item{rotate}{rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.}
 
-\item{suppress}{cutoff of rotated coefs. Generally .30 is appropriate but .10 will be good.}
+\item{suppress}{cutoff of rotated coefs. Generally .30 is appropriate but .10 will be good in practically}
 }
 \value{
 summary of aefa results

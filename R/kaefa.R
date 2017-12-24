@@ -28,7 +28,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
 
       pb <- progress::progress_bar$new(
         format = " initialising [:bar] :percent eta: :eta",
-        total = length(serverList), clear = T, width = 100)
+        total = length(serverList), clear = F, width = 300)
 
         STOP <- F
         while (!STOP) {
@@ -123,7 +123,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
               ## Elapsed time
               pb <- progress_bar$new(
                 format = "  Wait for 100 seconds for connection stabilise [:bar] :percent in :elapsed",
-                total = 100, clear = T, width = 100)
+                total = 100, clear = F, width = 300)
               for (i in 1:100) {
                 pb$tick()
                 Sys.sleep(1)

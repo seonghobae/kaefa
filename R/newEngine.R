@@ -337,7 +337,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste('/ fixed: ', paste(as.character(k_fixed), collapse = "")), random = paste('/ random: ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
+              pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' random: ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {
@@ -369,7 +369,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                                                 })
                                       }
                                     }
-              pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste('/ lr.fixed: ', paste(as.character(k_fixed), collapse = "")), random = paste('/ lr.random: ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
+              pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ lr.fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0('/ lr.random ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
               modConditional2[[paste(paste0(as.character(i), collapse = ""),
                                      j, paste0(as.character(k_fixed), collapse = ""),
                                      k, collapse = " ")]] %<-% {

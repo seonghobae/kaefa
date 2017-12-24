@@ -907,14 +907,17 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 
     if (class(mirtModel) == "aefa") {
-        message(paste0("aefa results: aefa has ", NROW(mirtModel$estModelTrials),
-            " automated internal validation trials."))
-        mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
+
         if(is.null(rotate)){
           automatedRotation <- mirtModel$rotationTrials[[NROW(mirtModel$estModelTrials)]]
         } else {
           automatedRotation <- rotate
         }
+
+        message(paste0("aefa results: aefa has ", NROW(mirtModel$estModelTrials),
+            " automated internal validation trials."))
+        mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
+
     }
 
     # convert mixedclass to singleclass temporary
@@ -958,7 +961,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
         message("\n")
     }
 
-    message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], 'model', ' and ', automatedRotation, ' rotation as optimal in probability perspectives.'))
+    message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model', ' and ', automatedRotation, ' rotation as optimal in probability perspectives.'))
     if(automatedRotation %in% c('oblimin', 'quartimin', 'oblimax', 'simplimax', 'bentlerQ', 'geominQ', 'cfQ', 'infomaxQ', 'bifactorQ') & !is.null(rotate)){
       message(paste0('The ', automatedRotation, 'rotation is oblique rotation method.'))
       message('That might have correlational relationships between calibrated factors.')

@@ -197,7 +197,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           }
         } # count ticktock
     pb <- progress::progress_bar$new(
-      format = " :spin estimating :modeltype :itemtype models using :method [:bar] :percent elapsed: :elapsed (:eta remained) :fixed :random",
+      format = " :spin estimating :modeltype :itemtype models using :method [:bar] :percent (:complete of :total, :incomplete left) // elapsed: :elapsed (:eta remained) :fixed :random",
       total = ticktockClock, clear = F, width= 300)
 
     # LOOP starts here!
@@ -337,7 +337,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' random: ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
+              pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' random ', paste(as.character(k), collapse = '')), method = 'EMEIRT'))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {

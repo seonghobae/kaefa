@@ -960,8 +960,11 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
         print(resultM2)
         message("\n")
     }
-
-    message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model', ' and ', automatedRotation, ' rotation as optimal in probability perspectives.'))
+    if(automatedRotation == 'none'){
+      message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model'))
+    } else {
+      message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model', ' and\n', automatedRotation, ' rotation as optimal in probability perspectives.'))
+    }
     if(automatedRotation %in% c('oblimin', 'quartimin', 'oblimax', 'simplimax', 'bentlerQ', 'geominQ', 'cfQ', 'infomaxQ', 'bifactorQ') & !is.null(rotate)){
       message(paste0('The ', automatedRotation, 'rotation is oblique rotation method.'))
       message('That might have correlational relationships between calibrated factors.')

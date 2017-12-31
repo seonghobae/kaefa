@@ -24,7 +24,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
     options(future.debug = debug)
 
     assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 30,
-        requiredMinimumClusters = min(c(2, round(NROW(serverList)/3))), sshKeyPath = NULL) {
+        requiredMinimumClusters = max(c(2, round(NROW(serverList)/3))), sshKeyPath = NULL) {
 
       pb <- progress::progress_bar$new(
         format = " initialising [:bar] :percent eta: :eta",

@@ -206,7 +206,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
       if(is.numeric(i)){
         if(i > ncol(data)){
-          break()
+          next()
         }
       }
 

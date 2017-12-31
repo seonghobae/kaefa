@@ -650,7 +650,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
                       names(estItemFitRotationSearch) <- rotateCandidate2
 
-                      print(estItemFitRotationSearch)
+                      # print(estItemFitRotationSearch)
 
                       # step 2: count Zh < cutoff
                       countZh <- vector()

@@ -964,6 +964,15 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
         print(resultM2)
         message("\n")
     }
+
+    resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {
+    })
+    if (exists("resultM2") && !is.null(resultM2)) {
+      message("M2 statistic")
+      print(resultM2)
+      message("\n")
+    }
+
     if(automatedRotation == 'none'){
       message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model'))
     } else {
@@ -985,4 +994,9 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
     }
     mirt::summary(mirtModel, rotate = automatedRotation, suppress = suppress, maxit = 1e+05)
 
+    if (exists("resultMarginalReliability") && !is.null(resultMarginalReliability)) {
+      message("Marginal (Empirical) Reliability statistic from Item Information Function")
+      print(resultMarginalReliability)
+      message("\n")
+    }
 }

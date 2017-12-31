@@ -6,11 +6,13 @@
 \title{doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment}
 \usage{
 aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
-  (is.data.frame(data)) if (ncol(data) < 10) ncol(data) else 10 else if
-  (class(data) \%in\% c("SingleGroupClass", "MixedClass", "DiscreteClass"))
-  ncol(data@Data$data) else if (class(data) \%in\% "aefa")
-  ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data) else
-  stop("Please provide data correctly."), RemoteClusters = NULL,
+  (is.data.frame(data)) if (ncol(data) < 10) max(c(1, round(sqrt(ncol(data)))))
+  else max(c(1, round(sqrt(ncol(data))))) else if (class(data) \%in\%
+  c("SingleGroupClass", "MixedClass", "DiscreteClass")) max(c(1,
+  round(sqrt(ncol(data@Data$data))))) else if (class(data) \%in\% "aefa")
+  max(c(1,
+  round(sqrt(ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data)))))
+  else stop("Please provide data correctly."), RemoteClusters = NULL,
   sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500,
   SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1),
   random = list(~1 | items), key = NULL, accelerate = "squarem",

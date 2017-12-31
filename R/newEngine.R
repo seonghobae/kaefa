@@ -202,8 +202,8 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
     # LOOP starts here!
     for (i in model) {
+      invisible(gc())
         # exploratory i th model
-
       if(is.numeric(i)){
         if(i > ncol(data)){
           next()

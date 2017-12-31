@@ -455,6 +455,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     STOP <- F
 
     while (!STOP) {
+      invisible(gc())
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
             if (exists("estModel")) {

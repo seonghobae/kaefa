@@ -35,7 +35,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
             statusList <- list()
             decisionList <- list()
             for (i in serverList) {
-              pb$tick()
+              suppressWarnings(pb$tick())
                 if (i == "localhost") {
                   # localhost side
                   statusList$localhost <- tryCatch(system(paste("uptime | awk '{print $8}' &&",
@@ -125,7 +125,7 @@ aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
                 format = "  Wait for 100 seconds for connection stabilise [:bar] :percent in :elapsed",
                 total = 100, clear = F, width = 300)
               for (i in 1:100) {
-                pb$tick()
+                suppressWarnings(pb$tick())
                 Sys.sleep(1)
               }
             } else {
@@ -1001,7 +1001,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
     mirt::summary(mirtModel, rotate = automatedRotation, suppress = suppress, maxit = 1e+05)
 
     if (exists("resultMarginalReliability") && !is.null(resultMarginalReliability)) {
-      message("Marginal (Empirical) Reliability statistic from Item Information Function")
+      message("\nMarginal (Empirical) Reliability statistic from Item Information Function")
       print(resultMarginalReliability)
       message("\n")
     }

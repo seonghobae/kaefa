@@ -436,7 +436,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
         }
     }
 
-    calibModel <- as.list(minExtraction:maxExtraction)
+    calibModel <- as.list(maxExtraction:minExtraction)
     if (!is.null(model)) {
         # user specified EFA or CFA
         j <- maxExtraction

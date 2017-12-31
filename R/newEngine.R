@@ -284,7 +284,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         for (m in c("sandwich", "Oakes")) { # SE
           for (n in c(T, F)) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
-              pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed: ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM')))
+              pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM')))
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
                                  as.character(k_fixed), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
                 tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,

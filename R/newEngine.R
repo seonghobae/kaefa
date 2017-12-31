@@ -45,7 +45,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         items), key = NULL, accelerate = "squarem", symmetric = F, resampling = T,
     samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
     forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F) {
-
+  invisible(gc())
     # data management: resampling
     if (resampling && nrow(data) > samples) {
         resampleCaseNumber <- sample(1:nrow(data), samples, replace = F)

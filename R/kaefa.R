@@ -818,16 +818,21 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                           modCI[grep("^a", modCI$parnam), ]$upper_97.5[i]))
                       }
 
-                      if (sum(includeZero) == 0) {
-                        STOP <- TRUE
-                      } else {
-                        badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)],
-                          na.rm = T) == diffValues)[1]]))
-                        if (length(badItemNames) == 0) {
+                      if(exists('includeZero')){
+                        if (sum(includeZero) == 0) {
                           STOP <- TRUE
+                        } else {
+                          badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)],
+                                                                                                 na.rm = T) == diffValues)[1]]))
+                          if (length(badItemNames) == 0) {
+                            STOP <- TRUE
+                          }
                         }
+                        try(rm(modCI))
+                      } else {
+                        STOP <- TRUE
                       }
-                      try(rm(modCI))
+
                     } else {
                       STOP <- TRUE
                     }

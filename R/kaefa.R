@@ -1012,6 +1012,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 #' @param mirtModel estimated aefa model
 #' @param mins logical; include the minimum value constants in the dataset. If FALSE, the expected values for each item are determined from the scoring 0:(ncat-1)
 #' @param devide logical; devide into the number of items. default is FALSE.
+#' @param rotate rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.
 #'
 #' @return recursively expected test score
 #' @export
@@ -1022,7 +1023,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 #' aefaResults(testMod1)
 #' recursiveScore <- recursiveFormula(testMod1)
 #' }
-recursiveFormula <- function(mirtModel, mins = F, devide = F){
+recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL){
   if (class(mirtModel) == "aefa") {
 
     if(is.null(rotate)){

@@ -1070,7 +1070,7 @@ recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL){
       }
     }
   }
-  resultRecursive <- tryCatch(mirt::expected.test(mirtModel, mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T), mins = mins, individual = T), error = function(e) {
+  resultRecursive <- tryCatch(mirt::expected.test(mirtModel, mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T), mins = mins, individual = F), error = function(e) {
   })
 
   if(exists('resultRecursive') && !is.null(resultRecursive)){

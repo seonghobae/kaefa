@@ -1006,3 +1006,80 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
       message("\n")
     }
 }
+
+#' return Recursive Score into raw response scale
+#'
+#' @param mirtModel estimated aefa model
+#' @param mins logical; include the minimum value constants in the dataset. If FALSE, the expected values for each item are determined from the scoring 0:(ncat-1)
+#' @param devide logical; devide into the number of items. default is FALSE.
+#'
+#' @return recursively expected test score
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
+#' aefaResults(testMod1)
+#' recursiveScore <- recursiveFormula(testMod1)
+#' }
+recursiveFormula <- function(mirtModel, mins = F, devide = F){
+  if (class(mirtModel) == "aefa") {
+
+    if(is.null(rotate)){
+      automatedRotation <- mirtModel$rotationTrials[[NROW(mirtModel$estModelTrials)]]
+    } else {
+      automatedRotation <- rotate
+    }
+
+    message(paste0("aefa results: aefa has ", NROW(mirtModel$estModelTrials),
+                   " automated internal validation trials."))
+    mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
+
+  }
+
+  # convert mixedclass to singleclass temporary
+  if (class(mirtModel)[1] == "MixedClass") {
+    message("\n")
+    mirt::summary(mirtModel)
+    message("\n")
+    modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                         SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
+    modMLM_original <- mirt::mod2values(mirtModel)
+    if (sum(modMLM_original$name == "(Intercept)") != 0) {
+      modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",
+                                         ]
+
+    }
+    modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in%
+                                                                                                         colnames(mirtModel@Data$data))]
+    modMLM$est <- F
+
+    if ("grsm" %in% mirtModel@Model$itemtype) {
+      mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                              itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
+                              SE = F, calcNull = F, technical = list(internal_constraints = FALSE))
+    } else {
+      mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                              itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
+                              SE = F, calcNull = F)
+    }
+    if (is.numeric(mirtModel@Model$model)) {
+      if (mirtModel@Model$model > 1) {
+        mirtModel@Options$exploratory <- TRUE
+      }
+    }
+  }
+  resultRecursive <- tryCatch(mirt::expected.test(mirtModel, mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T), mins = mins, individual = T), error = function(e) {
+  })
+
+  if(exists('resultRecursive') && !is.null(resultRecursive)){
+    if(devide){
+      ret <- resultRecursive / ncol(mirtModel@Data$data)
+    } else {
+      ret <- resultRecursive
+    }
+    return(ret)
+  } else {
+    stop('please check your model')
+  }
+}

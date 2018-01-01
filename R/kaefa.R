@@ -799,7 +799,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         na.rm = T))]))
                   } else if (length(estItemFit$item) <= 3) {
                     STOP <- TRUE
-                  } else if (!estModel@Options$exploratory) {
+                  } else if (!estModel@Options$exploratory && estModel@Model$itemtype[1] != 'Rasch') {
                     is.between <- function(x, a, b) {
                       (x - a) * (b - x) > 0
                     }
@@ -818,20 +818,17 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                           modCI[grep("^a", modCI$parnam), ]$upper_97.5[i]))
                       }
 
-                      if(exists('includeZero') && length != 0){
-                        if (sum(includeZero, na.rm = T) == 0) {
-                          STOP <- TRUE
-                        } else {
-                          badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)],
-                                                                                                 na.rm = T) == diffValues)[1]]))
-                          if (length(badItemNames) == 0) {
-                            STOP <- TRUE
-                          }
-                        }
-                        try(rm(modCI))
-                      } else {
+                      if (sum(includeZero, na.rm = T) == 0) {
                         STOP <- TRUE
+                      } else {
+                        badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)],
+                                                                                               na.rm = T) == diffValues)[1]]))
+                        if (length(badItemNames) == 0) {
+                          STOP <- TRUE
+                        }
                       }
+                      try(rm(modCI))
+
 
                     } else {
                       STOP <- TRUE

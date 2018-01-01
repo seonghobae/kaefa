@@ -1013,6 +1013,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 #' @param mins logical; include the minimum value constants in the dataset. If FALSE, the expected values for each item are determined from the scoring 0:(ncat-1)
 #' @param devide logical; devide into the number of items. default is FALSE.
 #' @param rotate rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.
+#' @param individual logical; return tracelines for individual items?
 #'
 #' @return recursively expected test score
 #' @export
@@ -1023,7 +1024,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 #' aefaResults(testMod1)
 #' recursiveScore <- recursiveFormula(testMod1)
 #' }
-recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL){
+recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL, individual = F){
   if (class(mirtModel) == "aefa") {
 
     if(is.null(rotate)){
@@ -1043,6 +1044,7 @@ recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL){
     message("\n")
     mirt::summary(mirtModel)
     message("\n")
+    ThetaRand <- mirt::randef(mirtModel)$Theta
     modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
                          SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
     modMLM_original <- mirt::mod2values(mirtModel)
@@ -1070,7 +1072,14 @@ recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL){
       }
     }
   }
-  resultRecursive <- tryCatch(mirt::expected.test(mirtModel, mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T), mins = mins, individual = F), error = function(e) {
+
+  if(exists('ThetaRand')){
+    ThetaExpected <- ThetaRand
+  } else {
+    ThetaExpected <- mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation)
+  }
+
+  resultRecursive <- tryCatch(mirt::expected.test(mirtModel, ThetaExpected, mins = mins, individual = individual), error = function(e) {
   })
 
   if(exists('resultRecursive') && !is.null(resultRecursive)){

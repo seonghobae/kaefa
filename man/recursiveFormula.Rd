@@ -4,7 +4,8 @@
 \alias{recursiveFormula}
 \title{return Recursive Score into raw response scale}
 \usage{
-recursiveFormula(mirtModel, mins = F, devide = F, rotate = NULL)
+recursiveFormula(mirtModel, mins = F, devide = F, rotate = NULL,
+  individual = F)
 }
 \arguments{
 \item{mirtModel}{estimated aefa model}
@@ -14,6 +15,8 @@ recursiveFormula(mirtModel, mins = F, devide = F, rotate = NULL)
 \item{devide}{logical; devide into the number of items. default is FALSE.}
 
 \item{rotate}{rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.}
+
+\item{individual}{logical; return tracelines for individual items?}
 }
 \value{
 recursively expected test score

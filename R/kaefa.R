@@ -818,8 +818,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                           modCI[grep("^a", modCI$parnam), ]$upper_97.5[i]))
                       }
 
-                      if(exists('includeZero')){
-                        if (sum(includeZero) == 0) {
+                      if(exists('includeZero') && length != 0){
+                        if (sum(includeZero, na.rm = T) == 0) {
                           STOP <- TRUE
                         } else {
                           badItemNames <- c(badItemNames, as.character(estItemFit$item[which(max(diffValues[is.finite(diffValues)],

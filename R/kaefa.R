@@ -20,7 +20,7 @@
 #' aefaInit(RemoteClusters = c('localhost', 's1', 's2'), sshKeyPath = c(NA, '~/pub.pem', NA))
 #'
 #'}
-aefaInit <- function(RemoteClusters = NULL, debug = F, sshKeyPath = NULL) {
+aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshKeyPath = NULL) {
     options(future.debug = debug)
 
     assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 30,
@@ -403,7 +403,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (is.data.frame(data)) if (ncol(data) <
     10) max(c(1, round(sqrt(ncol(data))))) else max(c(1, round(sqrt(ncol(data))))) else if (class(data) %in% c("SingleGroupClass", "MixedClass",
     "DiscreteClass")) max(c(1, round(sqrt(ncol(data@Data$data))))) else if (class(data) %in% "aefa") max(c(1, round(sqrt(ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data))))) else stop("Please provide data correctly."),
-    RemoteClusters = NULL, sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
+    RemoteClusters = getOption("kaefaServers"), sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
     BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
         items), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
     filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ","geominQ", "geominT", "bentlerQ", "bentlerT",

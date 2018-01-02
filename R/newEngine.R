@@ -337,7 +337,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed / ', paste(as.character(k_fixed), collapse = "")), random = paste0(' random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
+              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' / random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {

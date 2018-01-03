@@ -16,9 +16,9 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   RemoteClusters = getOption("kaefaServers"), sshKeyPath = NULL,
   GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000,
   covdata = NULL, fixed = c(~1, ~0, ~-1),
-  random = lapply(c(colnames(covdata), "items"), FUN = function(X) {    
-  eval(parse(text = paste0("as.formula(", paste0("~1|", X), ")"))) }),
-  key = NULL, accelerate = "squarem", symmetric = F,
+  random = lapply(c(kaefa:::.covdataClassifieder(covdata)$random, "items"),
+  FUN = function(X) {     eval(parse(text = paste0("as.formula(", paste0("~1|",
+  X), ")"))) }), key = NULL, accelerate = "squarem", symmetric = F,
   saveModelHistory = T, filename = "aefa.RDS", printItemFit = T,
   rotate = c("bifactorQ", "geominQ", "geominT", "bentlerQ", "bentlerT",
   "oblimin", "oblimax", "simplimax", "tandemII", "tandemI", "entropy",

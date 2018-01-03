@@ -49,7 +49,7 @@
         randomVars <- randomVars[!randomVars %in% excludeRandomVars]
       }
 
-      list(fixed = colnames(a[fixedVars]), random = colnames(a[randomVars]))
+      list(fixed = colnames(a[unique(fixedVars)]), random = colnames(a[unique(randomVars)]))
     } else {
       list(fixed = NULL, random = NULL)
     }

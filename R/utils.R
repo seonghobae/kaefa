@@ -1,4 +1,5 @@
 # classify fixed and random effect variables
+#' @export
   .covdataClassifieder <- function(a){
     if(!is.null(a)){
       if(sum(class(a) %in% "tbl_df") != 0){
@@ -57,6 +58,7 @@
   }
 
 # fixed effect combination
+#' @export
   .covdataFixedEffectComb <- function(a){
     combine <- function(x, y) {
       combn(y, x, paste, collapse = " + ")

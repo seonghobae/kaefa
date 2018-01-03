@@ -413,6 +413,9 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     fitIndicesCutOff = 0.005) {
 
   if(length(.covdataClassifieder(covdata)$fixed) != 0){
+    if(sum(class(covdata) %in% 'tbl_df') != 0){
+      covdata <- as.data.frame(covdata)
+    }
     for(i in which(colnames(covdata) %in% .covdataClassifieder(covdata)$fixed)){
       if(!is.factor(covdata[,i])){
         covdata[,i] <- as.factor(covdata[,i])

@@ -1,7 +1,7 @@
 # classify fixed and random effect variables
   .covdataClassifieder <- function(a){
     if(!is.null(a)){
-      if(!is.data.frame(a)){
+      if(sum(class(a) %in% "tbl_df") != 0){
         a <- as.data.frame(a)
       }
       # change as factor

@@ -1,11 +1,13 @@
 # classify fixed and random effect variables
   .covdataClassifieder <- function(a){
     if(!is.null(a)){
+      if(!is.data.frame(a)){
+        a <- as.data.frame(a)
+      }
       # change as factor
       for(i in 1:ncol(a)){
         a[,i] <- as.factor(a[,i])
       }
-      summary(a)
 
       # classify fixed and random
       fixedVars <- vector()

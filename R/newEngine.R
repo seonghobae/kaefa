@@ -170,7 +170,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           if (is.numeric(i) && tryLCA) {
             for (m in c("sandwich", "Oakes")) { # SE
               for (n in c(T, F)) { # empirical histogram
-                for (k_fixed in fixed) { # fixed effect
+                for (k_fixed in eval(parse(text = fixed))) { # fixed effect
                   ticktockClock <- ticktockClock + 1
                 }
               }
@@ -185,7 +185,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
               for (k in randomEffectCandidates) {
                 # and
-                for (k_fixed in fixed) {
+                for (k_fixed in eval(parse(text = fixed))) {
                   ticktockClock <- ticktockClock + 1
                   ticktockClock <- ticktockClock + 1
                 }
@@ -283,7 +283,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
         for (m in c("sandwich", "Oakes")) { # SE
           for (n in c(T, F)) { # empirical histogram
-            for (k_fixed in fixed) { # fixed effect
+            for (k_fixed in eval(parse(text = fixed))) { # fixed effect
               suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
                                  as.character(k_fixed), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
@@ -336,7 +336,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
           for (k in randomEffectCandidates) {
             # and
-            for (k_fixed in fixed) {
+            for (k_fixed in eval(parse(text = fixed))) {
               suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' / random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),

@@ -404,17 +404,21 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     10) max(c(1, round(sqrt(ncol(data))))) else max(c(1, round(sqrt(ncol(data))))) else if (class(data) %in% c("SingleGroupClass", "MixedClass",
     "DiscreteClass")) max(c(1, round(sqrt(ncol(data@Data$data))))) else if (class(data) %in% "aefa") max(c(1, round(sqrt(ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data))))) else stop("Please provide data correctly."),
     RemoteClusters = getOption("kaefaServers"), sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
-    BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = lapply(c(kaefa:::.covdataClassifieder(covdata)$random, 'items'), FUN = function(X){eval(parse(text = paste0('as.formula(',paste0('~1|',X), ')')))}), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
+    BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = .covdataFixedEffectComb(covdata), random = lapply(c(.covdataClassifieder(covdata)$random, 'items'), FUN = function(X){eval(parse(text = paste0('as.formula(',paste0('~1|',X), ')')))}), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
     filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ","geominQ", "geominT", "bentlerQ", "bentlerT",
                                                         "oblimin", "oblimax", "simplimax", "tandemII",
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F, turnOffMixedEst = F,
     fitIndicesCutOff = 0.005) {
-    # if ('sequential' %in% class(future::plan('list')[[1]]) | 'sequential' %in%
-    # class(getOption('aefaConn')) | is.null(getOption('aefaConn'))) {
-    # getOption('aefaConn', aefaInit(RemoteClusters = RemoteClusters, debug =
-    # printDebugMsg)) }
+
+  if(length(.covdataClassifieder(covdata)$fixed) != 0){
+    for(i in which(colnames(covdata) %in% .covdataClassifieder(covdata)$fixed)){
+      if(!is.factor(covdata[,i])){
+        covdata[,i] <- as.factor(covdata[,i])
+      }
+    }
+  }
 
     TimeStart <- Sys.time()
 

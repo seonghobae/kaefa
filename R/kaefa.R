@@ -234,32 +234,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {
-        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-            SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
-        modMLM_original <- mirt::mod2values(mirtModel)
-        if (sum(modMLM_original$name == "(Intercept)") != 0) {
-            modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",
-                ]
-
-        }
-        modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in%
-            colnames(mirtModel@Data$data))]
-        modMLM$est <- F
-
-        if ("grsm" %in% mirtModel@Model$itemtype) {
-            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
-                SE = F, calcNull = T, technical = list(internal_constraints = FALSE))
-        } else {
-            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
-                SE = F, calcNull = T)
-        }
-        if (is.numeric(mirtModel@Model$model)) {
-            if (mirtModel@Model$model > 1) {
-                mirtModel@Options$exploratory <- TRUE
-            }
-        }
+      mirtModel <- .exportParmsEME(mirtModel)
     }
 
     if (attr(class(mirtModel), "package") == "mirt") {
@@ -934,35 +909,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 
     # convert mixedclass to singleclass temporary
     if (class(mirtModel)[1] == "MixedClass") {
-        message("\n")
-        mirt::summary(mirtModel)
-        message("\n")
-        modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-            SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
-        modMLM_original <- mirt::mod2values(mirtModel)
-        if (sum(modMLM_original$name == "(Intercept)") != 0) {
-            modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",
-                ]
-
-        }
-        modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in%
-            colnames(mirtModel@Data$data))]
-        modMLM$est <- F
-
-        if ("grsm" %in% mirtModel@Model$itemtype) {
-            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
-                SE = F, calcNull = F, technical = list(internal_constraints = FALSE))
-        } else {
-            mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
-                SE = F, calcNull = F)
-        }
-        if (is.numeric(mirtModel@Model$model)) {
-            if (mirtModel@Model$model > 1) {
-                mirtModel@Options$exploratory <- TRUE
-            }
-        }
+      mirtModel <- .exportParmsEME(mirtModel)
     }
 
     resultM2 <- tryCatch(mirt::M2(mirtModel, QMC = T), error = function(e) {
@@ -975,11 +922,6 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 
     resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {
     })
-    if (exists("resultM2") && !is.null(resultM2)) {
-      message("M2 statistic")
-      print(resultM2)
-      message("\n")
-    }
 
     if(automatedRotation == 'none'){
       message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model'))
@@ -1043,36 +985,8 @@ recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL, ind
 
   # convert mixedclass to singleclass temporary
   if (class(mirtModel)[1] == "MixedClass") {
-    message("\n")
-    mirt::summary(mirtModel)
-    message("\n")
     ThetaRand <- mirt::randef(mirtModel)$Theta
-    modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-                         SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
-    modMLM_original <- mirt::mod2values(mirtModel)
-    if (sum(modMLM_original$name == "(Intercept)") != 0) {
-      modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",
-                                         ]
-
-    }
-    modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in%
-                                                                                                         colnames(mirtModel@Data$data))]
-    modMLM$est <- F
-
-    if ("grsm" %in% mirtModel@Model$itemtype) {
-      mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-                              itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
-                              SE = F, calcNull = F, technical = list(internal_constraints = FALSE))
-    } else {
-      mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
-                              itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
-                              SE = F, calcNull = F)
-    }
-    if (is.numeric(mirtModel@Model$model)) {
-      if (mirtModel@Model$model > 1) {
-        mirtModel@Options$exploratory <- TRUE
-      }
-    }
+    mirtModel <- .exportParmsEME(mirtModel)
   }
 
   if(exists('ThetaRand')){

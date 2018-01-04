@@ -2,6 +2,7 @@
 
 export(.covdataClassifieder)
 export(.covdataFixedEffectComb)
+export(.exportParmsEME)
 export(aefa)
 export(aefaInit)
 export(aefaResults)

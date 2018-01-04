@@ -79,3 +79,40 @@
 
     ret
   }
+
+# parameter linking Mixed-Effect to SingleClass Class temporaly
+#' @export
+  .exportParmsEME <- function(mirtModel){
+    if (class(mirtModel)[1] == "MixedClass") {
+      message("\n")
+      mirt::summary(mirtModel)
+      message("\n")
+      modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                           SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
+      modMLM_original <- mirt::mod2values(mirtModel)
+      if (sum(modMLM_original$name == "(Intercept)") != 0) {
+        modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",
+                                           ]
+
+      }
+      modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in%
+                                                                                                           colnames(mirtModel@Data$data))]
+      modMLM$est <- F
+
+      if ("grsm" %in% mirtModel@Model$itemtype) {
+        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
+                                SE = F, calcNull = F, technical = list(internal_constraints = FALSE))
+      } else {
+        mirtModel <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
+                                itemtype = mirtModel@Model$itemtype, pars = modMLM, method = "QMCEM",
+                                SE = F, calcNull = F)
+      }
+      if (is.numeric(mirtModel@Model$model)) {
+        if (mirtModel@Model$model > 1) {
+          mirtModel@Options$exploratory <- TRUE
+        }
+      }
+    }
+    mirtModel
+  }

@@ -74,7 +74,7 @@
 
     ret <- list()
     for(i in 1:length(fixedVarsComb)){
-      ret[[i]] <- as.formula(fixedVarsComb[i])
+      ret[[i]] <- as.character(fixedVarsComb[i])
     }
 
     ret

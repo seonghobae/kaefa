@@ -284,9 +284,9 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         for (m in c("sandwich", "Oakes")) { # SE
           for (n in c(T, F)) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
-              suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(eval(parse(text = k_fixed)))), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
+              suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
-                                 as.character(eval(parse(text = k_fixed))), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
+                                 as.character(k_fixed), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
                 tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
                                      accelerate = accelerate, GenRandomPars = GenRandomPars,
                                      empiricalhist = n, technical = list(NCYCLES = NCYCLES,
@@ -336,9 +336,9 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(eval(parse(text = k_fixed))), collapse = "")), random = paste0(' / random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
+              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' / random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
-                                    j, paste0(as.character(eval(parse(text = k_fixed))), collapse = ""),
+                                    j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {
                                       if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu",
                                                                  "2PLNRM") %in% j) > 0) {
@@ -368,9 +368,9 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                                                 })
                                       }
                                     }
-              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ lr.fixed ', paste(as.character(eval(parse(text = k_fixed))), collapse = "")), random = paste0('/ lr.random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
+              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ lr.fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0('/ lr.random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
               modConditional2[[paste(paste0(as.character(i), collapse = ""),
-                                     j, paste0(as.character(eval(parse(text = k_fixed))), collapse = ""),
+                                     j, paste0(as.character(k_fixed), collapse = ""),
                                      k, collapse = " ")]] %<-% {
                                        if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu",
                                                                   "2PLNRM") %in% j) > 0) {

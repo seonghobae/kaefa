@@ -72,9 +72,9 @@
       fixedVarsComb <- c(~1, ~0, ~-1)
     }
 
-    ret <- vector()
-    for(i in fixedVarsComb){
-      ret[length(ret)+1] <- as.formula(i)
+    ret <- list()
+    for(i in 1:length(fixedVarsComb)){
+      ret[NROW(ret)+1] <- as.formula(fixedVarsComb[i])
     }
 
     ret

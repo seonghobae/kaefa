@@ -284,15 +284,15 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         for (m in c("sandwich", "Oakes")) { # SE
           for (n in c(T, F)) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
-              suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
+              suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(eval(parse(text = k_fixed)))), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
-                                 as.character(k_fixed), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
+                                 as.character(eval(parse(text = k_fixed))), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
                 tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
                                      accelerate = accelerate, GenRandomPars = GenRandomPars,
                                      empiricalhist = n, technical = list(NCYCLES = NCYCLES,
                                                                          BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                     covdata = covdata, formula = if (k_fixed == ~1)
-                                       NULL else k_fixed), error = function(e) {
+                                     covdata = covdata, formula = if (eval(parse(text = k_fixed)) == ~1)
+                                       NULL else eval(parse(text = k_fixed))), error = function(e) {
                                        })
             }
           }
@@ -337,9 +337,9 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' / random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
+              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(eval(parse(text = k_fixed))), collapse = "")), random = paste0(' / random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
-                                    j, paste0(as.character(k_fixed), collapse = ""),
+                                    j, paste0(as.character(eval(parse(text = k_fixed))), collapse = ""),
                                     k, collapse = " ")]] %<-% {
                                       if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu",
                                                                  "2PLNRM") %in% j) > 0) {
@@ -350,7 +350,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                      "3PL" else if (j == "3PLuNRM")
                                                                        "3PLu" else if (j == "2PLNRM")
                                                                          "2PL" else j, SE = T, GenRandomPars = GenRandomPars,
-                                                                 covdata = covdata, fixed = k_fixed, random = eval(parse(text = k)),
+                                                                 covdata = covdata, fixed = eval(parse(text = k_fixed)), random = eval(parse(text = k)),
                                                                  calcNull = T, technical = list(NCYCLES = NCYCLES,
                                                                                                 BURNIN = BURNIN,
                                                                                                 SEMCYCLES = SEMCYCLES,
@@ -361,7 +361,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                       } else {
                                         tryCatch(mirt::mixedmirt(data = data, model = i,
                                                                  accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
-                                                                 covdata = covdata, fixed = k_fixed, random = eval(parse(text = k)),
+                                                                 covdata = covdata, fixed = eval(parse(text = k_fixed)), random = eval(parse(text = k)),
                                                                  calcNull = T, technical = list(NCYCLES = NCYCLES,
                                                                                                 BURNIN = BURNIN,
                                                                                                 SEMCYCLES = SEMCYCLES,
@@ -369,9 +369,9 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                                                 })
                                       }
                                     }
-              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ lr.fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0('/ lr.random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
+              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ lr.fixed ', paste(as.character(eval(parse(text = k_fixed))), collapse = "")), random = paste0('/ lr.random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
               modConditional2[[paste(paste0(as.character(i), collapse = ""),
-                                     j, paste0(as.character(k_fixed), collapse = ""),
+                                     j, paste0(as.character(eval(parse(text = k_fixed))), collapse = ""),
                                      k, collapse = " ")]] %<-% {
                                        if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu",
                                                                   "2PLNRM") %in% j) > 0) {
@@ -382,7 +382,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                       "3PL" else if (j == "3PLuNRM")
                                                                         "3PLu" else if (j == "2PLNRM")
                                                                           "2PL" else j, SE = T, GenRandomPars = GenRandomPars,
-                                                                  covdata = covdata, lr.fixed = k_fixed, lr.random = eval(parse(text = k)),
+                                                                  covdata = covdata, lr.fixed = eval(parse(text = k_fixed)), lr.random = eval(parse(text = k)),
                                                                   calcNull = T, technical = list(NCYCLES = NCYCLES,
                                                                                                  BURNIN = BURNIN,
                                                                                                  SEMCYCLES = SEMCYCLES,
@@ -393,7 +393,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                        } else {
                                          tryCatch(mirt::mixedmirt(data = data, model = i,
                                                                   accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
-                                                                  covdata = covdata, lr.fixed = k_fixed, lr.random = eval(parse(text = k)),
+                                                                  covdata = covdata, lr.fixed = eval(parse(text = k_fixed)), lr.random = eval(parse(text = k)),
                                                                   calcNull = T, technical = list(NCYCLES = NCYCLES,
                                                                                                  BURNIN = BURNIN,
                                                                                                  SEMCYCLES = SEMCYCLES,

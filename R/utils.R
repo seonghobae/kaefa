@@ -74,7 +74,7 @@
 
     ret <- vector()
     for(i in fixedVarsComb){
-      ret[length(ret)] <- as.formula(i)
+      ret[length(ret)+1] <- as.formula(i)
     }
 
     ret

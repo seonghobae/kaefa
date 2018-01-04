@@ -291,8 +291,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                      accelerate = accelerate, GenRandomPars = GenRandomPars,
                                      empiricalhist = n, technical = list(NCYCLES = NCYCLES,
                                                                          BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                     covdata = covdata, formula = if (eval(parse(text = k_fixed)) == ~1)
-                                       NULL else eval(parse(text = k_fixed))), error = function(e) {
+                                     covdata = covdata, formula = eval(parse(text = k_fixed))), error = function(e) {
                                        })
             }
           }

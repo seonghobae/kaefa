@@ -287,17 +287,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
               suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
                                  as.character(k_fixed), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
-                mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
-                                     accelerate = accelerate, GenRandomPars = GenRandomPars,
-                                     empiricalhist = n, technical = list(NCYCLES = NCYCLES,
-                                                                         BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                     covdata = covdata, formula = eval(parse(text = k_fixed)))
-              # tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
-              #                      accelerate = accelerate, GenRandomPars = GenRandomPars,
-              #                      empiricalhist = n, technical = list(NCYCLES = NCYCLES,
-              #                                                          BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-              #                      covdata = covdata, formula = eval(parse(text = k_fixed))), error = function(e) {
-              #                      })
+              tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
+                                   accelerate = accelerate, GenRandomPars = GenRandomPars,
+                                   empiricalhist = n, technical = list(NCYCLES = NCYCLES,
+                                                                       BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
+                                   covdata = covdata, formula = eval(parse(text = k_fixed))), error = function(e) {
+                                   })
             }
           }
         }

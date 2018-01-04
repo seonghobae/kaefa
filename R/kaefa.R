@@ -418,9 +418,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
       covdata <- as.data.frame(covdata)
     }
     for(i in which(colnames(covdata) %in% .covdataClassifieder(covdata)$fixed)){
-      if(!is.factor(covdata[,i])){
-        covdata[,i] <- as.factor(covdata[,i])
-      }
+      covdata[,i] <- as.factor(covdata[,i])
     }
   }
 

@@ -63,7 +63,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     nK <- vector()
     for (i in 1:ncol(data)) {
         nK[i] <- length(attributes(factor(data[, i]))$levels)
-        testLength[i] <- nK[i] > 30
+        testLength[i] <- nK[i] > 30 # k > 30 will not estimate as categorical variable.
     }
     data <- data[!testLength]
     nK <- nK[!testLength]
@@ -95,107 +95,129 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
     # get total ticktock
     ticktockClock <- 0
-        for (i in model) {
-          if(is.numeric(i)){
-            if(i > ncol(data)){
-              next()
-            }
-          }
-          if (is.numeric(i)) {
-            if (i == 1) {
-              # UIRT
-              if (max(nK[is.finite(nK)], na.rm = T) > 2) {
-                # poly UIRT
-                if (!is.null(key)) {
-                  # with key
-                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                   "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm",
-                                   "monopoly")
-                } else {
-                  # without key
-                  estItemtype <- c("ggum", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
-                                   "grsmIRT", "Rasch", "rsm", "monopoly")
-                }
-              } else {
-                # dich UIRT
-                estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch",
-                                 "spline", "monopoly")
-              }
-            } else {
-              # MIRT
-              if (max(nK[is.finite(nK)], na.rm = T) > 2) {
-                # poly MIRT
-                if (!is.null(key)) {
-                  # poly MIRT with key
-                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                   "gpcm", "graded", "grsm")
-                } else {
-                  # poly MIRT without key
-                  estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
-                }
-              } else {
-                # dich MIRT
-                estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL")
-              }
-            }
+    for (i in model) {
+      invisible(gc())
+      # exploratory i th model
+      if(is.numeric(i)){
+        if(i > ncol(data)){
+          next()
+        }
+      }
 
-          } else if (class(i) == "mirt.model") {
-            # CFA
-            if (max(nK[is.finite(nK)], na.rm = T) > 2) {
-              # poly CFA
-              if (!is.null(key)) {
-                # with key
-                estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                 "gpcm", "graded", "Rasch")
-              } else {
-                # without key
-                estItemtype <- c("ggum", "nominal", "gpcm", "graded", "Rasch")
-              }
+      # config
+      if (is.numeric(i)) {
+
+        if (i == 1) {
+          # UIRT
+          if (max(nK[is.finite(nK)], na.rm = T) > 2) {
+            # poly UIRT
+            if (!is.null(key)) {
+              # with key
+              estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                               "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm",
+                               "monopoly")
             } else {
-              # dich
-              estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL", "PC3PL", "PC2PL",
-                               "Rasch")
+              # without key
+              estItemtype <- c("ggum", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
+                               "grsmIRT", "Rasch", "rsm", "monopoly")
             }
           } else {
-            stop("model is not correctly provided")
+            # dich UIRT
+            estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch",
+                             "spline", "monopoly")
           }
-
-
-          if (sum(max(nK[is.finite(nK)], na.rm = T) == nK) != length(nK[is.finite(nK)])) {
-            if (length(grep("rsm", estItemtype)) > 0) {
-              estItemtype <- estItemtype[-grep("rsm", estItemtype)]
-            }
-          }
-          # LCA
-          if (is.numeric(i) && tryLCA) {
-            for (m in c("sandwich", "Oakes")) { # SE
-              for (n in c(T, F)) { # empirical histogram
-                for (k_fixed in fixed) { # fixed effect
-                  ticktockClock <- ticktockClock + 1
-                }
-              }
-            }
-          }
-          for (j in estItemtype) {
-            if (!forcingMixedModelOnly) {
-              ticktockClock <- ticktockClock + 1
-            }
-            if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
-                                        j) == 0) {
-
-              for (k in randomEffectCandidates) {
-                # and
-                for (k_fixed in fixed) {
-                  ticktockClock <- ticktockClock + 1
-                  ticktockClock <- ticktockClock + 1
-                }
-              }
-              # pb$tick(1e7)
+        } else {
+          # MIRT
+          if (max(nK[is.finite(nK)], na.rm = T) > 2) {
+            # poly MIRT
+            if (!is.null(key)) {
+              # poly MIRT with key
+              estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                               "gpcm", "graded", "grsm")
             } else {
+              # poly MIRT without key
+              estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
+            }
+          } else {
+            # dich MIRT
+            estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL")
+          }
+        }
+
+      } else if (class(i) == "mirt.model") {
+        # CFA
+        if (max(nK[is.finite(nK)], na.rm = T) > 2) {
+          # poly CFA
+          if (!is.null(key)) {
+            # with key
+            estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                             "gpcm", "graded", "Rasch")
+          } else {
+            # without key
+            estItemtype <- c("ggum", "nominal", "gpcm", "graded", "Rasch")
+          }
+        } else {
+          # dich
+          estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL", "PC3PL", "PC2PL",
+                           "Rasch")
+        }
+      } else {
+        stop("model is not correctly provided")
+      }
+
+
+      if (sum(max(nK[is.finite(nK)], na.rm = T) == nK) != length(nK[is.finite(nK)])) {
+        if (length(grep("rsm", estItemtype)) > 0) {
+          estItemtype <- estItemtype[-grep("rsm", estItemtype)]
+        }
+      }
+      # LCA
+      if (is.numeric(i) && tryLCA) {
+
+        for (m in c("sandwich", "Oakes")) { # SE
+          for (n in c(T, F)) { # empirical histogram
+            for (k_fixed in fixed) { # fixed effect
               ticktockClock <- ticktockClock + 1
             }
           }
-        } # count ticktock
+        }
+      }
+      for (j in estItemtype) {
+        # itemtype j for model i
+
+        if (!forcingMixedModelOnly) {
+
+          # message("mirt::mirt calibration (normal MIRT)\n")
+
+          if (forcingQMC) {
+            estMethod <- "QMCEM"
+          } else {
+            if (sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
+                    j) == 0) {
+            } else {
+            }
+          }
+          ticktockClock <- ticktockClock + 1
+        }
+        # FIXME: CONSIDER TO REMOVE THIS: TO SPEED UP; ESTIMATE RANDOM EFFECTS DIRECTLY
+        # if (!is.null(covdata)) {} # try to calibrate mixed-effect even covdata is null
+        # anyway -- 2017. 11. 10
+        if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
+                                    j) == 0) {
+          # message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
+
+          for (k in randomEffectCandidates) {
+            # and
+            for (k_fixed in fixed) {
+              ticktockClock <- ticktockClock + 1
+              ticktockClock <- ticktockClock + 1
+            }
+          }
+        } else {
+        }
+      }
+
+    } # count ticktock
     pb <- progress::progress_bar$new(
       format = " :spin estimating :modeltype :itemtype models using :method [:bar] :percent (:current of :total) // elapsed: :elapsed (:eta remained) :fixed :random",
       total = ticktockClock, clear = F, width= 300)

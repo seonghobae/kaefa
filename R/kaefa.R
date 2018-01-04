@@ -32,6 +32,7 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
 
         STOP <- F
         while (!STOP) {
+          invisible(gc())
             statusList <- list()
             decisionList <- list()
             for (i in serverList) {

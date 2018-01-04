@@ -37,7 +37,7 @@
         }
       }
 
-      # elemenate random vars if group size under 3
+      # elemenate random vars if group size under 2
       if(length(randomVars)){
         excludeRandomVars <- vector()
         for(i in randomVars){

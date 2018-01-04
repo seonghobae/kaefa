@@ -24,7 +24,7 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
     options(future.debug = debug)
 
     assignClusterNodes <- function(serverList, loadPercentage = 70, freeRamPercentage = 30,
-        requiredMinimumClusters = max(c(1, round(NROW(serverList)/3))), sshKeyPath = NULL) {
+        requiredMinimumClusters = max(c(1, round(sqrt(NROW(serverList))))), sshKeyPath = NULL) {
 
       pb <- progress::progress_bar$new(
         format = " initialising [:bar] :percent eta: :eta",

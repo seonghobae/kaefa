@@ -962,7 +962,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 #' @param devide logical; devide into the number of items. default is FALSE.
 #' @param rotate rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.
 #' @param individual logical; return tracelines for individual items?
-#'
+#' @param extractThetaOnly logical; return the theta only without recursive score?
 #' @return recursively expected test score
 #' @export
 #'
@@ -972,7 +972,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
 #' aefaResults(testMod1)
 #' recursiveScore <- recursiveFormula(testMod1)
 #' }
-recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL, individual = F){
+recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL, individual = F, extractThetaOnly = F){
   if (class(mirtModel) == "aefa") {
 
     if(is.null(rotate)){
@@ -999,17 +999,22 @@ recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL, ind
     ThetaExpected <- mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation)
   }
 
-  resultRecursive <- tryCatch(mirt::expected.test(mirtModel, ThetaExpected, mins = mins, individual = individual), error = function(e) {
-  })
-
-  if(exists('resultRecursive') && !is.null(resultRecursive)){
-    if(devide){
-      ret <- resultRecursive / ncol(mirtModel@Data$data)
-    } else {
-      ret <- resultRecursive
-    }
-    return(ret)
+  if(extractThetaOnly){
+    return(ThetaExpected)
   } else {
-    stop('please check your model')
+    resultRecursive <- tryCatch(mirt::expected.test(mirtModel, ThetaExpected, mins = mins, individual = individual), error = function(e) {
+    })
+
+    if(exists('resultRecursive') && !is.null(resultRecursive)){
+      if(devide){
+        ret <- resultRecursive / ncol(mirtModel@Data$data)
+      } else {
+        ret <- resultRecursive
+      }
+      return(ret)
+    } else {
+      stop('please check your model')
+    }
   }
+
 }

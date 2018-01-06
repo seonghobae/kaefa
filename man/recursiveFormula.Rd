@@ -5,7 +5,7 @@
 \title{return Recursive Score into raw response scale}
 \usage{
 recursiveFormula(mirtModel, mins = F, devide = F, rotate = NULL,
-  individual = F)
+  individual = F, extractThetaOnly = F)
 }
 \arguments{
 \item{mirtModel}{estimated aefa model}
@@ -17,6 +17,8 @@ recursiveFormula(mirtModel, mins = F, devide = F, rotate = NULL,
 \item{rotate}{rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.}
 
 \item{individual}{logical; return tracelines for individual items?}
+
+\item{extractThetaOnly}{logical; return the theta only without recursive score?}
 }
 \value{
 recursively expected test score

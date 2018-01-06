@@ -6,8 +6,8 @@
 \title{doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment}
 \usage{
 aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
-  (is.data.frame(data)) if (ncol(data) < 10) max(c(1, round(sqrt(ncol(data)))))
-  else max(c(1, round(sqrt(ncol(data))))) else if (class(data) \%in\%
+  (is.data.frame(data)) if (ncol(data) <= 10) max(c(1, (round(sqrt(ncol(data)))
+  + 2))) else max(c(1, round(sqrt(ncol(data))))) else if (class(data) \%in\%
   c("SingleGroupClass", "MixedClass", "DiscreteClass")) max(c(1,
   round(sqrt(ncol(data@Data$data))))) else if (class(data) \%in\% "aefa")
   max(c(1,

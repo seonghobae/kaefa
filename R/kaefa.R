@@ -376,8 +376,8 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #'
 #' }
-aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (is.data.frame(data)) if (ncol(data) <
-    10) max(c(1, round(sqrt(ncol(data))))) else max(c(1, round(sqrt(ncol(data))))) else if (class(data) %in% c("SingleGroupClass", "MixedClass",
+aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (is.data.frame(data)) if (ncol(data) <=
+    10) max(c(1, (round(sqrt(ncol(data)))+2))) else max(c(1, round(sqrt(ncol(data))))) else if (class(data) %in% c("SingleGroupClass", "MixedClass",
     "DiscreteClass")) max(c(1, round(sqrt(ncol(data@Data$data))))) else if (class(data) %in% "aefa") max(c(1, round(sqrt(ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data))))) else stop("Please provide data correctly."),
     RemoteClusters = getOption("kaefaServers"), sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
     BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = kaefa:::.covdataFixedEffectComb(covdata), random = lapply(c(kaefa:::.covdataClassifieder(covdata)$random, 'items'), FUN = function(X){eval(parse(text = paste0('as.formula(',paste0('~1|',X), ')')))}), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,

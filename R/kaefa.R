@@ -917,6 +917,10 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
     if (exists("resultM2") && !is.null(resultM2)) {
         message("M2 statistic")
         print(resultM2)
+        if(resultM2$CFI < .9 && resultM2$TLI > .9){
+          message('The calibrated model is seems good,')
+          message('but CFI is inappropriate so that you might increase the number of factor extraction.')
+        }
         message("\n")
     }
 

@@ -5,6 +5,16 @@
       if(sum(class(a) %in% "tbl_df") != 0){
         a <- as.data.frame(a)
       }
+
+      # marking integers: NEED TO FIX
+      markInt <- vector()
+      for(i in 1:ncol(a)){
+        if(is.integer(a[,i])){
+          markInt[length(markInt) + 1] <- i
+        } else {
+        }
+      }
+
       # change as factor
       for(i in 1:ncol(a)){
         a[,i] <- as.factor(a[,i])
@@ -115,4 +125,49 @@
       }
     }
     mirtModel
+  }
+
+# MIRT wrapper
+#' @export
+#'
+  .mirt <- function(data = NULL, model = 1, method = "EM",
+                    itemtype = "graded", accelerate = "squarem", SE = T, GenRandomPars = T,
+                    key = NULL, calcNull = T, technical = list(NCYCLES = 4000,
+                                                              BURNIN = 1000, SEMCYCLES = 1500, symmetric = F)){
+    mod <- mirt(data = data, model = i, method = estMethod,
+         itemtype = j, accelerate = accelerate, SE = SE, GenRandomPars = GenRandomPars,
+         key = key, calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
+                                                   BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))
+    if(exists('mod')){
+      if(mod@OptimInfo$secondordertest){
+        mod
+      } else {
+        NULL
+      }
+    }
+  }
+
+# EMEIRT wrapper
+#' @export
+#'
+  .mixedmirt <- function(data = NULL, model = 1,
+                    itemtype = "graded", accelerate = "squarem", SE = T, GenRandomPars = T, covdata = NULL,
+                    fixed = ~1, random = NULL, lr.fixed = ~1, lr.random = NULL,
+                    calcNull = T, technical = list(NCYCLES = 4000, BURNIN = 1000, SEMCYCLES = 1500, symmetric = F)){
+    mod <- mirt::mixedmirt(data = data, model = i,
+                           accelerate = accelerate, itemtype = j, SE = SE, GenRandomPars = GenRandomPars,
+                           covdata = covdata, fixed = fixed, random = random, lr.fixed = lr.fixed, lr.random = lr.random,
+                           calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
+                                                          BURNIN = BURNIN,
+                                                          SEMCYCLES = SEMCYCLES,
+                                                          symmetric = symmetric))
+    if(exists('mod')){
+      if(mod@OptimInfo$secondordertest){
+        mod
+      } else {
+        NULL
+      }
+    } else {
+      NULL
+    }
   }

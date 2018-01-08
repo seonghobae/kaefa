@@ -204,7 +204,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         # anyway -- 2017. 11. 10
         if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
                                     j) == 0) {
-          # message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
+          # message("\n.mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
 
           for (k in randomEffectCandidates) {
             # and
@@ -340,7 +340,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           modUnConditional[[paste(paste0(as.character(i), collapse = ""),
                                   j, collapse = " ")]] %<-% {
 
-                                    tryCatch(mirt::mirt(data = data, model = i, method = estMethod,
+                                    tryCatch(.mirt(data = data, model = i, method = estMethod,
                                                         itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
                                                         key = key, calcNull = T, technical = list(NCYCLES = NCYCLES,
                                                                                                   BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric)),
@@ -353,7 +353,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         # anyway -- 2017. 11. 10
         if (!turnOffMixedEst && sum(c("grsmIRT", "gpcmIRT", "spline", "rsm", "monopoly") %in%
                                     j) == 0) {
-          # message("\nmirt::mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
+          # message("\n.mixedmirt calibration (multilevel/mixed-effect MIRT)\n")
 
           for (k in randomEffectCandidates) {
             # and
@@ -364,7 +364,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                     k, collapse = " ")]] %<-% {
                                       if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu",
                                                                  "2PLNRM") %in% j) > 0) {
-                                        tryCatch(mirt::mixedmirt(data = mirt::key2binary(data,
+                                        tryCatch(.mixedmirt(data = mirt::key2binary(data,
                                                                                          key), model = i,
                                                                  accelerate = accelerate, itemtype = if (j == "4PLNRM")
                                                                    "4PL" else if (j == "3PLNRM")
@@ -380,7 +380,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                  })
 
                                       } else {
-                                        tryCatch(mirt::mixedmirt(data = data, model = i,
+                                        tryCatch(.mixedmirt(data = data, model = i,
                                                                  accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
                                                                  covdata = covdata, fixed = eval(parse(text = k_fixed)), random = eval(parse(text = k)),
                                                                  calcNull = T, technical = list(NCYCLES = NCYCLES,
@@ -396,7 +396,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                      k, collapse = " ")]] %<-% {
                                        if (!is.null(key) && sum(c("4PLNRM", "3PLNRM", "3PLNRMu",
                                                                   "2PLNRM") %in% j) > 0) {
-                                         tryCatch(mirt::mixedmirt(data = mirt::key2binary(data,
+                                         tryCatch(.mixedmirt(data = mirt::key2binary(data,
                                                                                           key), model = i,
                                                                   accelerate = accelerate, itemtype = if (j == "4PLNRM")
                                                                     "4PL" else if (j == "3PLNRM")
@@ -412,7 +412,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                   })
 
                                        } else {
-                                         tryCatch(mirt::mixedmirt(data = data, model = i,
+                                         tryCatch(.mixedmirt(data = data, model = i,
                                                                   accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
                                                                   covdata = covdata, lr.fixed = eval(parse(text = k_fixed)), lr.random = eval(parse(text = k)),
                                                                   calcNull = T, technical = list(NCYCLES = NCYCLES,

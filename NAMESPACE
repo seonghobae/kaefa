@@ -3,6 +3,8 @@
 export(.covdataClassifieder)
 export(.covdataFixedEffectComb)
 export(.exportParmsEME)
+export(.mirt)
+export(.mixedmirt)
 export(aefa)
 export(aefaInit)
 export(aefaResults)

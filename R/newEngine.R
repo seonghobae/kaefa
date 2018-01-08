@@ -307,6 +307,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           for (n in c(T, F)) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
               suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
+              invisible(gc())
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
                                  as.character(k_fixed), paste0(as.character(n), collapse = ""), collapse = " ")]] %<-%
               tryCatch(mirt::mdirt(data = data, model = i, SE = T, SE.type = m,
@@ -337,6 +338,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
           }
           suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = ' ', random = ' ', method = estMethod)))
+          invisible(gc())
           modUnConditional[[paste(paste0(as.character(i), collapse = ""),
                                   j, collapse = " ")]] %<-% {
 
@@ -359,6 +361,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             # and
             for (k_fixed in fixed) {
               suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' / random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
+              invisible(gc())
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
                                     j, paste0(as.character(k_fixed), collapse = ""),
                                     k, collapse = " ")]] %<-% {
@@ -391,6 +394,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                       }
                                     }
               suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ lr.fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0('/ lr.random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
+              invisible(gc())
               modConditional2[[paste(paste0(as.character(i), collapse = ""),
                                      j, paste0(as.character(k_fixed), collapse = ""),
                                      k, collapse = " ")]] %<-% {

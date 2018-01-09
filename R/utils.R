@@ -135,7 +135,7 @@
                     key = NULL, calcNull = T, technical = list(NCYCLES = 4000,
                                                               BURNIN = 1000, SEMCYCLES = 1500, symmetric = F)){
     invisible(gc())
-    mod <- mirt(data = data, model = model, method = method,
+    mod <- mirt::mirt(data = data, model = model, method = method,
          itemtype = itemtype, accelerate = accelerate, SE = SE, GenRandomPars = GenRandomPars,
          key = key, calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
                                                    BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))

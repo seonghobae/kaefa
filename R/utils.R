@@ -135,8 +135,8 @@
                     key = NULL, calcNull = T, technical = list(NCYCLES = 4000,
                                                               BURNIN = 1000, SEMCYCLES = 1500, symmetric = F)){
     invisible(gc())
-    mod <- mirt(data = data, model = i, method = estMethod,
-         itemtype = j, accelerate = accelerate, SE = SE, GenRandomPars = GenRandomPars,
+    mod <- mirt(data = data, model = model, method = method,
+         itemtype = itemtype, accelerate = accelerate, SE = SE, GenRandomPars = GenRandomPars,
          key = key, calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
                                                    BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))
     if(exists('mod')){
@@ -156,8 +156,8 @@
                     fixed = ~1, random = NULL, lr.fixed = ~1, lr.random = NULL,
                     calcNull = T, technical = list(NCYCLES = 4000, BURNIN = 1000, SEMCYCLES = 1500, symmetric = F)){
     invisible(gc())
-    mod <- mirt::mixedmirt(data = data, model = i,
-                           accelerate = accelerate, itemtype = j, SE = SE, GenRandomPars = GenRandomPars,
+    mod <- mirt::mixedmirt(data = data, model = model,
+                           accelerate = accelerate, itemtype = itemtype, SE = SE, GenRandomPars = GenRandomPars,
                            covdata = covdata, fixed = fixed, random = random, lr.fixed = lr.fixed, lr.random = lr.random,
                            calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
                                                           BURNIN = BURNIN,

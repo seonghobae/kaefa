@@ -2,9 +2,6 @@
 #' @export
   .covdataClassifieder <- function(a){
     if(!is.null(a)){
-      if("tbl_df" %in% class(a)){
-        a <- as.data.frame(a)
-      }
 
       # marking integers: NEED TO FIX! (reserved)
       markInt <- vector()
@@ -12,9 +9,9 @@
       markCat <- vector()
       for(i in 1:ncol(a)){
         if(is.integer(a[[i]])){
-          markInt[length(markInt) + 1] <- i # marking as Integer (1.2342... with decimals)
+          markInt[length(markInt) + 1] <- i # marking as Numeric (1, 2, 3, ..., and so on)
         } else if(is.numeric(a[[i]])){
-          markNum[length(markNum) + 1] <- i # marking as Numeric (1, 2, 3, ..., and so on)
+          markNum[length(markNum) + 1] <- i # marking as Integer (1.2342... with decimals)
         } else {
           markCat[length(markCat) + 1] <- i
         }
@@ -73,10 +70,10 @@
         done <- c(unique(fixedVars), unique(randomVars))
         NumberCandidates <- 1:ncol(a)
         NumberCandidates <- NumberCandidates[!NumberCandidates %in% done]
-        NumberCandidates <- c(NumberCandidates, markInt)
+        NumberCandidates <- c(NumberCandidates, markNum)
 
         for(i in NumberCandidates){
-          if(isTRUE(all.equal(a[[i]], as.integer((a[[i]]))))){
+          if(isTRUE(all.equal(a[[i]], as.numeric(a[[i]])))){
             numericVars[length(numericVars) + 1] <- i
           }
         }

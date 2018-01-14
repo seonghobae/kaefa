@@ -78,7 +78,7 @@
         }
 
         for(i in NumberCandidates){
-          if(isTRUE(all.equal(a[[i]], as.integer(as.factor(a[[i]]))))){
+          if(isTRUE(all.equal(a[[i]], as.integer((a[[i]]))))){
             numericVars[length(numericVars) + 1] <- i
           }
         }

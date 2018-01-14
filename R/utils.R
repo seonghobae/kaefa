@@ -2,6 +2,9 @@
 #' @export
   .covdataClassifieder <- function(a){
     if(!is.null(a)){
+      if('tbl_df' %in% class(a)){
+        a <- as.data.frame(a)
+      }
 
       # marking integers: NEED TO FIX! (reserved)
       markInt <- vector()

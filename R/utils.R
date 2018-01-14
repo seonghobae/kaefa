@@ -73,9 +73,7 @@
         done <- c(unique(fixedVars), unique(randomVars))
         NumberCandidates <- 1:ncol(a)
         NumberCandidates <- NumberCandidates[!NumberCandidates %in% done]
-        if(!is.null(markInt)){
-          NumberCandidates <- c(NumberCandidates, markInt)
-        }
+        NumberCandidates <- c(NumberCandidates, markInt)
 
         for(i in NumberCandidates){
           if(isTRUE(all.equal(a[[i]], as.integer((a[[i]]))))){

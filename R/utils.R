@@ -57,13 +57,18 @@
         }
 
         # elemenate random vars if group size under 2 -- that may numeric / integer?
-        if(length(randomVars)){
+        if(length(randomVars) != 0){
           excludeRandomVars <- vector()
+
           for(i in randomVars){
-            if(min(table(a[[i]])) > 1){
+            if(sum(table(a[[i]]) == 1) > sqrt(length(a[[i]]))){ # if a lot of individual cases, do not execlude
 
             } else {
-              excludeRandomVars <- c(excludeRandomVars, i)
+              if(min(table(a[[i]])) > 1){
+
+              } else {
+                excludeRandomVars <- c(excludeRandomVars, i)
+              }
             }
           }
           randomVars <- randomVars[!randomVars %in% excludeRandomVars]

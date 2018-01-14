@@ -2,7 +2,7 @@
 #' @export
   .covdataClassifieder <- function(a){
     if(!is.null(a)){
-      if(sum(class(a) %in% "tbl_df") != 0){
+      if("tbl_df" %in% class(a)){
         a <- as.data.frame(a)
       }
 
@@ -11,9 +11,9 @@
       markNum <- vector()
       markCat <- vector()
       for(i in 1:ncol(a)){
-        if(is.integer(a[,i])){
+        if(is.integer(a[[i]])){
           markInt[length(markInt) + 1] <- i # marking as Integer (1.2342... with decimals)
-        } else if(is.numeric(a[,i])){
+        } else if(is.numeric(a[[i]])){
           markNum[length(markNum) + 1] <- i # marking as Numeric (1, 2, 3, ..., and so on)
         } else {
           markCat[length(markCat) + 1] <- i
@@ -22,7 +22,7 @@
 
       # change as factor in temporal
       for(i in 1:ncol(a)){
-        a[,i] <- as.factor(a[,i])
+        a[[i]] <- as.factor(a[[i]])
       }
 
       # classify number, fixed and random
@@ -32,7 +32,7 @@
 
         # classify fixed and random first
         for(i in 1:ncol(a)){
-          if(length(levels(a[,i])) <= 30){ # if k <= 30 (group level <= 30)
+          if(length(levels(a[[i]])) <= 30){ # if k <= 30 (group level <= 30)
             fixedVars <- c(fixedVars, i)
           } else {
             randomVars <- c(randomVars, i) # if k > 30
@@ -43,7 +43,7 @@
         if(length(fixedVars) != 0){
           gotoRandom <- vector()
           for(i in 1:ncol(a)){
-            if(max(table(a[,i]))/min(table(a[,i])) < 2){
+            if(max(table(a[[i]]))/min(table(a[[i]])) < 2){
 
             } else {  # if fixed group has unbalanced levels (group a has 4 members, group b has 60...)
               gotoRandom[length(gotoRandom) + 1] <- i
@@ -60,7 +60,7 @@
         if(length(randomVars)){
           excludeRandomVars <- vector()
           for(i in randomVars){
-            if(min(table(a[,i])) > 1){
+            if(min(table(a[[i]])) > 1){
 
             } else {
               excludeRandomVars <- c(excludeRandomVars, i)
@@ -78,7 +78,7 @@
         }
 
         for(i in NumberCandidates){
-          if(isTRUE(all.equal(a[,i], as.numeric(as.factor(a[,i]))))){
+          if(isTRUE(all.equal(a[[i]], as.numeric(as.factor(a[[i]]))))){
             numericVars[length(numericVars) + 1] <- i
           }
         }

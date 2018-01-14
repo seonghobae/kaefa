@@ -62,7 +62,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     testLength <- vector()
     nK <- vector()
     for (i in 1:ncol(data)) {
-        nK[i] <- length(attributes(factor(data[, i]))$levels)
+        nK[i] <- length(attributes(factor(data[[i]]))$levels)
         testLength[i] <- nK[i] > 30 # k > 30 will not estimate as categorical variable.
     }
     data <- data[!testLength]

@@ -6,65 +6,83 @@
         a <- as.data.frame(a)
       }
 
-      # marking integers: NEED TO FIX
+      # marking integers: NEED TO FIX! (reserved)
       markInt <- vector()
+      markNum <- vector()
+      markCat <- vector()
       for(i in 1:ncol(a)){
         if(is.integer(a[,i])){
-          markInt[length(markInt) + 1] <- i
+          markInt[length(markInt) + 1] <- i # marking as Integer (1.2342... with decimals)
+        } else if(is.numeric(a[,i])){
+          markNum[length(markNum) + 1] <- i # marking as Numeric (1, 2, 3, ..., and so on)
         } else {
+          markCat[length(markCat) + 1] <- i
         }
       }
 
-      # change as factor
+      # change as factor in temporal
       for(i in 1:ncol(a)){
         a[,i] <- as.factor(a[,i])
       }
 
-      # classify fixed and random
+      # classify number, fixed and random
       fixedVars <- vector()
       randomVars <- vector()
-      for(i in 1:ncol(a)){
-        if(length(levels(a[,i])) <= 30){
-          fixedVars <- c(fixedVars, i)
-        } else {
-          randomVars <- c(randomVars, i)
-        }
-      }
+      numericVars <- vector() # age, number of team members, ..., etc.
 
-      # test group size to move random
-      if(length(fixedVars) != 0){
-        gotoRandom <- vector()
+        # classify fixed and random first
         for(i in 1:ncol(a)){
-          if(max(table(a[,i]))/min(table(a[,i])) < 2){
-
+          if(length(levels(a[,i])) <= 30){ # if k <= 30 (group level <= 30)
+            fixedVars <- c(fixedVars, i)
           } else {
-            gotoRandom[length(gotoRandom) + 1] <- i
+            randomVars <- c(randomVars, i) # if k > 30
           }
         }
-        if(length(randomVars) != 0){
-          fixedVars <- fixedVars[!fixedVars %in% gotoRandom]
-          randomVars <- c(randomVars, gotoRandom)
-        }
-      }
 
-      # elemenate random vars if group size under 2
-      if(length(randomVars)){
-        excludeRandomVars <- vector()
-        for(i in randomVars){
-          if(min(table(a[,i])) > 1){
+        # make a decision which variable to move fixed to random by group size balancing
+        if(length(fixedVars) != 0){
+          gotoRandom <- vector()
+          for(i in 1:ncol(a)){
+            if(max(table(a[,i]))/min(table(a[,i])) < 2){
 
-          } else {
-            excludeRandomVars <- c(excludeRandomVars, i)
+            } else {  # if fixed group has unbalanced levels (group a has 4 members, group b has 60...)
+              gotoRandom[length(gotoRandom) + 1] <- i
+            }
+          }
+
+          if(length(randomVars) != 0){
+            fixedVars <- fixedVars[!fixedVars %in% gotoRandom]
+            randomVars <- c(randomVars, gotoRandom)
           }
         }
-        randomVars <- randomVars[!randomVars %in% excludeRandomVars]
-      }
 
-      list(fixed = colnames(a[unique(fixedVars)]), random = colnames(a[unique(randomVars)]))
+        # elemenate random vars if group size under 2 -- that may numeric / integer?
+        if(length(randomVars)){
+          excludeRandomVars <- vector()
+          for(i in randomVars){
+            if(min(table(a[,i])) > 1){
+
+            } else {
+              excludeRandomVars <- c(excludeRandomVars, i)
+            }
+          }
+          randomVars <- randomVars[!randomVars %in% excludeRandomVars]
+        }
+
+      # evaluate variables that non-included yet
+        done <- c(unique(fixedVars), unique(randomVars))
+        NumberCandidates <- 1:ncol(a)
+        NumberCandidates <- NumberCandidates[!NumberCandidates %in% done]
+        for(i in NumberCandidates){
+          if(isTRUE(all.equal(a[,i], as.numeric(as.factor(a[,i]))))){
+            numericVars[length(numericVars) + 1] <- i
+          }
+        }
+
+      list(fixed = colnames(a[unique(fixedVars)]), random = colnames(a[unique(randomVars)]), numeric = colnames(a[unique(numericVars)]))
     } else {
-      list(fixed = NULL, random = NULL)
+      list(fixed = NULL, random = NULL, numeric = NULL)
     }
-
   }
 
 # fixed effect combination

@@ -126,10 +126,10 @@
                            SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
       modMLM_original <- mirt::mod2values(mirtModel)
       if (sum(modMLM_original$name == "(Intercept)") != 0) {
-        modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",
-                                           ]
+        modMLM_original <- modMLM_original[!modMLM_original$name == "(Intercept)",]
 
       }
+      modMLM_original <- modMLM_original[modMLM_original$name %in% intersect(modMLM_original$name, modMLM$name),]
       modMLM$value[which(modMLM$item %in% colnames(mirtModel@Data$data))] <- modMLM_original$value[which(modMLM_original$item %in%
                                                                                                            colnames(mirtModel@Data$data))]
       modMLM$est <- F

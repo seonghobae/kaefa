@@ -21,7 +21,7 @@
 #'
 #'}
 aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshKeyPath = NULL) {
-    options(future.debug = debug)
+    # options(future.debug = debug)
 
     assignClusterNodes <- function(serverList, loadPercentage = 50, freeRamPercentage = 30,
         requiredMinimumClusters = max(c(1, round(sqrt(NROW(serverList))))), sshKeyPath = NULL) {

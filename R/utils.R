@@ -164,8 +164,12 @@
          key = key, calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
                                                    BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))
     if(exists('mod')){
-      if(mod@OptimInfo$secondordertest){
-        mod
+      if(mod@OptimInfo$converged){
+        if(mod@OptimInfo$secondordertest){
+          mod
+        } else {
+          NULL
+        }
       } else {
         NULL
       }
@@ -188,12 +192,14 @@
                                                           SEMCYCLES = SEMCYCLES,
                                                           symmetric = symmetric))
     if(exists('mod')){
-      if(mod@OptimInfo$secondordertest){
-        mod
+      if(mod@OptimInfo$converged){
+        if(mod@OptimInfo$secondordertest){
+          mod
+        } else {
+          NULL
+        }
       } else {
         NULL
       }
-    } else {
-      NULL
     }
   }

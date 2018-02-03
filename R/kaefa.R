@@ -398,7 +398,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
   }
 
     TimeStart <- Sys.time()
-
+    workDirectory <- getwd()
     options(future.globals.maxSize = 500 * 1024^3)
 
     # prepare for bad item detection
@@ -436,6 +436,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
     while (!STOP) {
       invisible(gc())
+      setwd(workDirectory)
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
             if (exists("estModel")) {
@@ -444,6 +445,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
             }
             modelDONE <- FALSE
             while (!modelDONE) {
+              setwd(workDirectory)
                 tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg,
                   sshKeyPath = sshKeyPath), error = function(e) {
                 })
@@ -511,6 +513,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
         # save model history (raw model, before model selection)
         if (exists("estModel")) {
             if (!is.null(estModel) && saveModelHistory && saveRawEstModels) {
+              setwd(workDirectory)
                 modelHistory$rawEstModels[[modelHistoryCount]] <- estModel
                 tryCatch(saveRDS(modelHistory, filename), error = function(e) {
                 })
@@ -582,6 +585,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   }
                   # save model history of DIC evaluated model
                   if (saveModelHistory) {
+                    setwd(workDirectory)
                     modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
                     tryCatch(saveRDS(modelHistory, filename), error = function(e) {
                     })
@@ -593,6 +597,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   }
                   fitDONE <- FALSE
                   while (!fitDONE) {
+                    setwd(workDirectory)
                     # reconnect
                     tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg,
                       sshKeyPath = sshKeyPath), error = function(e) {
@@ -696,6 +701,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
                   # save model
                   if (saveModelHistory) {
+                    setwd(workDirectory)
                     modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit
                     modelHistory$rotationTrials[[modelHistoryCount]] <- rotateCandidates
                     tryCatch(saveRDS(modelHistory, filename), error = function(e) {
@@ -871,6 +877,9 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     if (saveModelHistory) {
         class(modelHistory) <- "aefa"
         modelHistory$TimeTotal <- TimeTotal
+        modelHistory$TimeStart <- TimeStart
+        modelHistory$TimeEnd <- TimeEnd
+        modelHistory$workPath <- workDirectory
         return(modelHistory)
     } else {
         return(estModel)

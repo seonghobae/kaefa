@@ -4,7 +4,8 @@
 \alias{aefaResults}
 \title{summarise AEFA results}
 \usage{
-aefaResults(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL)
+aefaResults(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL,
+  printRawCoefs = F, simplifyRawCoefs = T)
 }
 \arguments{
 \item{mirtModel}{estimated aefa model}
@@ -12,6 +13,12 @@ aefaResults(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL)
 \item{rotate}{rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.}
 
 \item{suppress}{cutoff of rotated coefs. Generally .30 is appropriate but .10 will be good in practically}
+
+\item{which.inspect}{which you are want to inspect of a calibration trial? If NULL, the last model will return.}
+
+\item{printRawCoefs}{print the raw IRT coefs.}
+
+\item{simplifyRawCoefs}{print the simplified raw IRT coefs if available when printRawCoefs = TRUE.}
 }
 \value{
 summary of aefa results

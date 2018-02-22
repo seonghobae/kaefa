@@ -891,7 +891,9 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 #' @param mirtModel estimated aefa model
 #' @param rotate rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.
 #' @param suppress cutoff of rotated coefs. Generally .30 is appropriate but .10 will be good in practically
-#'
+#' @param which.inspect which you are want to inspect of a calibration trial? If NULL, the last model will return.
+#' @param printRawCoefs print the raw IRT coefs.
+#' @param simplifyRawCoefs print the simplified raw IRT coefs if available when printRawCoefs = TRUE.
 #' @return summary of aefa results
 #' @export
 #'
@@ -900,7 +902,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #' aefaResults(testMod1)
 #' }
-aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL) {
+aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL, printRawCoefs = F, simplifyRawCoefs = T) {
 
     if (class(mirtModel) == "aefa") {
 
@@ -983,6 +985,10 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
 
     mirt::summary(mirtModel, rotate = automatedRotation, suppress = suppress, maxit = 1e+05)
 
+    if(printRawCoefs){
+      mirt::coef(mirtModel, rotate = automatedRotation, simplify = simplifyRawCoefs)
+    }
+
     if (exists("resultMarginalReliability") && !is.null(resultMarginalReliability)) {
       message("\nMarginal (Empirical) Reliability statistic from Item Information Function")
       print(resultMarginalReliability)
@@ -997,7 +1003,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
 #' @param devide logical; devide into the number of items. default is FALSE.
 #' @param rotate rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.
 #' @param individual logical; return tracelines for individual items?
-#' @param extractThetaOnly logical; return the theta only without recursive score?
+#' @param extractThetaOnly logical; return the theta only without recursive score? if FALSE, theta will return.
 #' @return recursively expected test score
 #' @export
 #'

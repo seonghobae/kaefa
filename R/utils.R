@@ -117,11 +117,15 @@
 
 # parameter linking Mixed-Effect to SingleClass Class temporaly
 #' @export
-  .exportParmsEME <- function(mirtModel){
+  .exportParmsEME <- function(mirtModel, quiet = F){
     if (class(mirtModel)[1] == "MixedClass") {
-      message("\n")
-      mirt::summary(mirtModel)
-      message("\n")
+      if(quiet){
+
+      } else {
+        message("\n")
+        mirt::summary(mirtModel)
+        message("\n")
+      }
       modMLM <- mirt::mirt(data = mirtModel@Data$data, model = mirtModel@Model$model,
                            SE = T, itemtype = mirtModel@Model$itemtype, pars = "values")
       modMLM_original <- mirt::mod2values(mirtModel)

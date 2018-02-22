@@ -74,7 +74,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
 
 \item{printDebugMsg}{Do you want to see the debugging messeages? default is FALSE}
 
-\item{modelSelectionCriteria}{Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available.}
+\item{modelSelectionCriteria}{Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available. AIC and DIC will be identical when no prior parameter distributions are included.}
 
 \item{saveRawEstModels}{Do you want to save raw estimated models before model selection work? default is FALSE}
 

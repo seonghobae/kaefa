@@ -4,7 +4,7 @@
 \alias{aefaResults}
 \title{summarise AEFA results}
 \usage{
-aefaResults(mirtModel, rotate = NULL, suppress = 0)
+aefaResults(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL)
 }
 \arguments{
 \item{mirtModel}{estimated aefa model}

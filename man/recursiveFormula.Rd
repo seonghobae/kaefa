@@ -2,7 +2,7 @@
 % Please edit documentation in R/kaefa.R
 \name{recursiveFormula}
 \alias{recursiveFormula}
-\title{return Recursive Score into raw response scale}
+\title{return Recursive Score into raw response scale or return the theta itself}
 \usage{
 recursiveFormula(mirtModel, mins = F, devide = F, rotate = NULL,
   individual = F, extractThetaOnly = F)
@@ -24,7 +24,7 @@ recursiveFormula(mirtModel, mins = F, devide = F, rotate = NULL,
 recursively expected test score
 }
 \description{
-return Recursive Score into raw response scale
+return Recursive Score into raw response scale or return the theta itself
 }
 \examples{
 \dontrun{

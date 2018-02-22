@@ -532,6 +532,16 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in%
                       class(estModel[[i]])) > 0) {
                       if (estModel[[i]]@OptimInfo$secondordertest) {
+                        # heywood case filter
+                        if(class(estModel[[i]]) %in% "MixedClass"){
+                          if(sum(invisible(.exportParmsEME(estModel[[i]], quiet = T))@Fit$h2 > 1) > 0){
+                            next()
+                          }
+                        } else if(class(estModel[[i]]) %in% "SingleGroupClass"){
+                          if(sum(estModel[[i]]@Fit$h2 > 1) > 0){
+                            next()
+                          }
+                        }
                         if (toupper(modelSelectionCriteria) %in% c("DIC")) {
                           modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$DIC
                         } else if (toupper(modelSelectionCriteria) %in% c("AIC")) {

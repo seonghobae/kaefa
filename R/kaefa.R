@@ -354,7 +354,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param resampling Do you want to do resampling with replace? default is TRUE and activate nrow is over samples argument.
 #' @param samples Specify the number samples with resampling. default is 5000.
 #' @param printDebugMsg Do you want to see the debugging messeages? default is FALSE
-#' @param modelSelectionCriteria Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available.
+#' @param modelSelectionCriteria Which critera want to use model selection work? 'DIC' (default), 'AIC', 'AICc', 'BIC', 'saBIC' available. AIC and DIC will be identical when no prior parameter distributions are included.
 #' @param saveRawEstModels Do you want to save raw estimated models before model selection work? default is FALSE
 #' @param fitEMatUIRT Do you want to fit the model with EM at UIRT? default is FALSE
 #' @param ranefautocomb Do you want to find global-optimal random effect combination? default is TRUE
@@ -900,20 +900,27 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #' aefaResults(testMod1)
 #' }
-aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
+aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL) {
 
     if (class(mirtModel) == "aefa") {
 
         if(is.null(rotate)){
-          automatedRotation <- mirtModel$rotationTrials[[NROW(mirtModel$estModelTrials)]]
+          if(is.null(which.inspect)){
+            inspectModelNumber <- NROW(mirtModel$estModelTrials)
+          } else {
+            inspectModelNumber <- which.inspect
+          }
+          automatedRotation <- mirtModel$rotationTrials[[inspectModelNumber]]
         } else {
           automatedRotation <- rotate
         }
 
         message(paste0("aefa results: aefa has ", NROW(mirtModel$estModelTrials),
             " automated internal validation trials."))
-        mirtModel <- mirtModel$estModelTrials[[NROW(mirtModel$estModelTrials)]]
+        mirtModel <- mirtModel$estModelTrials[[inspectModelNumber]]
 
+    } else {
+      automatedRotation <- rotate
     }
 
     # convert mixedclass to singleclass temporary
@@ -926,9 +933,23 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
     if (exists("resultM2") && !is.null(resultM2)) {
         message("M2 statistic")
         print(resultM2)
-        if(resultM2$CFI < .9 && resultM2$TLI > .9){
+        if(resultM2$CFI > .9 && resultM2$TLI > .9 && resultM2$RMSEA_5 < .05){
+          message('The calibrated model is seems reasonable')
+        } else if(resultM2$CFI > .9 && resultM2$TLI > .9 && resultM2$RMSEA_5 > .05){
+          message('The calibrated model is seems reasonable,')
+          message('but RMSEA is inappropriate so that you might increase the number of factor extraction.')
+        } else if(resultM2$CFI < .9 && resultM2$TLI > .9){
           message('The calibrated model is seems good,')
           message('but CFI is inappropriate so that you might increase the number of factor extraction.')
+        } else if(resultM2$CFI > .9 && resultM2$TLI < .9){
+          message('The calibrated model is seems good,')
+          message('but TLI is inappropriate so that you might reconsider the model specification.')
+        } else if(resultM2$CFI < .9 && resultM2$TLI < .9 && resultM2$RMSEA_5 < .05){
+          message('The calibrated model is seems good,')
+          message('but CFI and TLI is inappropriate so that you might increase the number of factor extraction.')
+        } else if(resultM2$CFI < .9 && resultM2$TLI < .9 && resultM2$RMSEA_5 > .05){
+          message('The calibrated model may have some issues,')
+          message('please consider to add demographic data in covdata argument to inspection')
         }
         message("\n")
     }
@@ -936,25 +957,30 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
     resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {
     })
 
-    if(automatedRotation == 'none'){
-      message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model'))
+    if(is.null(automatedRotation)){
+      automatedRotation <- 'oblimin' # mirt default
     } else {
-      message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model', ' and\n', automatedRotation, ' rotation as optimal in probability perspectives.'))
+      if(automatedRotation == 'none'){
+        message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model'))
+      } else {
+        message(paste0("Item Factor Model loadings: ", mirtModel@Model$itemtype[1], ' model', ' and\n', automatedRotation, ' rotation as optimal in probability perspectives.'))
+      }
+      if(automatedRotation %in% c('oblimin', 'quartimin', 'oblimax', 'simplimax', 'bentlerQ', 'geominQ', 'cfQ', 'infomaxQ', 'bifactorQ') & !is.null(rotate)){
+        message(paste0('The ', automatedRotation, 'rotation is oblique rotation method.'))
+        message('That might have correlational relationships between calibrated factors.')
+      }
+      if(automatedRotation %in% c('entropy', 'quartimax', 'varimax', 'bentlerT', 'tandemI', 'tandemII', 'geominT', 'cfT', 'infomaxT', 'mccammon', 'bifactorT')& !is.null(rotate)){
+        message(paste0('The ', automatedRotation, 'rotation is oblique rotation method.'))
+        message('That might not have correlational relationships between calibrated factors.')
+      }
+      if(automatedRotation %in% c('bifactorQ', 'bifactorT') & !is.null(rotate)){
+        message('Moreover, your model has general factor (as known as g-factor) at F1. Therefore, another factors might be subfactor or method factor.')
+      }
+      if(mirtModel@Model$itemtype[1] %in% c('grsm', 'grsmIRT')){
+        message('Sadly, This is a bad news: Your items seems too hard to read or understand to response well, interpret carefully!')
+      }
     }
-    if(automatedRotation %in% c('oblimin', 'quartimin', 'oblimax', 'simplimax', 'bentlerQ', 'geominQ', 'cfQ', 'infomaxQ', 'bifactorQ') & !is.null(rotate)){
-      message(paste0('The ', automatedRotation, 'rotation is oblique rotation method.'))
-      message('That might have correlational relationships between calibrated factors.')
-    }
-    if(automatedRotation %in% c('entropy', 'quartimax', 'varimax', 'bentlerT', 'tandemI', 'tandemII', 'geominT', 'cfT', 'infomaxT', 'mccammon', 'bifactorT')& !is.null(rotate)){
-      message(paste0('The ', automatedRotation, 'rotation is oblique rotation method.'))
-      message('That might not have correlational relationships between calibrated factors.')
-    }
-    if(automatedRotation %in% c('bifactorQ', 'bifactorT') & !is.null(rotate)){
-      message('Moreover, your model has general factor (as known as g-factor) at F1. Therefore, another factors might be subfactor or method factor.')
-    }
-    if(mirtModel@Model$itemtype[1] %in% c('grsm', 'grsmIRT')){
-      message('Sadly, This is a bad news: Your items seems too hard to read or understand to response well, interpret carefully!')
-    }
+
     mirt::summary(mirtModel, rotate = automatedRotation, suppress = suppress, maxit = 1e+05)
 
     if (exists("resultMarginalReliability") && !is.null(resultMarginalReliability)) {
@@ -964,7 +990,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0) {
     }
 }
 
-#' return Recursive Score into raw response scale
+#' return Recursive Score into raw response scale or return the theta itself
 #'
 #' @param mirtModel estimated aefa model
 #' @param mins logical; include the minimum value constants in the dataset. If FALSE, the expected values for each item are determined from the scoring 0:(ncat-1)

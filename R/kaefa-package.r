@@ -3,7 +3,9 @@
 #' This library stands for improving research capability to identify
 #' unexplained factor structure with complexly cross-classified
 #' multilevel structured data in R environment
-#' in the automated exploratory factor analysis framework.
+#' in the automated exploratory factor analysis framework what imports
+#' \code{mirt::mirt}, \code{mirt::mixedmirt} and \code{mirt::mdirt}
+#' (Chalmers, 2012; Chalmers, 2015).
 #'
 #' In practice of applied psychological resarch, so much researcher ignoring
 #' the impact of the MMMM (Multiple Membership Multilevel Model) and MM
@@ -12,27 +14,23 @@
 #'
 #' Moreover, A lot of researcher do not know what is the improper solution
 #' in the exploratory factor analysis. That may lead wrong conclusion to
-#' research society, The kaefa avoid possible improper solutions during
-#' the exploratory factor analysis.
+#' research society, The kaefa will filter possible improper solutions during
+#' the automated exploratory factor analysis.
+#' Filtering the Heywood cased models and fail to pass the second-order test
+#' model will help this work. These model will not consider to model selection
+#' that they are possible improper solutions.
 #'
 #' The kaefa may inspect this issues from the MMMM or MM
 #' in statistical learning theory perspectives using model
 #' selection criteria like the DIC (Kang, 2008; Kang, Cohen, & Sung, 2009;
-#' Jiao, Kamata, Wang, & Jin, 2012; Jiao & Zhang, 2015).
-#'
-#' This software can be pallelise to multiple computers via LAN
-#' even heterogeneous environment, so that applied researchers may expand
-#' their research capability more easy with kaefa
-#' even data has too complicated structure.
+#' Jiao, Kamata, Wang, & Jin, 2012; Jiao & Zhang, 2015) with maximising
+#' generalisability of the number of factor decisions in every calibration
+#' (Kang, 2008; Preacher, Zhang, Kim, & Mels, 2013).
 #'
 #' If researcher provide of demographical information in kaefa,
 #' kaefa will inspect the optimal number of factor and optimal IRT model,
 #' and possible error variances or latent differences from
 #' demographic information of respondents.
-#'
-#' After the \emph{n-th} calibration, kaefa do the item appropriateness test
-#' for check which item contribute to explain conceptual criterion with
-#' robustness of aberrant response using \emph{Zh, S-X2, PV-Q1}.
 #'
 #' During the calibration, kaefa consider the these item response models:
 #' Rasch, 2PL, 3PL, 3PLu, 4PL, ideal (for dichotomous)
@@ -42,10 +40,25 @@
 #' minimizing potential outage of the item as actual criteria.
 #' As the default, "bifactorQ","geominQ", "geominT", "bentlerQ", "bentlerT",
 #' "oblimin", "oblimax", "simplimax", "tandemII", "tandemI", "entropy",
-#' and "quartimax" will try to inspect the structure of actual criteria
-#' reflect to the conceptual criterion.
+#' and "quartimax" will try to inspect the optimal structure of actual criteria
+#' reflect to the conceptual criterion. It is make a way to increase interpretability
+#' of the exploratory factor analysis without the human intervention
+#' as objectivity and reproducibility what principles of the science.
+#'
+#' After the every \emph{n-th} calibration, kaefa do the item appropriateness test
+#' for check which item contribute to explain conceptual criterion with
+#' robustness of aberrant response using \emph{Zh, S-X2, PV-Q1}. If kaefa
+#' find out the improper item, kaefa will exclude the worst one automatically
+#' and recalibrating the models until all items are acceptable via statistcal
+#' criteria.
+#'
+#' This software can be pallelise to multiple computers via LAN
+#' even heterogeneous environment, so that applied researchers may expand
+#' their research capability more easy with kaefa
+#' even data has too complicated structure to calibrate in single machine.
 #'
 #' This project started in 2013, and restructured in 2017.
+#' Hope to help exploring human behavioural mechanisms in complex contexts.
 #'
 #' @name kaefa
 #' @title kwangwoon automated exploratory factor analysis.

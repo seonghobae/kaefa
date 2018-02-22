@@ -1,14 +1,12 @@
 Package: kaefa
 Type: Package
 Title: kwangwoon automated exploratory factor analysis
-Version: 0.1.155
+Version: 0.1.369
 Authors@R: c(person("Seongho", family="Bae", role = c("aut", "cre"),
-                     email = c("seongho@kw.ac.kr", "seonghobae@me.com"),
+                     email = c("seongho@kw.ac.kr", "me@seonghobae.me"),
                      comment = "PsyD candidate in Work psychology for large-scale assessment and measurement"),
               person("Tae-Yong", family="Yoo", role = c("ths", "ctb"),
-                     email = "tyyoo@kw.ac.kr"),
-              person("Kyosoo", family="Shin", role = "ctb",
-                     email = "int100@gmail.com"))
+                     email = "tyyoo@kw.ac.kr"))
 Author: Seongho Bae [aut, cre]
 Maintainer: Seongho Bae <seongho@kw.ac.kr>
 Depends: R (>= 3.4.0)

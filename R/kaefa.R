@@ -32,7 +32,7 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
 
         STOP <- F
         while (!STOP) {
-          invisible(gc())
+          # invisible(gc())
             statusList <- list()
             decisionList <- list()
             for (i in serverList) {
@@ -435,7 +435,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     STOP <- F
 
     while (!STOP) {
-      invisible(gc())
+      # invisible(gc())
       if(workDirectory != getwd()){
         setwd('~/')
         setwd(workDirectory)

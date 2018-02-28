@@ -437,7 +437,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     while (!STOP) {
       # invisible(gc())
       if(workDirectory != getwd()){
-        setwd('~/')
+        setwd('/tmp')
         setwd(workDirectory)
       }
 
@@ -450,7 +450,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
             modelDONE <- FALSE
             while (!modelDONE) {
               if(workDirectory != getwd()){
-                setwd('~/')
+                setwd('/tmp')
                 setwd(workDirectory)
               }
               tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg,
@@ -521,7 +521,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
         if (exists("estModel")) {
             if (!is.null(estModel) && saveModelHistory && saveRawEstModels) {
               if(workDirectory != getwd()){
-                setwd('~/')
+                setwd('/tmp')
                 setwd(workDirectory)
               }
               modelHistory$rawEstModels[[modelHistoryCount]] <- estModel
@@ -606,7 +606,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   # save model history of DIC evaluated model
                   if (saveModelHistory) {
                     if(workDirectory != getwd()){
-                      setwd('~/')
+                      setwd('/tmp')
                       setwd(workDirectory)
                     }
                     modelHistory$estModelTrials[[modelHistoryCount]] <- estModel
@@ -621,7 +621,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   fitDONE <- FALSE
                   while (!fitDONE) {
                     if(workDirectory != getwd()){
-                      setwd('~/')
+                      setwd('/tmp')
                       setwd(workDirectory)
                     }
                     # reconnect
@@ -728,7 +728,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   # save model
                   if (saveModelHistory) {
                     if(workDirectory != getwd()){
-                      setwd('~/')
+                      setwd('/tmp')
                       setwd(workDirectory)
                     }
                     modelHistory$itemFitTrials[[modelHistoryCount]] <- estItemFit

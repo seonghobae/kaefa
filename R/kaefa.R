@@ -389,6 +389,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     fitIndicesCutOff = 0.005) {
 
   workDirectory <- getwd()
+  message(paste0('work directory: ', workDirectory))
   if(length(.covdataClassifieder(covdata)$fixed) != 0){
     if(sum(class(covdata) %in% 'tbl_df') != 0){
       covdata <- as.data.frame(covdata)

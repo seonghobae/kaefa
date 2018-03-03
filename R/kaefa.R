@@ -935,13 +935,12 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL, printRawCoefs = F, simplifyRawCoefs = T) {
 
     if (class(mirtModel) == "aefa") {
-
+        if(is.null(which.inspect)){
+          inspectModelNumber <- NROW(mirtModel$estModelTrials)
+        } else {
+          inspectModelNumber <- which.inspect
+        }
         if(is.null(rotate)){
-          if(is.null(which.inspect)){
-            inspectModelNumber <- NROW(mirtModel$estModelTrials)
-          } else {
-            inspectModelNumber <- which.inspect
-          }
           automatedRotation <- mirtModel$rotationTrials[[inspectModelNumber]]
         } else {
           automatedRotation <- rotate

@@ -91,6 +91,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     modConditional1 <- listenv::listenv()
     modConditional2 <- listenv::listenv()
     modUnConditional <- listenv::listenv()
+    modMultipleGroup <- listenv::listenv()
     modDiscrete <- listenv::listenv()
 
     # get total ticktock
@@ -439,7 +440,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         if (NROW(noNullEstModels) != 0) {
             for (i in 1:NROW(noNullEstModels)) {
                 if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass",
-                  "DiscreteClass")) {
+                  "DiscreteClass", "MultipleGroupClass")) {
                   if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
                     if (is.numeric(noNullEstModels[[i]]@Model$model) && class(noNullEstModels[[i]]) ==
                       "MixedClass") {

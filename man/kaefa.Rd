@@ -23,10 +23,11 @@ who noted in Sharpe (2013) and Foster, Min, and Zickar (2017).
 
 Moreover, A lot of researcher do not know what is the improper solution
 in the exploratory factor analysis. That may lead wrong conclusion to
-research society, The kaefa avoid possible improper solutions during
-the automated exploratory factor analysis. Filtering the Heywood cases and
-fail to converge the second-order test will help this work. These model will not
-consider to model selection that they are improper solutions.
+research society, The kaefa will filter possible improper solutions during
+the automated exploratory factor analysis.
+Filtering the Heywood cased models and fail to pass the second-order test
+model will help this work. These model will not consider to model selection
+that they are possible improper solutions.
 
 The kaefa may inspect this issues from the MMMM or MM
 in statistical learning theory perspectives using model

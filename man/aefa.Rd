@@ -8,9 +8,9 @@
 aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   (is.data.frame(data)) if (ncol(data) <= 10) max(c(1, (round(sqrt(ncol(data)))
   + 2))) else max(c(1, round(sqrt(ncol(data))))) else if (class(data) \%in\%
-  c("SingleGroupClass", "MixedClass", "DiscreteClass")) max(c(1,
-  round(sqrt(ncol(data@Data$data))))) else if (class(data) \%in\% "aefa")
-  max(c(1,
+  c("SingleGroupClass", "MixedClass", "DiscreteClass", "MultipleGroupClass"))
+  max(c(1, round(sqrt(ncol(data@Data$data))))) else if (class(data) \%in\%
+  "aefa") max(c(1,
   round(sqrt(ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data)))))
   else stop("Please provide data correctly."),
   RemoteClusters = getOption("kaefaServers"), sshKeyPath = NULL,

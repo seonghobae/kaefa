@@ -245,7 +245,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                                                                  fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                          0)
-                                                                   100 else 0)[1:ncol(mirtModel@Data$data),], error = function(e) {
+                                                                   100 else 0), error = function(e) {
                                                                    }))
         }
 
@@ -254,7 +254,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                                                                   fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                             0)
-                                                                    100 else 0)[1:ncol(mirtModel@Data$data),], error = function(e) {
+                                                                    100 else 0), error = function(e) {
                                                                     }))
         }
 
@@ -262,7 +262,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if (mirtModel@Model$nfact == 1 && PV_Q1 && sum('lca' %in% mirtModel@Model$itemtype) != 0) {
             modFit_PVQ1 <- listenv()
             modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                fit_stats = "PV_Q1*", QMC = T, method = "MAP")[1:ncol(mirtModel@Data$data),], error = function(e) {
+                fit_stats = "PV_Q1*", QMC = T, method = "MAP"), error = function(e) {
             }))
 
         }
@@ -273,7 +273,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
             modFit_infit %<-% tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                 fit_stats = "infit", QMC = T, method = "WLE", impute = if (sum(is.na(mirtModel@Data$data)) >
                   0)
-                  100 else 0)[1:ncol(mirtModel@Data$data),], error = function(e) {
+                  100 else 0), error = function(e) {
             })
         }
 
@@ -317,7 +317,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           itemfitList <- itemfitList[1:ncol(mirtModel@Data$data),]
           return(itemfitList)
         } else {
-          return(mirt::itemfit(mirtModel, impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0))
+          return(mirt::itemfit(mirtModel, impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0)[1:ncol(mirtModel@Data$data),])
         }
 
     } else {

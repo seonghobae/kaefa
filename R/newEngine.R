@@ -31,6 +31,7 @@
 #' @param forcingMixedModelOnly Do you want to forcing the Mixed model calibration? default is FALSE
 #' @param forcingQMC Do you want to forcing the use QMC estimation instead MHRM? default is FALSE
 #' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
+#' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
 #'
 #' @return possible optimal combinations of models in list
 #' @export
@@ -44,7 +45,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
         items), key = NULL, accelerate = "squarem", symmetric = F, resampling = T,
     samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
-    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F) {
+    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL) {
   invisible(gc())
     # data management: resampling
     if (resampling && nrow(data) > samples) {
@@ -93,6 +94,8 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     modUnConditional <- listenv::listenv()
     modMultipleGroup <- listenv::listenv()
     modDiscrete <- listenv::listenv()
+
+    groupnames <- .covdataClassifieder(covdata)
 
     # get total ticktock
     ticktockClock <- 0
@@ -199,6 +202,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
           }
           ticktockClock <- ticktockClock + 1
+          if(!is.null(groupnames)){
+            for(gname in groupnames){
+              ticktockClock <- ticktockClock + 1
+            }
+          }
         }
         # FIXME: CONSIDER TO REMOVE THIS: TO SPEED UP; ESTIMATE RANDOM EFFECTS DIRECTLY
         # if (!is.null(covdata)) {} # try to calibrate mixed-effect even covdata is null
@@ -348,7 +356,24 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                         key = key, calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
                                              error = function(e) {
                                              })
+                                  }
+
+          if(!is.null(groupnames)){
+            for(gname in groupnames){
+              suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor multiple group ') else paste0('user specified '), fixed = paste0(gname), random = ' ', method = estMethod)))
+              modMultipleGroup[[paste(paste0(as.character(i), collapse = ""), paste0(as.character(gname), collapse = ""),
+                                      j, collapse = " ")]] %<-% {
+
+                                        tryCatch(.mirt(data = data, model = i, method = estMethod,
+                                                       itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
+                                                       key = key, calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES,
+                                                       symmetric = symmetric, group = gname, anchor = anchor),
+                                                 error = function(e) {
+                                                 })
+                                      }
+            }
           }
+
         }
         # FIXME: CONSIDER TO REMOVE THIS: TO SPEED UP; ESTIMATE RANDOM EFFECTS DIRECTLY
         # if (!is.null(covdata)) {} # try to calibrate mixed-effect even covdata is null

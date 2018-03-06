@@ -414,6 +414,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
     # prepare for bad item detection
     badItemNames <- vector()  # make new null vector
+    DIFitems <- vector() # DIF in anchor items
+    checkDIF <- TRUE
 
     # prepare for save model history
     modelHistoryCount <- 0
@@ -474,7 +476,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   random = random, key = key, accelerate = accelerate, symmetric = symmetric,
                   resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
                   fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA,
-                  forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst), error = function(e) {
+                  forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems]), error = function(e) {
                 })
                 if (exists("estModel")) {
                   modelDONE <- TRUE
@@ -504,7 +506,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     fixed = fixed, random = random, key = key, accelerate = accelerate,
                     symmetric = symmetric, resampling = resampling, samples = samples,
                     printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
-                    tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst),
+                    tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems]),
                     error = function(e) {
                     })
                   if (!dfFound) {
@@ -597,7 +599,6 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     STOP <- T
                   }
                 }
-
 
                 if (exists("modelFound")) {
                   data <- estModel@Data$data
@@ -801,7 +802,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     S_X2Cond3 <- FALSE
                   }
 
-                  # plagging bad item
+                  # flagging bad item
                   if (ZhCond) {
                     badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh ==
                       min(estItemFit$Zh[is.finite(estItemFit$Zh)], na.rm = T))]))
@@ -823,9 +824,21 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 ==
                       max(estItemFit$S_X2[is.finite(estItemFit$S_X2)]/estItemFit$p.S_X2[is.finite(estItemFit$p.S_X2)],
                         na.rm = T))]))
+                  } else if(class(estModel) %in% "MultipleGroupClass"){
+                    if(checkDIF){
+                      stepdown <- tryCatch(suppressMessages(mirt::DIF(MGmodel = estModel,
+                                                                      which.par = unique(mirt::mod2values(estModel)$name[grep("^a|^d",
+                                                                                                                              mirt::mod2values(estModel)$name)]),
+                                                                      scheme = 'drop_sequential')), error = function(e){})
+                      DIFitems <- c(DIFitems, names(stepdown))
+                      if(is.null(DIFitems)){
+                        checkDIF <- FALSE
+                      }
+                    }
+
                   } else if (length(estItemFit$item) <= 3) {
                     STOP <- TRUE
-                  } else if (!estModel@Options$exploratory && estModel@Model$itemtype[1] != 'Rasch') {
+                  } else if (!estModel@Options$exploratory && estModel@Model$itemtype[1] != 'Rasch' && class(estModel) != 'MultipleGroupClass') {
                     is.between <- function(x, a, b) {
                       (x - a) * (b - x) > 0
                     }

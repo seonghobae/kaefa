@@ -830,8 +830,15 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                                                                       which.par = unique(mirt::mod2values(estModel)$name[grep("^a|^d",
                                                                                                                               mirt::mod2values(estModel)$name)]),
                                                                       scheme = 'drop_sequential')), error = function(e){})
-                      DIFitems <- c(DIFitems, names(stepdown))
-                      if(is.null(DIFitems)){
+                      DIFsearch <- vector()
+                      if(!is.null(stepdown)){
+                        for(effsize in stepdown){
+                          DIFsearch[length(DIFsearch) + 1] <- effsize[2,]$X2 / effsize[2,]$df
+                        }
+
+                        DIFitems <- c(DIFitems, names(stepdown)[which(max(DIFsearch))[1]])
+                      }
+                      if (is.null(DIFitems)){
                         checkDIF <- FALSE
                       }
                     }

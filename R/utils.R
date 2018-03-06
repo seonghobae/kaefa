@@ -161,12 +161,21 @@
 #'
   .mirt <- function(data = NULL, model = 1, method = "EM",
                     itemtype = "graded", accelerate = "squarem", SE = T, GenRandomPars = T,
-                    key = NULL, calcNull = T, NCYCLES = 4000, BURNIN = 1000, SEMCYCLES = 1500, symmetric = F){
+                    key = NULL, calcNull = T, NCYCLES = 4000, BURNIN = 1000, SEMCYCLES = 1500, symmetric = F, group = NULL, anchor = colnames(data)){
     invisible(gc())
-    mod <- mirt::mirt(data = data, model = model, method = method,
-         itemtype = itemtype, accelerate = accelerate, SE = SE, GenRandomPars = GenRandomPars,
-         key = key, calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
-                                                   BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))
+    if(is.null(group)){
+      mod <- mirt::mirt(data = data, model = model, method = method,
+                        itemtype = itemtype, accelerate = accelerate, SE = SE, GenRandomPars = GenRandomPars,
+                        key = key, calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
+                                                                         BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric))
+    } else {
+      mod <- mirt::multipleGroup(data = data, model = model, method = method,
+                        itemtype = itemtype, accelerate = accelerate, SE = SE, GenRandomPars = GenRandomPars,
+                        key = key, calcNull = calcNull, technical = list(NCYCLES = NCYCLES,
+                                                                         BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
+                        invariance = anchor, group = group)
+    }
+
     if(exists('mod')){
       if(mod@OptimInfo$converged){
         if(mod@OptimInfo$secondordertest){

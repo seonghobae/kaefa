@@ -243,7 +243,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if(sum('lca' %in% mirtModel@Model$itemtype) == 0){
           modFit_Zh <- listenv()
           modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                                                                 fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                                                                 fit_stats = "Zh", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                          0)
                                                                    100 else 0), error = function(e) {
                                                                    }))
@@ -252,7 +252,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if(S_X2){
           modFit_SX2 <- listenv()
           modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                                                                  fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                                                                  fit_stats = "S_X2", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                             0)
                                                                     100 else 0), error = function(e) {
                                                                     }))
@@ -262,7 +262,8 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if (mirtModel@Model$nfact == 1 && PV_Q1 && sum('lca' %in% mirtModel@Model$itemtype) != 0) {
             modFit_PVQ1 <- listenv()
             modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                fit_stats = "PV_Q1*", QMC = T, method = "MAP"), error = function(e) {
+                fit_stats = "PV_Q1*", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP'), error = function(e) {
+
             }))
 
         }
@@ -282,24 +283,32 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if (exists("modFit_Zh")) {
             if (!class(modFit_Zh)[1] == "mirt_df") {
                 rm(modFit_Zh)
+            } else {
+              modFit_Zh <- plyr::rbind.fill(modFit_Zh)
             }
         }
 
         if (exists("modFit_SX2")) {
             if (!class(modFit_SX2)[1] == "mirt_df") {
                 rm(modFit_SX2)
+            } else {
+              modFit_SX2 <- plyr::rbind.fill(modFit_SX2)
             }
         }
 
         if (exists("modFit_PVQ1")) {
             if (!class(modFit_PVQ1)[1] == "mirt_df") {
                 rm(modFit_PVQ1)
+            } else {
+              modFit_PVQ1 <- plyr::rbind.fill(modFit_PVQ1)
             }
         }
 
         if (exists("modFit_infit")) {
             if (!class(modFit_infit)[1] == "mirt_df") {
                 rm(modFit_infit)
+            } else {
+              modFit_infit <- plyr::rbind.fill(modFit_infit)
             }
         }
 
@@ -313,11 +322,12 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
             fitList[[i]] <- (eval(parse(text = itemFitList[i])))
           }
           itemfitList <- invisible(suppressWarnings(suppressMessages(plyr::join_all(fitList))))
-
-          itemfitList <- itemfitList[1:ncol(mirtModel@Data$data),]
+          itemfitList <- itemfitList[itemfitList$item %in% colnames(mirtModel@Data$data),]
           return(itemfitList)
         } else {
-          return(mirt::itemfit(mirtModel, impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0)[1:ncol(mirtModel@Data$data),])
+          itemfitList <- plyr::rbind.fill(mirt::itemfit(mirtModel, impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0))
+          itemfitList <- itemfitList[itemfitList$item %in% colnames(mirtModel@Data$data),]
+          return(itemfitList)
         }
 
     } else {
@@ -363,6 +373,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param forcingQMC Do you want to forcing the use QMC estimation instead MHRM? default is FALSE
 #' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
 #' @param fitIndicesCutOff Specify item assessment cutoff. default is p < .005
+#' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
 #' @importFrom stats qnorm
 #' @importFrom stats sd
 #'
@@ -378,15 +389,20 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' }
 aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = if (is.data.frame(data)) if (ncol(data) <=
     10) max(c(1, (round(sqrt(ncol(data)))+2))) else max(c(1, round(sqrt(ncol(data))))) else if (class(data) %in% c("SingleGroupClass", "MixedClass",
-    "DiscreteClass")) max(c(1, round(sqrt(ncol(data@Data$data))))) else if (class(data) %in% "aefa") max(c(1, round(sqrt(ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data))))) else stop("Please provide data correctly."),
+    "DiscreteClass", "MultipleGroupClass")) max(c(1, round(sqrt(ncol(data@Data$data))))) else if (class(data) %in% "aefa") max(c(1, round(sqrt(ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data))))) else stop("Please provide data correctly."),
     RemoteClusters = getOption("kaefaServers"), sshKeyPath = NULL, GenRandomPars = T, NCYCLES = 4000,
-    BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL, fixed = kaefa:::.covdataFixedEffectComb(covdata), random = lapply(c(kaefa:::.covdataClassifieder(covdata)$random, 'items'), FUN = function(X){eval(parse(text = paste0('as.formula(',paste0('~1|',X), ')')))}), key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
+    BURNIN = 1500, SEMCYCLES = 1000, covdata = NULL,
+    fixed = kaefa:::.covdataFixedEffectComb(covdata),
+    random = lapply(c(c(kaefa:::.covdataClassifieder(covdata)$random, 'items'),
+                      if(length(kaefa:::.covdataClassifieder(covdata)$random) != 0) paste0(kaefa:::.covdataClassifieder(covdata)$random, ':items')),
+                    FUN = function(X){eval(parse(text = paste0('as.formula(',paste0('~1|',X), ')')))}),
+    key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
     filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ","geominQ", "geominT", "bentlerQ", "bentlerT",
                                                         "oblimin", "oblimax", "simplimax", "tandemII",
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F, turnOffMixedEst = F,
-    fitIndicesCutOff = 0.005) {
+    fitIndicesCutOff = 0.005, anchor = colnames(data)) {
 
   workDirectory <- getwd()
   message(paste0('work directory: ', workDirectory))
@@ -404,6 +420,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
     # prepare for bad item detection
     badItemNames <- vector()  # make new null vector
+    DIFitems <- vector() # DIF in anchor items
+    checkDIF <- TRUE
 
     # prepare for save model history
     modelHistoryCount <- 0
@@ -464,7 +482,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   random = random, key = key, accelerate = accelerate, symmetric = symmetric,
                   resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
                   fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA,
-                  forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst), error = function(e) {
+                  forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems]), error = function(e) {
                 })
                 if (exists("estModel")) {
                   modelDONE <- TRUE
@@ -477,7 +495,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
             estModel <- list()
             for (i in 1:NROW(data)) {
-                if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in%
+                if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass", "MultipleGroupClass") %in%
                   class(data[[i]])) != 0) {
                   # then first, searching pre-calibrated model in data argument
                   estModel[[NROW(estModel) + 1]] <- data[[i]]
@@ -494,7 +512,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     fixed = fixed, random = random, key = key, accelerate = accelerate,
                     symmetric = symmetric, resampling = resampling, samples = samples,
                     printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
-                    tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst),
+                    tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems]),
                     error = function(e) {
                     })
                   if (!dfFound) {
@@ -504,7 +522,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                 }
             }
             estModel <- unlist(estModel)  # tidy up
-        } else if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in% class(data)) !=
+        } else if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass", "MultipleGroupClass") %in% class(data)) !=
             0) {
             # if data is pre-calibrated mirt model, simply switch them
             estModel <- data
@@ -540,7 +558,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   # model fit evaluation
                   modModelFit <- vector()
                   for (i in 1:NROW(estModel)) {
-                    if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass") %in%
+                    if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass", "MultipleGroupClass") %in%
                       class(estModel[[i]])) > 0) {
                       if (estModel[[i]]@OptimInfo$secondordertest) {
                         # heywood case filter
@@ -588,14 +606,13 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   }
                 }
 
-
                 if (exists("modelFound")) {
                   data <- estModel@Data$data
                 } else if (exists("dfFound")) {
                   data <- estModel@Data$data
                 }
 
-                if (class(estModel) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass")) {
+                if (class(estModel) %in% c("MixedClass", "SingleGroupClass", "DiscreteClass", "MultipleGroupClass")) {
 
                   if (class(estModel) %in% "MixedClass") {
                     if (is.numeric(estModel@Model$model)) {
@@ -791,7 +808,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     S_X2Cond3 <- FALSE
                   }
 
-                  # plagging bad item
+                  # flagging bad item
                   if (ZhCond) {
                     badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$Zh ==
                       min(estItemFit$Zh[is.finite(estItemFit$Zh)], na.rm = T))]))
@@ -813,9 +830,28 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 ==
                       max(estItemFit$S_X2[is.finite(estItemFit$S_X2)]/estItemFit$p.S_X2[is.finite(estItemFit$p.S_X2)],
                         na.rm = T))]))
+                  } else if(class(estModel) %in% "MultipleGroupClass"){
+                    if(checkDIF){
+                      stepdown <- tryCatch(suppressMessages(mirt::DIF(MGmodel = estModel,
+                                                                      which.par = unique(mirt::mod2values(estModel)$name[grep("^a|^d",
+                                                                                                                              mirt::mod2values(estModel)$name)]),
+                                                                      scheme = 'drop_sequential')), error = function(e){})
+                      DIFsearch <- vector()
+                      if(!is.null(stepdown)){
+                        for(effsize in stepdown){
+                          DIFsearch[length(DIFsearch) + 1] <- effsize[2,]$X2 / effsize[2,]$df
+                        }
+
+                        DIFitems <- c(DIFitems, names(stepdown)[which(max(DIFsearch))[1]])
+                      }
+                      if (is.null(DIFitems)){
+                        checkDIF <- FALSE
+                      }
+                    }
+
                   } else if (length(estItemFit$item) <= 3) {
                     STOP <- TRUE
-                  } else if (!estModel@Options$exploratory && estModel@Model$itemtype[1] != 'Rasch') {
+                  } else if (!estModel@Options$exploratory && estModel@Model$itemtype[1] != 'Rasch' && class(estModel) != 'MultipleGroupClass') {
                     is.between <- function(x, a, b) {
                       (x - a) * (b - x) > 0
                     }
@@ -985,7 +1021,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
         message("\n")
     }
 
-    resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {
+    resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {
     })
 
     if(is.null(automatedRotation)){
@@ -1066,7 +1102,7 @@ recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL, ind
   if(exists('ThetaRand')){
     ThetaExpected <- ThetaRand
   } else {
-    ThetaExpected <- mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation)
+    ThetaExpected <- mirt::fscores(mirtModel, QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', rotate = automatedRotation)
   }
 
   if(extractThetaOnly){

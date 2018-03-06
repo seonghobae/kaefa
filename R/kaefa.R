@@ -282,24 +282,32 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if (exists("modFit_Zh")) {
             if (!class(modFit_Zh)[1] == "mirt_df") {
                 rm(modFit_Zh)
+            } else {
+              modFit_Zh <- plyr::rbind.fill(modFit_Zh)
             }
         }
 
         if (exists("modFit_SX2")) {
             if (!class(modFit_SX2)[1] == "mirt_df") {
                 rm(modFit_SX2)
+            } else {
+              modFit_SX2 <- plyr::rbind.fill(modFit_SX2)
             }
         }
 
         if (exists("modFit_PVQ1")) {
             if (!class(modFit_PVQ1)[1] == "mirt_df") {
                 rm(modFit_PVQ1)
+            } else {
+              modFit_PVQ1 <- plyr::rbind.fill(modFit_PVQ1)
             }
         }
 
         if (exists("modFit_infit")) {
             if (!class(modFit_infit)[1] == "mirt_df") {
                 rm(modFit_infit)
+            } else {
+              modFit_infit <- plyr::rbind.fill(modFit_infit)
             }
         }
 
@@ -313,11 +321,12 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
             fitList[[i]] <- (eval(parse(text = itemFitList[i])))
           }
           itemfitList <- invisible(suppressWarnings(suppressMessages(plyr::join_all(fitList))))
-
-          itemfitList <- itemfitList[1:ncol(mirtModel@Data$data),]
+          itemfitList <- itemfitList[itemfitList$item %in% colnames(mirtModel@Data$data),]
           return(itemfitList)
         } else {
-          return(mirt::itemfit(mirtModel, impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0)[1:ncol(mirtModel@Data$data),])
+          itemfitList <- plyr::rbind.fill(mirt::itemfit(mirtModel, impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0))
+          itemfitList <- itemfitList[itemfitList$item %in% colnames(mirtModel@Data$data),]
+          return(itemfitList)
         }
 
     } else {
@@ -363,6 +372,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param forcingQMC Do you want to forcing the use QMC estimation instead MHRM? default is FALSE
 #' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
 #' @param fitIndicesCutOff Specify item assessment cutoff. default is p < .005
+#' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
 #' @importFrom stats qnorm
 #' @importFrom stats sd
 #'
@@ -386,7 +396,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F, turnOffMixedEst = F,
-    fitIndicesCutOff = 0.005) {
+    fitIndicesCutOff = 0.005, anchor = colnames(data)) {
 
   workDirectory <- getwd()
   message(paste0('work directory: ', workDirectory))

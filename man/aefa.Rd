@@ -25,7 +25,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   "quartimax"), resampling = T, samples = 5000, printDebugMsg = F,
   modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
   ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F,
-  turnOffMixedEst = F, fitIndicesCutOff = 0.005)
+  turnOffMixedEst = F, fitIndicesCutOff = 0.005, anchor = colnames(data))
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -91,6 +91,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
 \item{turnOffMixedEst}{Do you want to turn off mixed effect (multilevel) estimation? default is FALSE}
 
 \item{fitIndicesCutOff}{Specify item assessment cutoff. default is p < .005}
+
+\item{anchor}{Set the anchor item names If you want to consider DIF detection. default is NULL.}
 }
 \value{
 automated exploratory factor analytic models

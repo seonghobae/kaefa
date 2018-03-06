@@ -243,7 +243,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if(sum('lca' %in% mirtModel@Model$itemtype) == 0){
           modFit_Zh <- listenv()
           modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                                                                 fit_stats = "Zh", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                                                                 fit_stats = "Zh", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                          0)
                                                                    100 else 0), error = function(e) {
                                                                    }))
@@ -252,7 +252,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if(S_X2){
           modFit_SX2 <- listenv()
           modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                                                                  fit_stats = "S_X2", QMC = T, method = "MAP", impute = if (sum(is.na(mirtModel@Data$data)) >
+                                                                  fit_stats = "S_X2", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                             0)
                                                                     100 else 0), error = function(e) {
                                                                     }))
@@ -262,7 +262,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
         if (mirtModel@Model$nfact == 1 && PV_Q1 && sum('lca' %in% mirtModel@Model$itemtype) != 0) {
             modFit_PVQ1 <- listenv()
             modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                fit_stats = "PV_Q1*", QMC = T, method = "MAP"), error = function(e) {
+                fit_stats = "PV_Q1*", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP'), error = function(e) {
             }))
 
         }
@@ -1015,7 +1015,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
         message("\n")
     }
 
-    resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {
+    resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {
     })
 
     if(is.null(automatedRotation)){
@@ -1096,7 +1096,7 @@ recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL, ind
   if(exists('ThetaRand')){
     ThetaExpected <- ThetaRand
   } else {
-    ThetaExpected <- mirt::fscores(mirtModel, QMC = T, method = 'MAP', rotate = automatedRotation)
+    ThetaExpected <- mirt::fscores(mirtModel, QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', rotate = automatedRotation)
   }
 
   if(extractThetaOnly){

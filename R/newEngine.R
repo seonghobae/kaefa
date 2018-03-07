@@ -201,7 +201,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             }
           }
           ticktockClock <- ticktockClock + 1
-          if(!is.null(groupnames)){
+          if(length(groupnames) != 0){
             for(gname in groupnames){
               ticktockClock <- ticktockClock + 1
             }
@@ -357,7 +357,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                              })
                                   }
 
-          if(!is.null(groupnames)){
+          if(length(groupnames) != 0){
             for(gname in groupnames){
               suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor multiple group ') else paste0('user specified '), fixed = paste0(gname), random = ' ', method = estMethod)))
               modMultipleGroup[[paste(paste0(as.character(i), collapse = ""), paste0(as.character(gname), collapse = ""),

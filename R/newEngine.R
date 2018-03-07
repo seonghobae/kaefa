@@ -446,7 +446,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
     }  # EOF of for loop
 
-    exploratoryModels <- unlist(list(as.list(modUnConditional), as.list(modConditional1), as.list(modConditional2), as.list(modDiscrete)))
+    exploratoryModels <- unlist(list(as.list(modUnConditional), as.list(modConditional1), as.list(modConditional2), as.list(modDiscrete), as.list(modMultipleGroup)))
     # exploratoryModels # for debug random effect model
 
     # # improper solution filter

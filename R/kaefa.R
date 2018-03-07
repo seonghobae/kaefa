@@ -830,23 +830,22 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     badItemNames <- c(badItemNames, as.character(estItemFit$item[which(estItemFit$S_X2/estItemFit$p.S_X2 ==
                       max(estItemFit$S_X2[is.finite(estItemFit$S_X2)]/estItemFit$p.S_X2[is.finite(estItemFit$p.S_X2)],
                         na.rm = T))]))
-                  } else if(class(estModel) %in% "MultipleGroupClass"){
-                    if(checkDIF){
-                      stepdown <- tryCatch(suppressMessages(mirt::DIF(MGmodel = estModel,
-                                                                      which.par = unique(mirt::mod2values(estModel)$name[grep("^a|^d",
-                                                                                                                              mirt::mod2values(estModel)$name)]),
-                                                                      scheme = 'drop_sequential')), error = function(e){})
-                      DIFsearch <- vector()
-                      if(!is.null(stepdown)){
-                        for(effsize in stepdown){
-                          DIFsearch[length(DIFsearch) + 1] <- effsize[2,]$X2 / effsize[2,]$df
-                        }
-
-                        DIFitems <- c(DIFitems, names(stepdown)[which(max(DIFsearch))[1]])
+                  } else if(class(estModel) %in% "MultipleGroupClass" && checkDIF){
+                    stepdown <- tryCatch(suppressMessages(mirt::DIF(MGmodel = estModel,
+                                                                    which.par = unique(mirt::mod2values(estModel)$name[grep("^a|^d",
+                                                                                                                            mirt::mod2values(estModel)$name)]),
+                                                                    scheme = 'drop_sequential')), error = function(e){})
+                    DIFsearch <- vector()
+                    if(!is.null(stepdown)){
+                      for(effsize in stepdown){
+                        DIFsearch[length(DIFsearch) + 1] <- effsize[2,]$X2 / effsize[2,]$df
                       }
+                      DIFitems <- c(DIFitems, names(stepdown)[which(max(DIFsearch))[1]])
                       if (is.null(DIFitems)){
                         checkDIF <- FALSE
                       }
+                    } else {
+                      checkDIF <- FALSE
                     }
 
                   } else if (length(estItemFit$item) <= 3) {

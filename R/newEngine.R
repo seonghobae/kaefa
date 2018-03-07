@@ -117,18 +117,17 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             # poly UIRT
             if (!is.null(key)) {
               # with key
-              estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                               "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm",
-                               "monopoly")
+              estItemtype <- c("monopoly", "4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                               "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
             } else {
               # without key
-              estItemtype <- c("ggum", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
-                               "grsmIRT", "Rasch", "rsm", "monopoly")
+              estItemtype <- c("monopoly", "ggum", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
+                               "grsmIRT", "Rasch", "rsm")
             }
           } else {
             # dich UIRT
-            estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch",
-                             "spline", "monopoly")
+            estItemtype <- c("monopoly", "4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch",
+                             "spline")
           }
         } else {
           # MIRT

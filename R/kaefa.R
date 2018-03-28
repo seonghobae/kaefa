@@ -245,8 +245,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                                                                  fit_stats = "Zh", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                          0)
-                                                                   100 else 0), error = function(e) {
-                                                                   }))
+                                                                   100 else 0), error = function(e) {NULL}))
         }
 
         if(S_X2){
@@ -254,17 +253,14 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                                                                   fit_stats = "S_X2", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', impute = if (sum(is.na(mirtModel@Data$data)) >
                                                                                                                             0)
-                                                                    100 else 0), error = function(e) {
-                                                                    }))
+                                                                    100 else 0), error = function(e) {NULL}))
         }
 
 
         if (mirtModel@Model$nfact == 1 && PV_Q1 && sum('lca' %in% mirtModel@Model$itemtype) != 0) {
             modFit_PVQ1 <- listenv()
             modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                fit_stats = "PV_Q1*", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP'), error = function(e) {
-
-            }))
+                fit_stats = "PV_Q1*", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP'), error = function(e) {NULL}))
 
         }
 
@@ -274,8 +270,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
             modFit_infit %<-% tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
                 fit_stats = "infit", QMC = T, method = "WLE", impute = if (sum(is.na(mirtModel@Data$data)) >
                   0)
-                  100 else 0), error = function(e) {
-            })
+                  100 else 0), error = function(e) {NULL})
         }
 
         # check item fit indices are exists
@@ -442,8 +437,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
         model <- unlist(list(model))
         for (i in 1:NROW(model)) {
             if (class(model[[i]]) == "mirt.model" | class(model[[i]]) == "numeric") {
-                calibModel[[j + i]] <- tryCatch(model[[i]], error = function(e) {
-                })
+                calibModel[[j + i]] <- tryCatch(model[[i]], error = function(e) {NULL})
             }
         }
     }
@@ -463,8 +457,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
         # estimate run exploratory IRT and confirmatory IRT
         if ((is.data.frame(data) | is.matrix(data))) {
             if (exists("estModel")) {
-                tryCatch(rm(estModel), error = function(e) {
-                })
+                tryCatch(rm(estModel), error = function(e) {NULL})
             }
             modelDONE <- FALSE
             while (!modelDONE) {
@@ -473,8 +466,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                 setwd(workDirectory)
               }
               tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg,
-                  sshKeyPath = sshKeyPath), error = function(e) {
-                })
+                  sshKeyPath = sshKeyPath), error = function(e) {NULL})
                 # general condition
                 estModel <- tryCatch(engineAEFA(data = data.frame(data[, !colnames(data) %in%
                   badItemNames]), model = model, GenRandomPars = GenRandomPars, NCYCLES = NCYCLES,
@@ -658,8 +650,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         for (rotateTrial in rotate) {
                           estItemFitRotationSearchTmp[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
                             RemoteClusters = RemoteClusters, rotate = rotateTrial, PV_Q1 = F, S_X2 = F),
-                            error = function(e) {
-                            })
+                            error = function(e) {NULL})
                         }
                         if (!is.null(as.list(estItemFitRotationSearchTmp))) {
                           estItemFitRotationSearchTmp <- as.list(estItemFitRotationSearchTmp)
@@ -721,15 +712,13 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
                       # estimate item fit measures
                       estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters,
-                        rotate = rotateCandidates, PV_Q1 = PV_Q1), error = function(e) {
-                      })
+                        rotate = rotateCandidates, PV_Q1 = PV_Q1), error = function(e) {NULL})
 
                     } else {
                       # estimate item fit measures
                       rotateCandidates <- 'none'
                       estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters,
-                        rotate = rotateCandidates, PV_Q1 = PV_Q1), error = function(e) {
-                      })
+                        rotate = rotateCandidates, PV_Q1 = PV_Q1), error = function(e) {NULL})
                     }
 
                     if (exists("estItemFit")) {
@@ -739,8 +728,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     }
                   }
                   if (printItemFit) {
-                    tryCatch(print(estItemFit), error = function(e) {
-                    })
+                    tryCatch(print(estItemFit), error = function(e) {NULL})
                   }
 
                   # save model
@@ -848,7 +836,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     stepdown <- tryCatch(suppressMessages(mirt::DIF(MGmodel = estModel,
                                                                     which.par = unique(mirt::mod2values(estModel)$name[grep("^a|^d",
                                                                                                                             mirt::mod2values(estModel)$name)]),
-                                                                    scheme = 'drop_sequential', seq_stat = seqStat)), error = function(e){})
+                                                                    scheme = 'drop_sequential', seq_stat = seqStat)), error = function(e){NULL})
                     DIFsearch <- vector()
                     if(!is.null(stepdown)){ # If DIF exists in trial,
                       for(effsize in stepdown){ # check the effect size of DIF,
@@ -1008,8 +996,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
       mirtModel <- .exportParmsEME(mirtModel)
     }
 
-    resultM2 <- tryCatch(mirt::M2(mirtModel, QMC = T), error = function(e) {
-    })
+    resultM2 <- tryCatch(mirt::M2(mirtModel, QMC = T), error = function(e) {NULL})
     if (exists("resultM2") && !is.null(resultM2)) {
         message("M2 statistic")
         print(resultM2)
@@ -1034,8 +1021,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
         message("\n")
     }
 
-    resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {
-    })
+    resultMarginalReliability <- tryCatch(mirt::empirical_rxx(mirt::fscores(mirtModel, QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', rotate = automatedRotation, full.scores.SE = T)), error = function(e) {NULL})
 
     if(is.null(automatedRotation)){
       automatedRotation <- 'oblimin' # mirt default
@@ -1121,8 +1107,7 @@ recursiveFormula <- function(mirtModel, mins = F, devide = F, rotate = NULL, ind
   if(extractThetaOnly){
     return(ThetaExpected)
   } else {
-    resultRecursive <- tryCatch(mirt::expected.test(mirtModel, ThetaExpected, mins = mins, individual = individual), error = function(e) {
-    })
+    resultRecursive <- tryCatch(mirt::expected.test(mirtModel, ThetaExpected, mins = mins, individual = individual), error = function(e) {NULL})
 
     if(exists('resultRecursive') && !is.null(resultRecursive)){
       if(devide){

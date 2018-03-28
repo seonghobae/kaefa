@@ -322,8 +322,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                    accelerate = accelerate, GenRandomPars = GenRandomPars,
                                    dentype = n, technical = list(NCYCLES = NCYCLES,
                                                                        BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                   covdata = covdata, formula = eval(parse(text = k_fixed))), error = function(e) {
-                                   })
+                                   covdata = covdata, formula = eval(parse(text = k_fixed))), error = function(e) {NULL})
             }
           }
         }
@@ -353,8 +352,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                     tryCatch(.mirt(data = data, model = i, method = estMethod,
                                                         itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
                                                         key = key, calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                             error = function(e) {
-                                             })
+                                             error = function(e) {NULL})
                                   }
 
           if(length(groupnames) != 0){
@@ -367,8 +365,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                        itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
                                                        key = key, calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES,
                                                        symmetric = symmetric, group = gname, anchor = anchor),
-                                                 error = function(e) {
-                                                 })
+                                                 error = function(e) {NULL})
                                       }
             }
           }
@@ -400,15 +397,13 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                          "2PL" else j, SE = T, GenRandomPars = GenRandomPars,
                                                                  covdata = covdata, fixed = eval(parse(text = k_fixed)), random = eval(parse(text = k)),
                                                                  calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                                 error = function(e) {
-                                                 })
+                                                 error = function(e) {NULL})
 
                                       } else {
                                         tryCatch(.mixedmirt(data = data, model = i,
                                                                  accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
                                                                  covdata = covdata, fixed = eval(parse(text = k_fixed)), random = eval(parse(text = k)),
-                                                                 calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), error = function(e) {
-                                                                                                })
+                                                                 calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), error = function(e) {NULL})
                                       }
                                     }
               suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ lr.fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0('/ lr.random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
@@ -427,15 +422,13 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                           "2PL" else j, SE = T, GenRandomPars = GenRandomPars,
                                                                   covdata = covdata, lr.fixed = eval(parse(text = k_fixed)), lr.random = eval(parse(text = k)),
                                                                   calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
-                                                  error = function(e) {
-                                                  })
+                                                  error = function(e) {NULL})
 
                                        } else {
                                          tryCatch(.mixedmirt(data = data, model = i,
                                                                   accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
                                                                   covdata = covdata, lr.fixed = eval(parse(text = k_fixed)), lr.random = eval(parse(text = k)),
-                                                                  calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), error = function(e) {
-                                                                                                 })
+                                                                  calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), error = function(e) {NULL})
                                        }
                                      }
             }

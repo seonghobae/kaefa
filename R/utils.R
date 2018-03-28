@@ -72,6 +72,7 @@
             }
           }
           randomVars <- randomVars[!randomVars %in% excludeRandomVars]
+          fixedVars <- c(fixedVars, excludeRandomVars)
         }
 
       # evaluate variables that non-included yet

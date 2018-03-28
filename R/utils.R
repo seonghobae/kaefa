@@ -32,10 +32,10 @@
 
         # classify fixed and random first
         for(i in 1:ncol(a)){
-          if(length(levels(a[[i]])) <= 30){ # if k <= 30 (group level <= 30)
+          if(length(levels(a[[i]])) <= 50){ # if k <= 50 (group level <= 50)
             fixedVars <- c(fixedVars, i)
           } else {
-            randomVars <- c(randomVars, i) # if k > 30
+            randomVars <- c(randomVars, i) # if k > 50
           }
         }
 

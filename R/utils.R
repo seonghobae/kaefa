@@ -75,21 +75,14 @@
           fixedVars <- c(fixedVars, excludeRandomVars)
         }
 
-      # evaluate variables that non-included yet
-        done <- c(unique(fixedVars), unique(randomVars))
-        NumberCandidates <- 1:ncol(a)
-        NumberCandidates <- NumberCandidates[!NumberCandidates %in% done]
-        NumberCandidates <- c(NumberCandidates, markNum)
+      # numeric and int
+      numericVars <- names(a)[c(markInt, markNum)]
+      fixedVars <- c(fixedVars, numericVars)
+      randomVars <- randomVars[!randomVars %in% numericVars]
 
-        for(i in NumberCandidates){
-          if(isTRUE(all.equal(a[[i]], as.numeric(a[[i]])))){
-            numericVars[length(numericVars) + 1] <- i
-          }
-        }
-
-      list(fixed = colnames(a[unique(fixedVars)]), random = colnames(a[unique(randomVars)]), numeric = colnames(a[unique(numericVars)]))
+      list(fixed = colnames(a[unique(fixedVars)]), random = colnames(a[unique(randomVars)]))
     } else {
-      list(fixed = NULL, random = NULL, numeric = NULL)
+      list(fixed = NULL, random = NULL)
     }
   }
 

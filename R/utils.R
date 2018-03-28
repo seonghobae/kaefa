@@ -76,11 +76,13 @@
         }
 
       # numeric and int
-      numericVars <- names(a)[c(markInt, markNum)]
+      numericVars <- colnames(a)[c(markInt, markNum)]
       fixedVars <- c(fixedVars, numericVars)
       randomVars <- randomVars[!randomVars %in% numericVars]
 
-      list(fixed = colnames(a[unique(fixedVars)]), random = colnames(a[unique(randomVars)]))
+      retFixed <- tryCatch(colnames(a[unique(fixedVars)]), error = function(e){NULL})
+      retRandom <- tryCatch(colnames(a[unique(randomVars)]), error = function(e){NULL})
+      list(fixed = retFixed, random = retRandom)
     } else {
       list(fixed = NULL, random = NULL)
     }

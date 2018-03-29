@@ -10,7 +10,7 @@ Authors@R: c(person("Seongho", family="Bae", role = c("aut", "cre"),
 Author: Seongho Bae [aut, cre]
 Maintainer: Seongho Bae <seongho@kw.ac.kr>
 Depends: R (>= 3.4.0)
-Imports: future, mirt (>= 1.27.4), psych, plyr, listenv, parallel, NCmisc, progress
+Imports: future, mirt (>= 1.27), psych, plyr, listenv, parallel, NCmisc, progress
 Description: The software of automated exploratory
     factor analysis (aefa) framework,
     to exploring unexplained factor structure

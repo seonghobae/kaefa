@@ -18,7 +18,7 @@ recursiveFormula(mirtModel, mins = F, devide = F, rotate = NULL,
 
 \item{individual}{logical; return tracelines for individual items?}
 
-\item{extractThetaOnly}{logical; return the theta only without recursive score? if FALSE, theta will return.}
+\item{extractThetaOnly}{logical; return the theta only without recursive score? if TRUE, theta will return.}
 }
 \value{
 recursively expected test score

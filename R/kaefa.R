@@ -1067,7 +1067,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
 #' @param devide logical; devide into the number of items. default is FALSE.
 #' @param rotate rotation method. Default is NULL, kaefa will be automatically select the rotation criteria using aefa calibrated model.
 #' @param individual logical; return tracelines for individual items?
-#' @param extractThetaOnly logical; return the theta only without recursive score? if FALSE, theta will return.
+#' @param extractThetaOnly logical; return the theta only without recursive score? if TRUE, theta will return.
 #' @return recursively expected test score
 #' @export
 #'

@@ -396,7 +396,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                                                         "oblimin", "oblimax", "simplimax", "tandemII",
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
-    ranefautocomb = T, PV_Q1 = T, tryLCA = T, forcingQMC = F, turnOffMixedEst = F,
+    ranefautocomb = T, PV_Q1 = T, tryLCA = F, forcingQMC = F, turnOffMixedEst = F,
     fitIndicesCutOff = 0.005, anchor = colnames(data)) {
 
   workDirectory <- getwd()

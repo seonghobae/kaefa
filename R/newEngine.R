@@ -178,7 +178,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
       if (is.numeric(i) && tryLCA) {
 
         for (m in c("sandwich", "Oakes")) { # SE
-          for (n in c('empiricalhist', 'empiricalhist_Woods', 'Davidian-#', 'Gaussian')) { # empirical histogram
+          for (n in c('empiricalhist', 'empiricalhist_Woods', 'Gaussian')) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
               ticktockClock <- ticktockClock + 1
             }
@@ -312,7 +312,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         # message("\ncalibrating ", "Latent Class Model calibration model ", ': ', if(is.numeric(i)) as.character(i) else ('User specified CFA model'))
 
         for (m in c("sandwich", "Oakes")) { # SE
-          for (n in c('empiricalhist', 'empiricalhist_Woods', 'Davidian-#', 'Gaussian')) { # empirical histogram
+          for (n in c('empiricalhist', 'empiricalhist_Woods', 'Gaussian')) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
               suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
               invisible(gc())

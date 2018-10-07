@@ -26,12 +26,12 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
     assignClusterNodes <- function(serverList, loadPercentage = 50, freeRamPercentage = 30,
         requiredMinimumClusters = max(c(1, round(sqrt(NROW(serverList))))), sshKeyPath = NULL) {
 
-      pb <- progress::progress_bar$new(
-        format = " initialising [:bar] :percent eta: :eta",
-        total = length(serverList), clear = F, width = 300)
 
         STOP <- F
         while (!STOP) {
+          pb <- progress::progress_bar$new(
+            format = " initialising [:bar] :percent eta: :eta",
+            total = length(serverList), clear = F, width = 300)
           # invisible(gc())
             statusList <- list()
             decisionList <- list()
@@ -190,7 +190,7 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
     # setting up cluster
     if (!is.null(RemoteClusters)) {
         try(future::plan(list(future::tweak("future::cluster",
-                                            workers = assignClusterNodes(RemoteClusters))
+                                            workers = tryCatch(assignClusterNodes(RemoteClusters), error = function(e){assignClusterNodes(RemoteClusters)}))
                          ), gc = T))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas|microsoft", extSoftVersion()["BLAS"])) > 0) {

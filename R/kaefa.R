@@ -113,8 +113,9 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
                 }
                 # evaluation
                 statusList[[i]][1] <- gsub(",", "", statusList[[i]][1])
-                decisionList[[i]] <- tryCatch(as.numeric(statusList[[i]][1])/as.numeric(statusList[[i]][2]) *
-                  100 < loadPercentage && statusList[[i]][3] > freeRamPercentage,
+                decisionList[[i]] <- tryCatch(as.numeric(statusList[[i]][1])/
+                                                as.numeric(statusList[[i]][2]) * 100 < loadPercentage
+                  ,
                   error = function(e) {
                   })
             }
@@ -155,14 +156,16 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
                 }
                 connList <- as.character(connList)
 
-                message("get ", length(connList), ' / ', nCores, " threads successfully from ", length(availableCluster),
-                  " clusters")
+                message("get ", length(availableCluster)," clusters")
                 STOP <- T
             }
         }
-        connList <- connList[sample(x = 1:length(connList), size = length(connList))]
-        return(connList)
+        # connList <- connList[sample(x = 1:length(connList), size = length(connList))]
+        return(availableCluster)
     }
+
+
+
     if (is.null(suppressWarnings(NCmisc::top()$CPU$idle))) {
         parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/2)
         if (2 >= parallelProcessors) {
@@ -189,9 +192,14 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
 
     # setting up cluster
     if (!is.null(RemoteClusters)) {
-        try(future::plan(list(future::tweak("future::cluster",
-                                            workers = tryCatch(assignClusterNodes(RemoteClusters), error = function(e){assignClusterNodes(RemoteClusters)}))
-                         ), gc = T))
+      halfCores <- function() { max(1, round(0.5 * future::availableCores()))}
+      try(future::plan(list(
+        future::tweak(future::cluster, workers = assignClusterNodes(RemoteClusters), gc = T),
+        future::tweak(future::multiprocess, workers = halfCores, gc = T)
+      )))
+        # try(future::plan(future::tweak("future::cluster",
+        #                                     workers = tryCatch(assignClusterNodes(RemoteClusters), error = function(e){assignClusterNodes(RemoteClusters)}), gc = T
+        #                  )))
     } else if (NROW(future::plan("list")) == 1) {
         if (length(grep("openblas|microsoft", extSoftVersion()["BLAS"])) > 0) {
             options(aefaConn = future::plan("future::multiprocess", workers = parallelProcessors),
@@ -635,9 +643,9 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                       setwd(workDirectory)
                     }
                     # reconnect
-                    tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg,
-                      sshKeyPath = sshKeyPath), error = function(e) {
-                    })
+                    # tryCatch(aefaInit(RemoteClusters = RemoteClusters, debug = printDebugMsg,
+                    #   sshKeyPath = sshKeyPath), error = function(e) {
+                    # })
 
                     # rotation search
                     if (estModel@Model$model > 1 && sum(estModel@Model$itemtype ==

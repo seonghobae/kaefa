@@ -792,13 +792,14 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                       S_X2Cond2 <- length(which(estItemFit$df.S_X2 == 0)) > 0
                       S_X2Cond3 <- sum(estItemFit$p.S_X2 < fitIndicesCutOff, na.rm = T) !=
                         0  # https://osf.io/preprints/psyarxiv/mky9j/
-                      # RMSEA Based
-                      S_X2Cond4 <- sum(estItemFit$RMSEA.S_X2 >= .05, na.rm = T) > 0
                       if (sum(estItemFit$p.S_X2 < fitIndicesCutOff, na.rm = T) ==
                         length(estItemFit$p.S_X2)) {
                         # turn off when all p-values are p<.005; that may wrong
                         S_X2Cond3 <- FALSE
                       }
+
+                      # RMSEA Based
+                      S_X2Cond4 <- sum(estItemFit$RMSEA.S_X2 > .05/length(estItemFit$RMSEA.S_X2), na.rm = T) > 0
                     }
                   } else {
                     S_X2Cond1 <- FALSE

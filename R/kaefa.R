@@ -154,7 +154,7 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
                   # }
                   connList <- c(connList, rep(servNames[i], max(c(1,maxP))))
                 }
-                connList <- as.character(connList)
+                connList <- sample(as.character(connList))
 
                 message("get ", length(availableCluster)," clusters")
                 STOP <- T

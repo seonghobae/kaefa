@@ -144,14 +144,14 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
                 connList <- vector()
 
                 for(i in 1:length(servNames)){
-                  maxP <- round((servThreads[i]*.7*.5))
-                  if(maxP >= 4){
-                    maxP <- round(maxP*.7) # add attunation factor for a high-performance computing machine
-                  }
-
-                  if(maxP >= 6){
-                    maxP <- round(maxP*.7) # add attunation factor for a high-performance computing machine
-                  }
+                  maxP <- round((servThreads[i]*.5))
+                  # if(maxP >= 4){
+                  #   maxP <- round(maxP*.7) # add attunation factor for a high-performance computing machine
+                  # }
+                  #
+                  # if(maxP >= 6){
+                  #   maxP <- round(maxP*.7) # add attunation factor for a high-performance computing machine
+                  # }
                   connList <- c(connList, rep(servNames[i], max(c(1,maxP))))
                 }
                 connList <- as.character(connList)
@@ -161,7 +161,7 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
             }
         }
         # connList <- connList[sample(x = 1:length(connList), size = length(connList))]
-        return(availableCluster)
+        return(connList)
     }
 
 

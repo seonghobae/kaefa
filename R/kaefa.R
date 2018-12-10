@@ -194,7 +194,7 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
     if (!is.null(RemoteClusters)) {
       halfCores <- function() { max(1, round(0.5 * future::availableCores()))}
       try(future::plan(list(
-        future::tweak(future::cluster, workers = assignClusterNodes(RemoteClusters), gc = T),
+        future::tweak(future::cluster, workers = assignClusterNodes(RemoteClusters), gc = T, homogeneous = FALSE),
         future::tweak(future::multiprocess, workers = halfCores, gc = T)
       )))
         # try(future::plan(future::tweak("future::cluster",

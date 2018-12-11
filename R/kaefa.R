@@ -799,7 +799,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                       }
 
                       # RMSEA Based
-                      S_X2Cond4 <- sum(round(estItemFit$RMSEA.S_X2,3) > .05, na.rm = T) > 0
+                      S_X2Cond4 <- sum(round(estItemFit$RMSEA.S_X2,3) >= .05, na.rm = T) > 0
                     }
                   } else {
                     S_X2Cond1 <- FALSE

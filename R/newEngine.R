@@ -135,11 +135,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             # poly MIRT
             if (!is.null(key)) {
               # poly MIRT with key
-              estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", 'Tutz', 'sequential', "nominal",
+              estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
                                "gpcm", "graded", "grsm")
             } else {
               # poly MIRT without key
-              estItemtype <- c("ggum", 'Tutz', 'sequential', "nominal", "gpcm", "graded", "grsm")
+              estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
             }
           } else {
             # dich MIRT
@@ -153,11 +153,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           # poly CFA
           if (!is.null(key)) {
             # with key
-            estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", 'Tutz', 'sequential', "nominal",
+            estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
                              "gpcm", "graded", "Rasch")
           } else {
             # without key
-            estItemtype <- c("ggum", 'Tutz', 'sequential', "nominal", "gpcm", "graded", "Rasch")
+            estItemtype <- c("ggum", "nominal", "gpcm", "graded", "Rasch")
           }
         } else {
           # dich
@@ -268,11 +268,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   # poly MIRT
                   if (!is.null(key)) {
                     # poly MIRT with key
-                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", 'Tutz', 'sequential', "nominal",
+                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
                       "gpcm", "graded", "grsm")
                   } else {
                     # poly MIRT without key
-                    estItemtype <- c("ggum", 'Tutz', 'sequential', "nominal", "gpcm", "graded", "grsm")
+                    estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
                   }
                 } else {
                   # dich MIRT
@@ -286,11 +286,11 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 # poly CFA
                 if (!is.null(key)) {
                   # with key
-                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", 'Tutz', 'sequential', "nominal",
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
                     "gpcm", "graded", "Rasch")
                 } else {
                   # without key
-                  estItemtype <- c("ggum", 'Tutz', 'sequential', "nominal", "gpcm", "graded", "Rasch")
+                  estItemtype <- c("ggum", "nominal", "gpcm", "graded", "Rasch")
                 }
             } else {
                 # dich

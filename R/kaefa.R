@@ -432,9 +432,13 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
         if (saveRawEstModels) {
             modelHistory <- list(rawEstModels = list(), estModelTrials = list(),
                 itemFitTrials = list(), rotationTrials = list())
+            class(modelHistory) <- 'aefa'
+
         } else {
             modelHistory <- list(estModelTrials = list(), itemFitTrials = list(),
                 rotationTrials = list())
+            class(modelHistory) <- 'aefa'
+
         }
     }
 
@@ -544,6 +548,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                 setwd(workDirectory)
               }
               modelHistory$rawEstModels[[modelHistoryCount]] <- estModel
+
                 tryCatch(saveRDS(modelHistory, filename), error = function(e) {
                 })
             }

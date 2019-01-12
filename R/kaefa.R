@@ -661,13 +661,19 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                       while (!searchDone) {
                         estItemFitRotationSearchTmp <- listenv::listenv()
                         for (rotateTrial in rotate) {
-                          estItemFitRotationSearchTmp[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
-                            RemoteClusters = RemoteClusters, rotate = rotateTrial, PV_Q1 = F, S_X2 = F),
-                            error = function(e) {NULL})
+                          # estItemFitRotationSearchTmp[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
+                          #   RemoteClusters = RemoteClusters, rotate = rotateTrial, PV_Q1 = F, S_X2 = F),
+                          #   error = function(e) {NULL})
+                          estItemFitRotationSearchTmp[[rotateTrial]] %<-% evaluateItemFit(estModel,
+                                                                                          RemoteClusters = RemoteClusters,
+                                                                                          rotate = rotateTrial, PV_Q1 = F, S_X2 = F)
+                          message(rotateTrial)
                         }
-                        if (!is.null(as.list(estItemFitRotationSearchTmp))) {
-                          estItemFitRotationSearchTmp <- as.list(estItemFitRotationSearchTmp)
+                        estItemFitRotationSearchTmp <- as.list(estItemFitRotationSearchTmp)
+                        if (!is.null(estItemFitRotationSearchTmp)) {
                           searchDone <- TRUE
+                        } else {
+                          stop('all rotation criteria failed')
                         }
                       }
 

@@ -677,6 +677,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         }
                       }
 
+                      message(paste(estItemFitRotationSearchTmp))
+
                       rotateCandidate1 <- names(estItemFitRotationSearchTmp)
                       rotateCandidate2 <- vector()
                       estItemFitRotationSearch <- list()

@@ -401,7 +401,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     FUN = function(X){eval(parse(text = paste0('as.formula(',paste0('~1|',X), ')')))}),
     key = NULL, accelerate = "squarem", symmetric = F, saveModelHistory = T,
     filename = "aefa.RDS", printItemFit = T, rotate = c("bifactorQ","geominQ", "geominT", "bentlerQ", "bentlerT",
-                                                        "oblimin", "oblimax", "simplimax", "tandemII",
+                                                        "oblimin", "simplimax", "tandemII",
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = F, forcingQMC = F, turnOffMixedEst = F,
@@ -664,10 +664,11 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                           # estItemFitRotationSearchTmp[[rotateTrial]] %<-% tryCatch(evaluateItemFit(estModel,
                           #   RemoteClusters = RemoteClusters, rotate = rotateTrial, PV_Q1 = F, S_X2 = F),
                           #   error = function(e) {NULL})
+                          message(rotateTrial)
                           estItemFitRotationSearchTmp[[rotateTrial]] %<-% evaluateItemFit(estModel,
                                                                                           RemoteClusters = RemoteClusters,
                                                                                           rotate = rotateTrial, PV_Q1 = F, S_X2 = F)
-                          message(rotateTrial)
+
                         }
                         estItemFitRotationSearchTmp <- as.list(estItemFitRotationSearchTmp)
                         if (!is.null(estItemFitRotationSearchTmp)) {
@@ -677,7 +678,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                         }
                       }
 
-                      message(paste(estItemFitRotationSearchTmp))
+                      # message(paste(estItemFitRotationSearchTmp))
 
                       rotateCandidate1 <- names(estItemFitRotationSearchTmp)
                       rotateCandidate2 <- vector()
@@ -732,8 +733,13 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                       }
 
                       # estimate item fit measures
-                      estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters,
-                        rotate = rotateCandidates, PV_Q1 = PV_Q1), error = function(e) {NULL})
+                      if(sum(estItemFitRotationSearchTmp[[paste0(rotateCandidates)]]$Zh +abs(qnorm(.025)) < qnorm(fitIndicesCutOff/2)) > 0){
+                        estItemFit <- estItemFitRotationSearchTmp[[paste0(rotateCandidates)]]
+                      } else {
+                        estItemFit <- tryCatch(evaluateItemFit(estModel, RemoteClusters = RemoteClusters,
+                                                               rotate = rotateCandidates, PV_Q1 = PV_Q1), error = function(e) {NULL})
+                      }
+
 
                     } else {
                       # estimate item fit measures

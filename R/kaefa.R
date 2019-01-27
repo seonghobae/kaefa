@@ -250,26 +250,39 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 
         if(sum('lca' %in% mirtModel@Model$itemtype) == 0){
           modFit_Zh <- listenv()
-          modFit_Zh %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                                                                 fit_stats = "Zh", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', impute = if (sum(is.na(mirtModel@Data$data)) >
-                                                                                                                         0)
-                                                                   100 else 0), error = function(e) {NULL}))
+          modFit_Zh %<-% suppressWarnings(tryCatch({
+            mirt::mirtCluster()
+            ret <- mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T,
+                                 method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP',
+                                 impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0)
+            mirt::mirtCluster(remove = T)
+            return(ret)
+            }, error = function(e) {NULL}))
         }
 
         if(S_X2){
           modFit_SX2 <- listenv()
-          modFit_SX2 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                                                                  fit_stats = "S_X2", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', impute = if (sum(is.na(mirtModel@Data$data)) >
-                                                                                                                            0)
-                                                                    100 else 0), error = function(e) {NULL}))
+          modFit_SX2 %<-% suppressWarnings(tryCatch({
+            mirt::mirtCluster()
+            ret <- mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T,
+                                 method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP',
+                                 impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0)
+            mirt::mirtCluster(remove = T)
+            return(ret)
+          }, error = function(e) {NULL}))
         }
 
 
         if (mirtModel@Model$nfact == 1 && PV_Q1 && sum('lca' %in% mirtModel@Model$itemtype) != 0) {
             modFit_PVQ1 <- listenv()
-            modFit_PVQ1 %<-% suppressWarnings(tryCatch(mirt::itemfit(mirtModel, rotate = rotate,
-                fit_stats = "PV_Q1*", QMC = T, method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP'), error = function(e) {NULL}))
-
+            modFit_PVQ1 %<-% suppressWarnings(tryCatch({
+              mirt::mirtCluster()
+              ret <- mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "PV_Q1*", QMC = T,
+                                   method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP',
+                                   impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0)
+              mirt::mirtCluster(remove = T)
+              return(ret)
+            }, error = function(e) {NULL}))
         }
 
         if (sum(mirtModel@Model$itemtype %in% "Rasch") > 0 && mirtModel@Model$nfact ==

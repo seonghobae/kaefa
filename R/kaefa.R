@@ -440,20 +440,39 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
     checkDIF <- TRUE
 
     # prepare for save model history
-    modelHistoryCount <- 0
-    if (saveModelHistory) {
+    if(class(data) == 'aefa'){
+      modelHistoryCount <- (NROW(data$estModelTrials)-1)
+      if (saveModelHistory) {
         if (saveRawEstModels) {
-            modelHistory <- list(rawEstModels = list(), estModelTrials = list(),
-                itemFitTrials = list(), rotationTrials = list())
-            class(modelHistory) <- 'aefa'
+          modelHistory <- list(rawEstModels = data$rawEstModels, estModelTrials = data$estModelTrials, itemFitTrials = data$itemFitTrials,
+                               rotationTrials = data$rotationTrials)
+          class(modelHistory) <- 'aefa'
 
         } else {
-            modelHistory <- list(estModelTrials = list(), itemFitTrials = list(),
-                rotationTrials = list())
-            class(modelHistory) <- 'aefa'
+          modelHistory <- list(estModelTrials = data$estModelTrials, itemFitTrials = data$itemFitTrials,
+                               rotationTrials = data$rotationTrials)
+          class(modelHistory) <- 'aefa'
 
         }
+      }
+      data <- data.frame(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data)
+    } else {
+      modelHistoryCount <- 0
+      if (saveModelHistory) {
+        if (saveRawEstModels) {
+          modelHistory <- list(rawEstModels = list(), estModelTrials = list(),
+                               itemFitTrials = list(), rotationTrials = list())
+          class(modelHistory) <- 'aefa'
+
+        } else {
+          modelHistory <- list(estModelTrials = list(), itemFitTrials = list(),
+                               rotationTrials = list())
+          class(modelHistory) <- 'aefa'
+
+        }
+      }
     }
+
 
     calibModel <- as.list(maxExtraction:minExtraction)
     if (!is.null(model)) {

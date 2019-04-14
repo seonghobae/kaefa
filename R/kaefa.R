@@ -528,7 +528,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
                   fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA,
                   forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
-                  skipggum = skipggum), error = function(e) {
+                  skipggumInternal = skipggum), error = function(e) {
                 })
                 if (exists("estModel")) {
                   modelDONE <- TRUE
@@ -559,7 +559,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     symmetric = symmetric, resampling = resampling, samples = samples,
                     printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
                     tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
-                    skipggum = skipggum),
+                    skipggumInternal = skipggum),
                     error = function(e) {
                     })
                   if (!dfFound) {

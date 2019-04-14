@@ -46,7 +46,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
         items), key = NULL, accelerate = "squarem", symmetric = F, resampling = T,
     samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
-    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggum = F) {
+    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggumInternal = F) {
   invisible(gc())
     # data management: resampling
     if (resampling && nrow(data) > samples) {
@@ -97,6 +97,10 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     modDiscrete <- listenv::listenv()
 
     groupnames <- .covdataClassifieder(covdata)$categorical
+
+    if(skipggumInternal == T){
+      message('Turned on skipggumInternal')
+    }
 
     # get total ticktock
     ticktockClock <- 0
@@ -177,7 +181,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
       }
 
       # skip ggum
-      if(skipggum){
+      if(skipggumInternal == T){
         if(length(grep("ggum", estItemtype)) > 0){
           estItemtype <- estItemtype[-grep("ggum", estItemtype)]
         }

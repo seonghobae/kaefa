@@ -186,6 +186,12 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           }
         }
       }
+
+      # skip ggum
+      if(skipggum){
+        estItemtype <- estItemtype[!estItemtype %in% 'ggum']
+      }
+
       for (j in estItemtype) {
         # itemtype j for model i
 

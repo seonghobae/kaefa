@@ -103,9 +103,9 @@
 
       retFixed <- tryCatch(colnames(a[unique(fixedVars)]), error = function(e){NULL})
       retRandom <- tryCatch(colnames(a[unique(randomVars)]), error = function(e){NULL})
-      list(fixed = retFixed, random = retRandom)
+      list(fixed = retFixed, random = retRandom, categorical = colnames(a)[markCat])
     } else {
-      list(fixed = NULL, random = NULL)
+      list(fixed = NULL, random = NULL, categorical = NULL)
     }
   }
 

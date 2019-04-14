@@ -6,28 +6,31 @@
 \title{doing automated exploratory factor analysis (aefa) for research capability to identify unexplained factor structure with complexly cross-classified multilevel structured data in R environment}
 \usage{
 aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
-  (is.data.frame(data)) if (ncol(data) <= 10) max(c(1, (round(sqrt(ncol(data)))
-  + 2))) else max(c(1, round(sqrt(ncol(data))))) else if (class(data) \%in\%
-  c("SingleGroupClass", "MixedClass", "DiscreteClass", "MultipleGroupClass"))
-  max(c(1, round(sqrt(ncol(data@Data$data))))) else if (class(data) \%in\%
-  "aefa") max(c(1,
+  (is.data.frame(data)) if (ncol(data) <= 10) max(c(1,
+  (round(sqrt(ncol(data))) + 2))) else max(c(1, round(sqrt(ncol(data)))))
+  else if (class(data) \%in\% c("SingleGroupClass", "MixedClass",
+  "DiscreteClass", "MultipleGroupClass")) max(c(1,
+  round(sqrt(ncol(data@Data$data))))) else if (class(data) \%in\% "aefa")
+  max(c(1,
   round(sqrt(ncol(data$estModelTrials[[NROW(data$estModelTrials)]]@Data$data)))))
   else stop("Please provide data correctly."),
   RemoteClusters = getOption("kaefaServers"), sshKeyPath = NULL,
-  GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500, SEMCYCLES = 1000,
-  covdata = NULL, fixed = kaefa:::.covdataFixedEffectComb(covdata),
-  random = lapply(c(c(kaefa:::.covdataClassifieder(covdata)$random, "items"),
-  if (length(kaefa:::.covdataClassifieder(covdata)$random) != 0)
+  GenRandomPars = T, NCYCLES = 4000, BURNIN = 1500,
+  SEMCYCLES = 1000, covdata = NULL,
+  fixed = kaefa:::.covdataFixedEffectComb(covdata),
+  random = lapply(c(c(kaefa:::.covdataClassifieder(covdata)$random,
+  "items"), if (length(kaefa:::.covdataClassifieder(covdata)$random) != 0)
   paste0(kaefa:::.covdataClassifieder(covdata)$random, ":items")), FUN =
-  function(X) {     eval(parse(text = paste0("as.formula(", paste0("~1|", X),
-  ")"))) }), key = NULL, accelerate = "squarem", symmetric = F,
+  function(X) {     eval(parse(text = paste0("as.formula(", paste0("~1|",
+  X), ")"))) }), key = NULL, accelerate = "squarem", symmetric = F,
   saveModelHistory = T, filename = "aefa.RDS", printItemFit = T,
   rotate = c("bifactorQ", "geominQ", "geominT", "bentlerQ", "bentlerT",
-  "oblimin", "oblimax", "simplimax", "tandemII", "tandemI", "entropy",
-  "quartimax"), resampling = T, samples = 5000, printDebugMsg = F,
-  modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
-  ranefautocomb = T, PV_Q1 = T, tryLCA = F, forcingQMC = F,
-  turnOffMixedEst = F, fitIndicesCutOff = 0.005, anchor = colnames(data))
+  "oblimin", "simplimax", "tandemII", "tandemI", "entropy", "quartimax"),
+  resampling = T, samples = 5000, printDebugMsg = F,
+  modelSelectionCriteria = "DIC", saveRawEstModels = F,
+  fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = F,
+  forcingQMC = F, turnOffMixedEst = F, fitIndicesCutOff = 0.005,
+  anchor = colnames(data))
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}

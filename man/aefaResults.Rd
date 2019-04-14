@@ -4,8 +4,8 @@
 \alias{aefaResults}
 \title{summarise AEFA results}
 \usage{
-aefaResults(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL,
-  printRawCoefs = F, simplifyRawCoefs = T)
+aefaResults(mirtModel, rotate = NULL, suppress = 0,
+  which.inspect = NULL, printRawCoefs = F, simplifyRawCoefs = T)
 }
 \arguments{
 \item{mirtModel}{estimated aefa model}

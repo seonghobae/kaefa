@@ -348,13 +348,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 
     } else {
         message("That's seems not MIRT model, so that trying to estimate new model with default settings")
-        estModel <- engineAEFA(data = mirtModel, model = model, GenRandomPars = GenRandomPars,
-                               NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata,
-                               fixed = fixed, random = random, key = key, accelerate = accelerate,
-                               symmetric = symmetric, resampling = resampling, samples = samples,
-                               printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
-                               tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
-                               skipggum = skipggum)
+        estModel <- engineAEFA(data = mirtModel)
         return(estModel)
     }
 }

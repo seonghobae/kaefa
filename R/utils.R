@@ -131,7 +131,7 @@
       ret[[i]] <- as.character(fixedVarsComb[i])
     }
 
-    ret
+    unlist(ret)
   }
 
 # parameter linking Mixed-Effect to SingleClass Class temporaly

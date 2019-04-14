@@ -96,7 +96,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     modMultipleGroup <- listenv::listenv()
     modDiscrete <- listenv::listenv()
 
-    groupnames <- .covdataClassifieder(covdata)$fixed
+    groupnames <- .covdataClassifieder(covdata)$categorical
 
     # get total ticktock
     ticktockClock <- 0

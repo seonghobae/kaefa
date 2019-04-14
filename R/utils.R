@@ -1,21 +1,36 @@
 # classify fixed and random effect variables
 #' @export
   .covdataClassifieder <- function(a){
-    if(!is.null(a)){
-      if('tbl_df' %in% class(a)){
+    decimalplaces <- function(x) {
+      if ((x %% 1) != 0) {
+        nchar(strsplit(sub('0+$', '', as.character(x)), ".", fixed=TRUE)[[1]][[2]])
+      } else {
+        return(0)
+      }
+    }
+
+    if (!is.null(a)) {
+      if ("tbl_df" %in% class(a)) {
+        a_tmp_colnames <- colnames(a)
         a <- as.data.frame(a)
+        colnames(a) <- a_tmp_colnames
       }
 
       # marking integers: NEED TO FIX! (reserved)
       markInt <- vector()
       markNum <- vector()
       markCat <- vector()
-      for(i in 1:ncol(a)){
-        if(is.integer(a[[i]])){
-          markInt[length(markInt) + 1] <- i # marking as Numeric (1, 2, 3, ..., and so on)
-        } else if(is.numeric(a[[i]])){
-          markNum[length(markNum) + 1] <- i # marking as Integer (1.2342... with decimals)
-        } else {
+      for (i in 1:ncol(a)) {
+        if (is.numeric(a[[i]]) | is.integer(a[[i]])) {
+          if(!is.null(attr(attr(a[[i]], 'labels'),'names'))){ # for SPSS label support
+            markCat[length(markCat) + 1] <- i
+          } else if(sum(sapply(a[[i]], decimalplaces) > 0) == 0){
+            markInt[length(markInt) + 1] <- i
+          } else if(sum(sapply(a[[i]], decimalplaces) > 0) >= 0){
+            markNum[length(markNum) + 1] <- i
+          }
+        }
+        else {
           markCat[length(markCat) + 1] <- i
         }
       }
@@ -30,8 +45,14 @@
       randomVars <- vector()
       numericVars <- vector() # age, number of team members, ..., etc.
 
+      # convert categorical variables into factor
+      if(!is.null(markCat)){
+        for (i in markCat) {
+          a[[i]] <- as.factor(a[[i]])
+        }
+      }
         # classify fixed and random first
-        for(i in 1:ncol(a)){
+        for (i in markCat) {
           if(length(levels(a[[i]])) <= 50){ # if k <= 50 (group level <= 50)
             fixedVars <- c(fixedVars, i)
           } else {
@@ -42,7 +63,7 @@
         # make a decision which variable to move fixed to random by group size balancing
         if(length(fixedVars) != 0){
           gotoRandom <- vector()
-          for(i in 1:ncol(a)){
+          for(i in markCat){
             if(max(table(a[[i]]))/min(table(a[[i]])) < 2){
 
             } else {  # if fixed group has unbalanced levels (group a has 4 members, group b has 60...)
@@ -50,7 +71,7 @@
             }
           }
 
-          if(length(randomVars) != 0){
+          if(length(gotoRandom) != 0){
             fixedVars <- fixedVars[!fixedVars %in% gotoRandom]
             randomVars <- c(randomVars, gotoRandom)
           }

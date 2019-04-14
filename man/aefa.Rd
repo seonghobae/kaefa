@@ -30,7 +30,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   modelSelectionCriteria = "DIC", saveRawEstModels = F,
   fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = F,
   forcingQMC = F, turnOffMixedEst = F, fitIndicesCutOff = 0.005,
-  anchor = colnames(data))
+  anchor = colnames(data), skipggum = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -98,6 +98,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
 \item{fitIndicesCutOff}{Specify item assessment cutoff. default is p < .005}
 
 \item{anchor}{Set the anchor item names If you want to consider DIF detection. default is NULL.}
+
+\item{skipggum}{Set the skipping ggum fitting procedure to speed up. default is FALSE.}
 }
 \value{
 automated exploratory factor analytic models

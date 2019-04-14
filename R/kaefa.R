@@ -390,6 +390,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
 #' @param fitIndicesCutOff Specify item assessment cutoff. default is p < .005
 #' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
+#' @param skipggum Set the skipping ggum fitting procedure to speed up. default is FALSE.
 #' @importFrom stats qnorm
 #' @importFrom stats sd
 #'
@@ -418,7 +419,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = F, forcingQMC = F, turnOffMixedEst = F,
-    fitIndicesCutOff = 0.005, anchor = colnames(data)) {
+    fitIndicesCutOff = 0.005, anchor = colnames(data), skipggum = F) {
 
   workDirectory <- getwd()
   message(paste0('work directory: ', workDirectory))
@@ -518,7 +519,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   random = random, key = key, accelerate = accelerate, symmetric = symmetric,
                   resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
                   fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA,
-                  forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems]), error = function(e) {
+                  forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
+                  skipggum = skipggum), error = function(e) {
                 })
                 if (exists("estModel")) {
                   modelDONE <- TRUE
@@ -548,7 +550,8 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     fixed = fixed, random = random, key = key, accelerate = accelerate,
                     symmetric = symmetric, resampling = resampling, samples = samples,
                     printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
-                    tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems]),
+                    tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
+                    skipggum = skipggum),
                     error = function(e) {
                     })
                   if (!dfFound) {

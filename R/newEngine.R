@@ -32,6 +32,7 @@
 #' @param forcingQMC Do you want to forcing the use QMC estimation instead MHRM? default is FALSE
 #' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
 #' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
+#' @param skipggum Set the skipping ggum fitting procedure to speed up. default is FALSE.
 #'
 #' @return possible optimal combinations of models in list
 #' @export
@@ -45,7 +46,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
         items), key = NULL, accelerate = "squarem", symmetric = F, resampling = T,
     samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
-    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL) {
+    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggum = F) {
   invisible(gc())
     # data management: resampling
     if (resampling && nrow(data) > samples) {

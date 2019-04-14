@@ -348,7 +348,13 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 
     } else {
         message("That's seems not MIRT model, so that trying to estimate new model with default settings")
-        estModel <- engineAEFA(data = mirtModel)
+        estModel <- engineAEFA(data = mirtModel, model = model, GenRandomPars = GenRandomPars,
+                               NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, covdata = covdata,
+                               fixed = fixed, random = random, key = key, accelerate = accelerate,
+                               symmetric = symmetric, resampling = resampling, samples = samples,
+                               printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
+                               tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
+                               skipggum = skipggum)
         return(estModel)
     }
 }
@@ -423,12 +429,20 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 
   workDirectory <- getwd()
   message(paste0('work directory: ', workDirectory))
-  if(length(.covdataClassifieder(covdata)$fixed) != 0){
-    if(sum(class(covdata) %in% 'tbl_df') != 0){
+  if (!is.null(covdata)) {
+    if ("tbl_df" %in% class(covdata)) {
+      a_tmp_colnames <- colnames(covdata)
       covdata <- as.data.frame(covdata)
+      colnames(covdata) <- a_tmp_colnames
     }
-    for(i in which(colnames(covdata) %in% .covdataClassifieder(covdata)$fixed)){
-      covdata[,i] <- as.factor(covdata[,i])
+    if(length(.covdataClassifieder(covdata)$categorical)>0){
+      if(length(which(colnames(covdata) %in% .covdataClassifieder(covdata)$categorical))>0){
+        for(tmpIter in which(colnames(covdata) %in% .covdataClassifieder(covdata)$categorical)){
+          if(!is.factor(covdata[[tmpIter]])){
+            covdata[[tmpIter]] <- as.factor(covdata[[tmpIter]])
+          }
+        }
+      }
     }
   }
 

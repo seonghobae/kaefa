@@ -175,6 +175,13 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           estItemtype <- estItemtype[-grep("rsm", estItemtype)]
         }
       }
+
+      # skip ggum
+      if(skipggum){
+        if(length(grep("ggum", estItemtype)) > 0){
+          estItemtype <- estItemtype[-grep("ggum", estItemtype)]
+        }
+      }
       # LCA
       if (is.numeric(i) && tryLCA) {
 
@@ -187,10 +194,6 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         }
       }
 
-      # skip ggum
-      if(skipggum){
-        estItemtype <- estItemtype[!estItemtype %in% 'ggum']
-      }
 
       for (j in estItemtype) {
         # itemtype j for model i

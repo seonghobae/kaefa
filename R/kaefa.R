@@ -167,27 +167,27 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
 
 
     if (is.null(suppressWarnings(NCmisc::top()$CPU$idle))) {
-        parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/2)
-        if (2 >= parallelProcessors) {
-            parallelProcessors <- 2
+        parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/3)
+        if (1 >= parallelProcessors) {
+            parallelProcessors <- 1
         }
     } else if (suppressWarnings(NCmisc::top()$CPU$idle) > 50) {
-        parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/2)
-        if (2 >= parallelProcessors) {
-            parallelProcessors <- 2
+        parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/3)
+        if (1 >= parallelProcessors) {
+            parallelProcessors <- 1
         }
     } else if (suppressWarnings(NCmisc::top()$CPU$idle) <= 50) {
-        parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/2)
-        if (2 >= parallelProcessors) {
-            parallelProcessors <- 2
+        parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/3)
+        if (1 >= parallelProcessors) {
+            parallelProcessors <- 1
         }
     } else if (suppressWarnings(NCmisc::top()$CPU$idle) < 30) {
         parallelProcessors <- round(parallel::detectCores(all.tests = FALSE, logical = FALSE)/3)
-        if (2 >= parallelProcessors) {
-            parallelProcessors <- 2
+        if (1 >= parallelProcessors) {
+            parallelProcessors <- 1
         }
     } else if (suppressWarnings(NCmisc::top()$CPU$idle) < 10) {
-        parallelProcessors <- 2
+        parallelProcessors <- 1
     }
 
     # setting up cluster

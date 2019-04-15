@@ -32,7 +32,7 @@
 #' @param forcingQMC Do you want to forcing the use QMC estimation instead MHRM? default is FALSE
 #' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
 #' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
-#' @param skipggum Set the skipping ggum fitting procedure to speed up. default is FALSE.
+#' @param skipggumInternal Set the skipping ggum fitting procedure to speed up. default is FALSE.
 #'
 #' @return possible optimal combinations of models in list
 #' @export

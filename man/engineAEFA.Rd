@@ -10,7 +10,8 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
   accelerate = "squarem", symmetric = F, resampling = T,
   samples = 5000, printDebugMsg = F, fitEMatUIRT = F,
   ranefautocomb = T, tryLCA = T, forcingMixedModelOnly = F,
-  forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggum = F)
+  forcingQMC = F, turnOffMixedEst = F, anchor = NULL,
+  skipggumInternal = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -57,7 +58,7 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
 
 \item{anchor}{Set the anchor item names If you want to consider DIF detection. default is NULL.}
 
-\item{skipggum}{Set the skipping ggum fitting procedure to speed up. default is FALSE.}
+\item{skipggumInternal}{Set the skipping ggum fitting procedure to speed up. default is FALSE.}
 }
 \value{
 possible optimal combinations of models in list

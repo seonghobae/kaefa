@@ -1039,6 +1039,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 #' @param which.inspect which you are want to inspect of a calibration trial? If NULL, the last model will return.
 #' @param printRawCoefs print the raw IRT coefs.
 #' @param simplifyRawCoefs print the simplified raw IRT coefs if available when printRawCoefs = TRUE.
+#' @param returnModel return converted MIRT model. default is FALSE
 #' @return summary of aefa results
 #' @export
 #'
@@ -1047,13 +1048,13 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
 #' testMod1 <- aefa(mirt::Science, minExtraction = 1, maxExtraction = 2)
 #' aefaResults(testMod1)
 #' }
-aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL, printRawCoefs = F, simplifyRawCoefs = T) {
+aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = NULL, printRawCoefs = F, simplifyRawCoefs = T, returnModel = F) {
 
     if (class(mirtModel) == "aefa") {
         if(is.null(which.inspect)){
 
           # RMSEA based model selection
-          if(sum(sapply(mirtModel$itemFitTrials, function(X){'RMSEA.S_X2' %in% colnames(checkIter)})) == NROW(mirtModel$itemFitTrials)){
+          if(sum(sapply(mirtModel$itemFitTrials, function(X){'RMSEA.S_X2' %in% colnames(X)})) == NROW(mirtModel$itemFitTrials)){
             inspectModelNumber <-
               which.min(sapply(mirtModel$itemFitTrials, function(X) {
                 if (mean(X$RMSEA.S_X2) > 0) {
@@ -1149,6 +1150,9 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
       message("\nMarginal (Empirical) Reliability statistic from Item Information Function")
       print(resultMarginalReliability)
       message("\n")
+    }
+    if(returnModel){
+      return(mirtModel)
     }
 }
 

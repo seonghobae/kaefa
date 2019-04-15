@@ -5,7 +5,8 @@
 \title{summarise AEFA results}
 \usage{
 aefaResults(mirtModel, rotate = NULL, suppress = 0,
-  which.inspect = NULL, printRawCoefs = F, simplifyRawCoefs = T)
+  which.inspect = NULL, printRawCoefs = F, simplifyRawCoefs = T,
+  returnModel = F)
 }
 \arguments{
 \item{mirtModel}{estimated aefa model}
@@ -19,6 +20,8 @@ aefaResults(mirtModel, rotate = NULL, suppress = 0,
 \item{printRawCoefs}{print the raw IRT coefs.}
 
 \item{simplifyRawCoefs}{print the simplified raw IRT coefs if available when printRawCoefs = TRUE.}
+
+\item{returnModel}{return converted MIRT model. default is FALSE}
 }
 \value{
 summary of aefa results

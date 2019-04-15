@@ -1051,7 +1051,21 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
 
     if (class(mirtModel) == "aefa") {
         if(is.null(which.inspect)){
-          inspectModelNumber <- NROW(mirtModel$estModelTrials)
+
+          # RMSEA based model selection
+          if(sum(sapply(mirtModel$itemFitTrials, function(X){'RMSEA.S_X2' %in% colnames(checkIter)})) == NROW(mirtModel$itemFitTrials)){
+            inspectModelNumber <-
+              which.min(sapply(mirtModel$itemFitTrials, function(X) {
+                if (mean(X$RMSEA.S_X2) > 0) {
+                  return(mean(X$RMSEA.S_X2))
+                } else{
+                  return(NA)
+                }
+              }))
+          } else {
+            inspectModelNumber <- NROW(mirtModel$estModelTrials)
+          }
+
         } else {
           inspectModelNumber <- which.inspect
         }

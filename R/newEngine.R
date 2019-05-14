@@ -33,6 +33,7 @@
 #' @param turnOffMixedEst Do you want to turn off mixed effect (multilevel) estimation? default is FALSE
 #' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
 #' @param skipggumInternal Set the skipping ggum fitting procedure to speed up. default is FALSE.
+#' @param powertest Set power test mode. default is FALSE.
 #'
 #' @return possible optimal combinations of models in list
 #' @export
@@ -46,7 +47,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
         items), key = NULL, accelerate = "squarem", symmetric = F, resampling = T,
     samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
-    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggumInternal = F) {
+    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggumInternal = F, powertest = F) {
   invisible(gc())
     # data management: resampling
     if (resampling && nrow(data) > samples) {
@@ -122,8 +123,14 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             # poly UIRT
             if (!is.null(key)) {
               # with key
-              estItemtype <- c("monopoly", "4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                               "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+              if(!powertest){
+
+                estItemtype <- c("monopoly", "4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                 "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+              } else {
+                estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
+              }
+
             } else {
               # without key
               estItemtype <- c("monopoly", "ggum", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
@@ -140,8 +147,13 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             # poly MIRT
             if (!is.null(key)) {
               # poly MIRT with key
-              estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                               "gpcm", "graded", "grsm")
+              if(!powertest){
+
+                estItemtype <- c("monopoly", "4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                 "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+              } else {
+                estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
+              }
             } else {
               # poly MIRT without key
               estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
@@ -158,8 +170,13 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           # poly CFA
           if (!is.null(key)) {
             # with key
-            estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                             "gpcm", "graded", "Rasch")
+            if(!powertest){
+
+              estItemtype <- c("monopoly", "4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                               "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+            } else {
+              estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
+            }
           } else {
             # without key
             estItemtype <- c("ggum", "nominal", "gpcm", "graded", "Rasch")
@@ -258,15 +275,21 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                   if (!is.null(key)) {
                     # with key
                     # skip ggum
-                    if(skipggumInternal == T){
-                      estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM",
-                                       "monopoly", "nominal",
-                                       "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+
+                    if(!powertest){
+                      if(skipggumInternal == T){
+                        estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM",
+                                         "monopoly", "nominal",
+                                         "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+                      } else {
+                        estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM",
+                                         "monopoly", "ggum", "nominal",
+                                         "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+                      }
                     } else {
-                      estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM",
-                                       "monopoly", "ggum", "nominal",
-                                       "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+                      estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
                     }
+
                   } else {
                     # without key
                     if(skipggumInternal == T){
@@ -287,23 +310,21 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 # MIRT
                 if (max(nK[is.finite(nK)], na.rm = T) > 2) {
                   # poly MIRT
-                  if (!is.null(key)) {
-                    # poly MIRT with key
-                    if(skipggumInternal==T){
+                  # with key
+
+                  if(!powertest){
+                    # skip ggum
+                    if(skipggumInternal == T){
                       estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal",
-                                       "gpcm", "graded", "grsm")
+                                                              "gpcm", "graded", "grsm")
                     } else {
                       estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                       "gpcm", "graded", "grsm")
+                                                              "gpcm", "graded", "grsm")
                     }
                   } else {
-                    # poly MIRT without key
-                    if(skipggumInternal==T){
-                      estItemtype <- c("nominal", "gpcm", "graded", "grsm")
-                    } else{
-                      estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
-                    }
+                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
                   }
+
                 } else {
                   # dich MIRT
                   estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL")
@@ -314,17 +335,24 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             # CFA
             if (max(nK[is.finite(nK)], na.rm = T) > 2) {
                 # poly CFA
-                if (!is.null(key)) {
-                  # with key
-                  if(skipggumInternal){
+              if (max(nK[is.finite(nK)], na.rm = T) > 2) {
+                # poly MIRT
+                # with key
+
+                if(!powertest){
+                  # skip ggum
+                  if(skipggumInternal == T){
                     estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal",
-                                     "gpcm", "graded", "Rasch")
+                                     "gpcm", "graded", "grsm", 'Rasch')
                   } else {
                     estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                     "gpcm", "graded", "Rasch")
+                                     "gpcm", "graded", "grsm", 'Rasch')
                   }
-
                 } else {
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
+                }
+
+              } else {
                   # without key
                   if(skipggumInternal){
                     estItemtype <- c("nominal", "gpcm", "graded", "Rasch")

@@ -30,7 +30,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   modelSelectionCriteria = "DIC", saveRawEstModels = F,
   fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = F,
   forcingQMC = F, turnOffMixedEst = F, fitIndicesCutOff = 0.005,
-  anchor = colnames(data), skipggum = F)
+  anchor = colnames(data), skipggum = F, powertest = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -100,6 +100,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
 \item{anchor}{Set the anchor item names If you want to consider DIF detection. default is NULL.}
 
 \item{skipggum}{Set the skipping ggum fitting procedure to speed up. default is FALSE.}
+
+\item{powertest}{Set power test mode. default is FALSE.}
 }
 \value{
 automated exploratory factor analytic models

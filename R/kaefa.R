@@ -392,6 +392,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
 #' @param skipggum Set the skipping ggum fitting procedure to speed up. default is FALSE.
 #' @param powertest Set power test mode. default is FALSE.
+#' @param idling Set seconds to idle. default is 60.
 #' @importFrom stats qnorm
 #' @importFrom stats sd
 #'
@@ -420,7 +421,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = F, forcingQMC = F, turnOffMixedEst = F,
-    fitIndicesCutOff = 0.005, anchor = colnames(data), skipggum = F, powertest = F) {
+    fitIndicesCutOff = 0.005, anchor = colnames(data), skipggum = F, powertest = F, idling = 60) {
 
   workDirectory <- getwd()
   message(paste0('work directory: ', workDirectory))
@@ -529,7 +530,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
                   fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA,
                   forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
-                  skipggumInternal = skipggum, powertest = powertest), error = function(e) {
+                  skipggumInternal = skipggum, powertest = powertest, idling = idling), error = function(e) {
                 })
                 if (exists("estModel")) {
                   modelDONE <- TRUE
@@ -560,7 +561,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     symmetric = symmetric, resampling = resampling, samples = samples,
                     printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
                     tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
-                    skipggumInternal = skipggum, powertest = powertest),
+                    skipggumInternal = skipggum, powertest = powertest, idling = idling),
                     error = function(e) {
                     })
                   if (!dfFound) {

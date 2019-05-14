@@ -30,7 +30,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   modelSelectionCriteria = "DIC", saveRawEstModels = F,
   fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = F,
   forcingQMC = F, turnOffMixedEst = F, fitIndicesCutOff = 0.005,
-  anchor = colnames(data), skipggum = F, powertest = F)
+  anchor = colnames(data), skipggum = F, powertest = F,
+  idling = 60)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -102,6 +103,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
 \item{skipggum}{Set the skipping ggum fitting procedure to speed up. default is FALSE.}
 
 \item{powertest}{Set power test mode. default is FALSE.}
+
+\item{idling}{Set seconds to idle. default is 60.}
 }
 \value{
 automated exploratory factor analytic models

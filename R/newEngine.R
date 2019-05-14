@@ -34,7 +34,7 @@
 #' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
 #' @param skipggumInternal Set the skipping ggum fitting procedure to speed up. default is FALSE.
 #' @param powertest Set power test mode. default is FALSE.
-#'
+#' @param idling Set seconds to idle. default is 60.
 #' @return possible optimal combinations of models in list
 #' @export
 #'
@@ -47,7 +47,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
         items), key = NULL, accelerate = "squarem", symmetric = F, resampling = T,
     samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
-    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggumInternal = F, powertest = F) {
+    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggumInternal = F, powertest = F, idling = 60) {
   invisible(gc())
     # data management: resampling
     if (resampling && nrow(data) > samples) {
@@ -383,7 +383,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
         for (m in c("sandwich", "Oakes")) { # SE
           for (n in c('empiricalhist', 'empiricalhist_Woods', 'Gaussian')) { # empirical histogram
             for (k_fixed in fixed) { # fixed effect
-              Sys.sleep(60)
+              Sys.sleep(idling)
               suppressWarnings(pb$tick(tokens = list(itemtype = "LCA", modeltype = if(is.numeric(i)) paste('exploratory', i, 'class ') else paste0('user specified '), fixed = paste('/ fixed ',as.character(k_fixed)), random = ' ', method = if(n) paste0('empirical histogram') else paste0('Standard EM'))))
               invisible(gc())
               modDiscrete[[paste(paste0(as.character(i), collapse = ""),
@@ -414,7 +414,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
               estMethod <- "EM"
             }
           }
-          Sys.sleep(60)
+          Sys.sleep(idling)
           suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = ' ', random = ' ', method = estMethod)))
           invisible(gc())
           modUnConditional[[paste(paste0(as.character(i), collapse = ""),
@@ -428,7 +428,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
           if(length(groupnames) != 0){
             for(gname in groupnames){
-              Sys.sleep(60)
+              Sys.sleep(idling)
               suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor multiple group ') else paste0('user specified '), fixed = paste0(gname), random = ' ', method = estMethod)))
               modMultipleGroup[[paste(paste0(as.character(i), collapse = ""), paste0(as.character(gname), collapse = ""),
                                       j, collapse = " ")]] %<-% {
@@ -453,7 +453,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
           for (k in randomEffectCandidates) {
             # and
             for (k_fixed in fixed) {
-              Sys.sleep(60)
+              Sys.sleep(idling)
               suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0(' / random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
               invisible(gc())
               modConditional1[[paste(paste0(as.character(i), collapse = ""),
@@ -479,7 +479,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                  calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), error = function(e) {NULL})
                                       }
                                     }
-              Sys.sleep(60)
+              Sys.sleep(idling)
               suppressWarnings(pb$tick(tokens = list(itemtype = j, modeltype = if(is.numeric(i)) paste('exploratory', i, 'factor ') else paste0('user specified '), fixed = paste0('/ lr.fixed ', paste(as.character(k_fixed), collapse = "")), random = paste0('/ lr.random ', paste(as.character(k), collapse = '')), method = 'EMEIRT')))
               invisible(gc())
               modConditional2[[paste(paste0(as.character(i), collapse = ""),

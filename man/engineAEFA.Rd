@@ -11,7 +11,7 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
   samples = 5000, printDebugMsg = F, fitEMatUIRT = F,
   ranefautocomb = T, tryLCA = T, forcingMixedModelOnly = F,
   forcingQMC = F, turnOffMixedEst = F, anchor = NULL,
-  skipggumInternal = F, powertest = F)
+  skipggumInternal = F, powertest = F, idling = 60)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -61,6 +61,8 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
 \item{skipggumInternal}{Set the skipping ggum fitting procedure to speed up. default is FALSE.}
 
 \item{powertest}{Set power test mode. default is FALSE.}
+
+\item{idling}{Set seconds to idle. default is 60.}
 }
 \value{
 possible optimal combinations of models in list

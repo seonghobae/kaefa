@@ -123,41 +123,65 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             # poly UIRT
             if (!is.null(key)) {
               # with key
-              if(!powertest){
+              # skip ggum
 
-                estItemtype <- c("monopoly", "4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                 "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+              if(!powertest){
+                if(skipggumInternal == T){
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM",
+                                   "monopoly", "nominal",
+                                   "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+                } else {
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM",
+                                   "monopoly", "ggum", "nominal",
+                                   "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+                }
               } else {
                 estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
               }
 
             } else {
               # without key
-              estItemtype <- c("monopoly", "ggum", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
-                               "grsmIRT", "Rasch", "rsm")
+              if(skipggumInternal == T){
+                estItemtype <- c("monopoly", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
+                                 "grsmIRT", "Rasch", "rsm")
+              } else {
+
+                estItemtype <- c("ggum", "monopoly", "nominal", "gpcm", "gpcmIRT", "graded", "grsm",
+                                 "grsmIRT", "Rasch", "rsm")
+              }
             }
           } else {
             # dich UIRT
-            estItemtype <- c("monopoly", "4PL", "3PL", "3PLu", "2PL", "ideal", "Rasch",
+            estItemtype <- c("4PL", "3PL", "3PLu", "2PL", "ideal", "monopoly", "Rasch",
                              "spline")
           }
         } else {
           # MIRT
           if (max(nK[is.finite(nK)], na.rm = T) > 2) {
             # poly MIRT
-            if (!is.null(key)) {
-              # poly MIRT with key
+            # with key
+            if(!is.null(key)){
               if(!powertest){
-
-                estItemtype <- c("monopoly", "4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                 "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+                # skip ggum
+                if(skipggumInternal == T){
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal",
+                                   "gpcm", "graded", "grsm")
+                } else {
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                   "gpcm", "graded", "grsm")
+                }
               } else {
                 estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
               }
-            } else {
-              # poly MIRT without key
-              estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
+            } else { # without key
+              if(skipggumInternal == T){
+                estItemtype <- c("nominal", "gpcm", "graded", "grsm")
+              } else {
+                estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
+              }
             }
+
+
           } else {
             # dich MIRT
             estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL")
@@ -166,25 +190,35 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
       } else if (class(i) == "mirt.model") {
         # CFA
+        # poly CFA
         if (max(nK[is.finite(nK)], na.rm = T) > 2) {
-          # poly CFA
-          if (!is.null(key)) {
-            # with key
+          # poly MIRT
+          # with key
+          if(!is.null(key)){
             if(!powertest){
-
-              estItemtype <- c("monopoly", "4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                               "gpcm", "gpcmIRT", "graded", "grsm", "grsmIRT", "Rasch", "rsm")
+              # skip ggum
+              if(skipggumInternal == T){
+                estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal",
+                                 "gpcm", "graded", "grsm")
+              } else {
+                estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                 "gpcm", "graded", "grsm")
+              }
             } else {
               estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
             }
-          } else {
-            # without key
-            estItemtype <- c("ggum", "nominal", "gpcm", "graded", "Rasch")
+          } else { # without key
+            if(skipggumInternal == T){
+              estItemtype <- c("nominal", "gpcm", "graded", "grsm")
+            } else {
+              estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
+            }
           }
+
+
         } else {
-          # dich
-          estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL", "PC3PL", "PC2PL",
-                           "Rasch")
+          # dich MIRT
+          estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL")
         }
       } else {
         stop("model is not correctly provided")
@@ -311,19 +345,27 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                 if (max(nK[is.finite(nK)], na.rm = T) > 2) {
                   # poly MIRT
                   # with key
-
-                  if(!powertest){
-                    # skip ggum
-                    if(skipggumInternal == T){
-                      estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal",
-                                                              "gpcm", "graded", "grsm")
+                  if(!is.null(key)){
+                    if(!powertest){
+                      # skip ggum
+                      if(skipggumInternal == T){
+                        estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal",
+                                         "gpcm", "graded", "grsm")
+                      } else {
+                        estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                         "gpcm", "graded", "grsm")
+                      }
                     } else {
-                      estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                                              "gpcm", "graded", "grsm")
+                      estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
                     }
-                  } else {
-                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
+                  } else { # without key
+                    if(skipggumInternal == T){
+                      estItemtype <- c("nominal", "gpcm", "graded", "grsm")
+                    } else {
+                      estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
+                    }
                   }
+
 
                 } else {
                   # dich MIRT
@@ -333,39 +375,37 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
         } else if (class(i) == "mirt.model") {
             # CFA
-            if (max(nK[is.finite(nK)], na.rm = T) > 2) {
-                # poly CFA
-              if (max(nK[is.finite(nK)], na.rm = T) > 2) {
-                # poly MIRT
-                # with key
 
-                if(!powertest){
-                  # skip ggum
-                  if(skipggumInternal == T){
-                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal",
-                                     "gpcm", "graded", "grsm", 'Rasch')
-                  } else {
-                    estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
-                                     "gpcm", "graded", "grsm", 'Rasch')
-                  }
+          # poly CFA
+          if (max(nK[is.finite(nK)], na.rm = T) > 2) {
+            # poly MIRT
+            # with key
+            if(!is.null(key)){
+              if(!powertest){
+                # skip ggum
+                if(skipggumInternal == T){
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal",
+                                   "gpcm", "graded", "grsm")
                 } else {
-                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
+                  estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "ggum", "nominal",
+                                   "gpcm", "graded", "grsm")
                 }
-
               } else {
-                  # without key
-                  if(skipggumInternal){
-                    estItemtype <- c("nominal", "gpcm", "graded", "Rasch")
-                  } else {
-                    estItemtype <- c("ggum", "nominal", "gpcm", "graded", "Rasch")
-
-                  }
-                }
-            } else {
-                # dich
-                estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL", "PC3PL", "PC2PL",
-                  "Rasch")
+                estItemtype <- c("4PLNRM", "3PLNRM", "3PLNRMu", "2PLNRM", "nominal")
+              }
+            } else { # without key
+              if(skipggumInternal == T){
+                estItemtype <- c("nominal", "gpcm", "graded", "grsm")
+              } else {
+                estItemtype <- c("ggum", "nominal", "gpcm", "graded", "grsm")
+              }
             }
+
+
+          } else {
+            # dich MIRT
+            estItemtype <- c("ideal", "4PL", "3PL", "3PLu", "2PL")
+          }
         } else {
             stop("model is not correctly provided")
         }

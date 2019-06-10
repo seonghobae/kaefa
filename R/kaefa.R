@@ -1059,7 +1059,7 @@ aefaResults <- function(mirtModel, rotate = NULL, suppress = 0, which.inspect = 
           if(sum(sapply(mirtModel$itemFitTrials, function(X){'RMSEA.S_X2' %in% colnames(X)})) == NROW(mirtModel$itemFitTrials)){
             inspectModelNumber <-
               which.min(sapply(mirtModel$itemFitTrials, function(X) {
-                if (mean(X$RMSEA.S_X2) > 0) {
+                if (mean(X$RMSEA.S_X2) >= 0) {
                   return(mean(X$RMSEA.S_X2))
                 } else{
                   return(NA)

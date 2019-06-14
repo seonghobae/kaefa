@@ -31,7 +31,7 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
   fitEMatUIRT = F, ranefautocomb = T, PV_Q1 = T, tryLCA = F,
   forcingQMC = F, turnOffMixedEst = F, fitIndicesCutOff = 0.005,
   anchor = colnames(data), skipggum = F, powertest = F,
-  idling = 60)
+  idling = 60, leniency = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -105,6 +105,8 @@ aefa(data, model = NULL, minExtraction = 1, maxExtraction = if
 \item{powertest}{Set power test mode. default is FALSE.}
 
 \item{idling}{Set seconds to idle. default is 60.}
+
+\item{leniency}{skip second order test. default is FALSE}
 }
 \value{
 automated exploratory factor analytic models

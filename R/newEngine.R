@@ -35,6 +35,7 @@
 #' @param skipggumInternal Set the skipping ggum fitting procedure to speed up. default is FALSE.
 #' @param powertest Set power test mode. default is FALSE.
 #' @param idling Set seconds to idle. default is 60.
+#' @param leniency skip second order test. default is FALSE
 #' @return possible optimal combinations of models in list
 #' @export
 #'
@@ -47,7 +48,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
     SEMCYCLES = 1000, covdata = NULL, fixed = c(~1, ~0, ~-1), random = list(~1 |
         items), key = NULL, accelerate = "squarem", symmetric = F, resampling = T,
     samples = 5000, printDebugMsg = F, fitEMatUIRT = F, ranefautocomb = T, tryLCA = T,
-    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggumInternal = F, powertest = F, idling = 60) {
+    forcingMixedModelOnly = F, forcingQMC = F, turnOffMixedEst = F, anchor = NULL, skipggumInternal = F, powertest = F, idling = 60, leniency = F) {
   invisible(gc())
     # data management: resampling
     if (resampling && nrow(data) > samples) {
@@ -462,7 +463,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
 
                                     tryCatch(.mirt(data = data, model = i, method = estMethod,
                                                         itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
-                                                        key = key, calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
+                                                        key = key, calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, leniency = leniency),
                                              error = function(e) {NULL})
                                   }
 
@@ -476,7 +477,7 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                         tryCatch(.mirt(data = data, model = i, method = estMethod,
                                                        itemtype = j, accelerate = accelerate, SE = T, GenRandomPars = GenRandomPars,
                                                        key = key, calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES,
-                                                       symmetric = symmetric, group = gname, anchor = anchor),
+                                                       symmetric = symmetric, group = gname, anchor = anchor, leniency = leniency),
                                                  error = function(e) {NULL})
                                       }
             }
@@ -509,14 +510,14 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                        "3PLu" else if (j == "2PLNRM")
                                                                          "2PL" else j, SE = T, GenRandomPars = GenRandomPars,
                                                                  covdata = covdata, fixed = eval(parse(text = k_fixed)), random = eval(parse(text = k)),
-                                                                 calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
+                                                                 calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, leniency = leniency),
                                                  error = function(e) {NULL})
 
                                       } else {
                                         tryCatch(.mixedmirt(data = data, model = i,
                                                                  accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
                                                                  covdata = covdata, fixed = eval(parse(text = k_fixed)), random = eval(parse(text = k)),
-                                                                 calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), error = function(e) {NULL})
+                                                                 calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, leniency = leniency), error = function(e) {NULL})
                                       }
                                     }
               Sys.sleep(idling)
@@ -535,14 +536,14 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
                                                                         "3PLu" else if (j == "2PLNRM")
                                                                           "2PL" else j, SE = T, GenRandomPars = GenRandomPars,
                                                                   covdata = covdata, lr.fixed = eval(parse(text = k_fixed)), lr.random = eval(parse(text = k)),
-                                                                  calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric),
+                                                                  calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, leniency = leniency),
                                                   error = function(e) {NULL})
 
                                        } else {
                                          tryCatch(.mixedmirt(data = data, model = i,
                                                                   accelerate = accelerate, itemtype = j, SE = T, GenRandomPars = GenRandomPars,
                                                                   covdata = covdata, lr.fixed = eval(parse(text = k_fixed)), lr.random = eval(parse(text = k)),
-                                                                  calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric), error = function(e) {NULL})
+                                                                  calcNull = T, NCYCLES = NCYCLES, BURNIN = BURNIN, SEMCYCLES = SEMCYCLES, symmetric = symmetric, leniency = leniency), error = function(e) {NULL})
                                        }
                                      }
             }
@@ -572,15 +573,14 @@ engineAEFA <- function(data, model = 1, GenRandomPars = T, NCYCLES = 4000, BURNI
             for (i in 1:NROW(noNullEstModels)) {
                 if (class(noNullEstModels[[i]]) %in% c("MixedClass", "SingleGroupClass",
                   "DiscreteClass", "MultipleGroupClass")) {
-                  if (noNullEstModels[[i]]@OptimInfo$secondordertest) {
-                    if (is.numeric(noNullEstModels[[i]]@Model$model) && class(noNullEstModels[[i]]) ==
+
+                  if (is.numeric(noNullEstModels[[i]]@Model$model) && class(noNullEstModels[[i]]) ==
                       "MixedClass") {
-                      if (noNullEstModels[[i]]@Model$model > 1) {
-                        noNullEstModels[[i]]@Options$exploratory <- TRUE
-                      }
+                    if (noNullEstModels[[i]]@Model$model > 1) {
+                      noNullEstModels[[i]]@Options$exploratory <- TRUE
                     }
-                    finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
                   }
+                  finalEstModels[[NROW(finalEstModels) + 1]] <- noNullEstModels[[i]]
 
                 }
             }

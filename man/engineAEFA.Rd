@@ -11,7 +11,7 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
   samples = 5000, printDebugMsg = F, fitEMatUIRT = F,
   ranefautocomb = T, tryLCA = T, forcingMixedModelOnly = F,
   forcingQMC = F, turnOffMixedEst = F, anchor = NULL,
-  skipggumInternal = F, powertest = F, idling = 60)
+  skipggumInternal = F, powertest = F, idling = 60, leniency = F)
 }
 \arguments{
 \item{data}{insert \code{data.frame} object.}
@@ -63,6 +63,8 @@ engineAEFA(data, model = 1, GenRandomPars = T, NCYCLES = 4000,
 \item{powertest}{Set power test mode. default is FALSE.}
 
 \item{idling}{Set seconds to idle. default is 60.}
+
+\item{leniency}{skip second order test. default is FALSE}
 }
 \value{
 possible optimal combinations of models in list

@@ -393,6 +393,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param skipggum Set the skipping ggum fitting procedure to speed up. default is FALSE.
 #' @param powertest Set power test mode. default is FALSE.
 #' @param idling Set seconds to idle. default is 60.
+#' @param leniency skip second order test. default is FALSE
 #' @importFrom stats qnorm
 #' @importFrom stats sd
 #'
@@ -421,7 +422,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = F, forcingQMC = F, turnOffMixedEst = F,
-    fitIndicesCutOff = 0.005, anchor = colnames(data), skipggum = F, powertest = F, idling = 60) {
+    fitIndicesCutOff = 0.005, anchor = colnames(data), skipggum = F, powertest = F, idling = 60, leniency = F) {
 
   workDirectory <- getwd()
   message(paste0('work directory: ', workDirectory))
@@ -530,7 +531,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   resampling = resampling, samples = samples, printDebugMsg = printDebugMsg,
                   fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb, tryLCA = tryLCA,
                   forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
-                  skipggumInternal = skipggum, powertest = powertest, idling = idling), error = function(e) {
+                  skipggumInternal = skipggum, powertest = powertest, idling = idling, leniency = leniency), error = function(e) {
                 })
                 if (exists("estModel")) {
                   modelDONE <- TRUE
@@ -561,7 +562,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                     symmetric = symmetric, resampling = resampling, samples = samples,
                     printDebugMsg = printDebugMsg, fitEMatUIRT = fitEMatUIRT, ranefautocomb = ranefautocomb,
                     tryLCA = tryLCA, forcingQMC = forcingQMC, turnOffMixedEst = turnOffMixedEst, anchor = anchor[!anchor %in% DIFitems],
-                    skipggumInternal = skipggum, powertest = powertest, idling = idling),
+                    skipggumInternal = skipggum, powertest = powertest, idling = idling, leniency = leniency),
                     error = function(e) {
                     })
                   if (!dfFound) {
@@ -610,32 +611,29 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                   for (i in 1:NROW(estModel)) {
                     if (sum(c("MixedClass", "SingleGroupClass", "DiscreteClass", "MultipleGroupClass") %in%
                       class(estModel[[i]])) > 0) {
-                      if (estModel[[i]]@OptimInfo$secondordertest) {
-                        # heywood case filter
-                        if(class(estModel[[i]]) %in% "MixedClass"){
-                          if(sum(invisible(.exportParmsEME(estModel[[i]], quiet = T))@Fit$h2 > 1) > 0){
-                            next()
-                          }
-                        } else if(class(estModel[[i]]) %in% "SingleGroupClass"){
-                          if(sum(estModel[[i]]@Fit$h2 > 1) > 0){
-                            next()
-                          }
+
+                      # heywood case filter
+                      if(class(estModel[[i]]) %in% "MixedClass"){
+                        if(sum(invisible(.exportParmsEME(estModel[[i]], quiet = T))@Fit$h2 > 1) > 0){
+                          next()
                         }
-                        if (toupper(modelSelectionCriteria) %in% c("DIC")) {
-                          modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$DIC
-                        } else if (toupper(modelSelectionCriteria) %in% c("AIC")) {
-                          modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AIC
-                        } else if (toupper(modelSelectionCriteria) %in% c("AICC", "CAIC")) {
-                          modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AICc
-                        } else if (toupper(modelSelectionCriteria) %in% c("BIC")) {
-                          modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$BIC
-                        } else if (toupper(modelSelectionCriteria) %in% c("SABIC")) {
-                          modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$SABIC
-                        } else {
-                          stop("please specify model fit type correctly: DIC (default), AIC, BIC, AICc (aka cAIC), saBIC")
+                      } else if(class(estModel[[i]]) %in% "SingleGroupClass"){
+                        if(sum(estModel[[i]]@Fit$h2 > 1) > 0){
+                          next()
                         }
+                      }
+                      if (toupper(modelSelectionCriteria) %in% c("DIC")) {
+                        modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$DIC
+                      } else if (toupper(modelSelectionCriteria) %in% c("AIC")) {
+                        modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AIC
+                      } else if (toupper(modelSelectionCriteria) %in% c("AICC", "CAIC")) {
+                        modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$AICc
+                      } else if (toupper(modelSelectionCriteria) %in% c("BIC")) {
+                        modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$BIC
+                      } else if (toupper(modelSelectionCriteria) %in% c("SABIC")) {
+                        modModelFit[[length(modModelFit) + 1]] <- estModel[[i]]@Fit$SABIC
                       } else {
-                        modModelFit[[length(modModelFit) + 1]] <- NA  # prevent unexpected event
+                        stop("please specify model fit type correctly: DIC (default), AIC, BIC, AICc (aka cAIC), saBIC")
                       }
                     }
                   }

@@ -180,7 +180,8 @@
 #'
   .mirt <- function(data = NULL, model = 1, method = "EM",
                     itemtype = "graded", accelerate = "squarem", SE = T, GenRandomPars = T,
-                    key = NULL, calcNull = T, NCYCLES = 4000, BURNIN = 1000, SEMCYCLES = 1500, symmetric = F, group = NULL, anchor = colnames(data)){
+                    key = NULL, calcNull = T, NCYCLES = 4000, BURNIN = 1000, SEMCYCLES = 1500, symmetric = F,
+                    group = NULL, anchor = colnames(data), leniency = F){
     invisible(gc())
     if(is.null(group)){
       mod <- mirt::mirt(data = data, model = model, method = method,
@@ -197,10 +198,14 @@
 
     if(exists('mod')){
       if(mod@OptimInfo$converged){
-        if(mod@OptimInfo$secondordertest){
+        if(leniency){
           mod
         } else {
-          NULL
+          if(mod@OptimInfo$secondordertest){
+            mod
+          } else {
+            NULL
+          }
         }
       } else {
         NULL
@@ -214,7 +219,7 @@
   .mixedmirt <- function(data = NULL, model = 1,
                     itemtype = "graded", accelerate = "squarem", SE = T, GenRandomPars = T, covdata = NULL,
                     fixed = ~1, random = NULL, lr.fixed = ~1, lr.random = NULL,
-                    calcNull = T, NCYCLES = 4000, BURNIN = 1000, SEMCYCLES = 1500, symmetric = F){
+                    calcNull = T, NCYCLES = 4000, BURNIN = 1000, SEMCYCLES = 1500, symmetric = F, leniency = F){
     invisible(gc())
     mod <- mirt::mixedmirt(data = data, model = model,
                            accelerate = accelerate, itemtype = itemtype, SE = SE, GenRandomPars = GenRandomPars,
@@ -225,10 +230,14 @@
                                                           symmetric = symmetric))
     if(exists('mod')){
       if(mod@OptimInfo$converged){
-        if(mod@OptimInfo$secondordertest){
+        if(leniency){
           mod
         } else {
-          NULL
+          if(mod@OptimInfo$secondordertest){
+            mod
+          } else {
+            NULL
+          }
         }
       } else {
         NULL

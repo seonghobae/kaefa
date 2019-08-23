@@ -10,7 +10,7 @@
 #' @param RemoteClusters insert google computing engine virtual machine information. If you want to use MPI address, please insert addresses here.
 #' @param debug run with debug mode. default is FALSE
 #' @param sshKeyPath provide the SSH key path, NA is the placeholder.
-#'
+#' @param loadPercentage Speicfy the load level when you want to use remote clusters.
 #' @return nothing to return, just hidden variable to set to run parallelism.
 #' @export
 #'
@@ -20,7 +20,7 @@
 #' aefaInit(RemoteClusters = c('localhost', 's1', 's2'), sshKeyPath = c(NA, '~/pub.pem', NA))
 #'
 #'}
-aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshKeyPath = NULL) {
+aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshKeyPath = NULL, loadPercentage = 50) {
     # options(future.debug = debug)
 
     assignClusterNodes <- function(serverList, loadPercentage = 50, freeRamPercentage = 30,
@@ -194,8 +194,8 @@ aefaInit <- function(RemoteClusters = getOption("kaefaServers"), debug = F, sshK
     if (!is.null(RemoteClusters)) {
       halfCores <- function() { max(1, round(0.3 * future::availableCores()))}
       try(future::plan(list(
-        future::tweak(future::cluster, workers = assignClusterNodes(RemoteClusters), gc = T, homogeneous = FALSE),
-        future::tweak(future::multiprocess, workers = halfCores, gc = T)
+        future::tweak(future::cluster, workers = assignClusterNodes(RemoteClusters), gc = T, homogeneous = FALSE, earlySignal = T),
+        future::tweak(future::multiprocess, workers = halfCores, gc = T, earlySignal = T)
       )))
         # try(future::plan(future::tweak("future::cluster",
         #                                     workers = tryCatch(assignClusterNodes(RemoteClusters), error = function(e){assignClusterNodes(RemoteClusters)}), gc = T

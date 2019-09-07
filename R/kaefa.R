@@ -392,7 +392,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
 #' @param anchor Set the anchor item names If you want to consider DIF detection. default is NULL.
 #' @param skipggum Set the skipping ggum fitting procedure to speed up. default is FALSE.
 #' @param powertest Set power test mode. default is FALSE.
-#' @param idling Set seconds to idle. default is 60.
+#' @param idling Set seconds to idle. default is 0.
 #' @param leniency skip second order test. default is FALSE
 #' @importFrom stats qnorm
 #' @importFrom stats sd
@@ -422,7 +422,7 @@ aefa <- efa <- function(data, model = NULL, minExtraction = 1, maxExtraction = i
                                                         "tandemI", "entropy", "quartimax"), resampling = T, samples = 5000,
     printDebugMsg = F, modelSelectionCriteria = "DIC", saveRawEstModels = F, fitEMatUIRT = F,
     ranefautocomb = T, PV_Q1 = T, tryLCA = F, forcingQMC = F, turnOffMixedEst = F,
-    fitIndicesCutOff = 0.005, anchor = colnames(data), skipggum = F, powertest = F, idling = 60, leniency = F) {
+    fitIndicesCutOff = 0.005, anchor = colnames(data), skipggum = F, powertest = F, idling = 0, leniency = F) {
 
   workDirectory <- getwd()
   message(paste0('work directory: ', workDirectory))

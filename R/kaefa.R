@@ -253,8 +253,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           modFit_Zh %<-% suppressWarnings(tryCatch({
             mirt::mirtCluster()
             ret <- mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "Zh", QMC = T,
-                                 method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP',
-                                 impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0)
+                                 method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', na.rm=TRUE)
             mirt::mirtCluster(remove = T)
             return(ret)
             }, error = function(e) {NULL}))
@@ -265,8 +264,7 @@ evaluateItemFit <- function(mirtModel, RemoteClusters = NULL, rotate = "bifactor
           modFit_SX2 %<-% suppressWarnings(tryCatch({
             mirt::mirtCluster()
             ret <- mirt::itemfit(mirtModel, rotate = rotate, fit_stats = "S_X2", QMC = T,
-                                 method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP',
-                                 impute = if (sum(is.na(mirtModel@Data$data)) > 0) 100 else 0)
+                                 method = if(mirtModel@Model$nfact == 1) 'EAP' else 'MAP', na.rm=TRUE)
             mirt::mirtCluster(remove = T)
             return(ret)
           }, error = function(e) {NULL}))

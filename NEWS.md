@@ -1,3 +1,10 @@
+# kaefa (development version)
+
+* Reduced local R workflow load for prose-only Markdown changes while keeping
+  `docs/product/kaefa-core-api-contract.md` inside the package contract checks.
+* Added a regression contract for the local workflow path filters and aligned
+  the architecture documentation with the live central/local gate boundary.
+
 # kaefa 0.1.428.1
 
 ## New Features
@@ -22,6 +29,5 @@ This update addresses the need to set theta priors based on empirical raw score 
 # kaefa 0.1.0.9000
 
 * Added a `NEWS.md` file to track changes to the package.
-
 
 

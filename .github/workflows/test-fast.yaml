@@ -3,8 +3,20 @@ name: test-fast
 on:
   push:
     branches: [main, master, develop]
+    paths:
+      - "**"
+      - "!docs/**"
+      - "!*.md"
+      - "!**/*.md"
+      - "docs/product/kaefa-core-api-contract.md"
   pull_request:
     branches: [main, master, develop]
+    paths:
+      - "**"
+      - "!docs/**"
+      - "!*.md"
+      - "!**/*.md"
+      - "docs/product/kaefa-core-api-contract.md"
 
 permissions:
   contents: read
@@ -37,5 +49,7 @@ jobs:
           testthat::test_file("tests/testthat/test-shiny-product-surface.R",
                               reporter = reporter)
           testthat::test_file("tests/testthat/test-core-api-contract.R",
+                              reporter = reporter)
+          testthat::test_file("tests/testthat/test-workflow-path-contract.R",
                               reporter = reporter)
           RSCRIPT

@@ -57,9 +57,16 @@ explicitly requires vendored source integration.
 ## Quality and Security Gates
 
 - PR merge requires review approval and resolved conversations.
-- Required checks include R-CMD-check matrix and dependency review.
-- If code scanning is enabled later, alerts can be tracked via GitHub code
-  scanning APIs.
+- Organization-owned required review and security gates run on every PR through
+  reusable workflows in `ContextualWisdomLab/.github`.
+- Local `R-CMD-check`, `test-fast`, and `test-suite` workflows run for runtime,
+  package, workflow, `README.Rmd`, and public API contract changes. Plain
+  Markdown changes are excluded, except
+  `docs/product/kaefa-core-api-contract.md`, because
+  `tests/testthat/test-core-api-contract.R` consumes that file as executable
+  contract input.
+- `tests/testthat/test-workflow-path-contract.R` prevents the API-contract
+  exception from silently disappearing when the trigger paths change.
 
 ## Change Rule
 
